@@ -6,7 +6,7 @@
                     <router-link to="/" class="main-logo flex items-center shrink-0">
                         <img class="w-8 ltr:-ml-1 rtl:-mr-1 inline" src="/assets/images/logo.svg" alt="" />
                         <span
-                            class="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle hidden md:inline dark:text-white-light transition-all duration-300">VRISTO</span>
+                            class="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle hidden md:inline dark:text-white-light transition-all duration-300">PAYMAX</span>
                     </router-link>
 
                     <a href="javascript:;"
@@ -14,28 +14,6 @@
                         @click="store.toggleSidebar()">
                         <icon-menu class="w-5 h-5" />
                     </a>
-                </div>
-                <div class="ltr:mr-2 rtl:ml-2 hidden sm:block">
-                    <ul class="flex items-center space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
-                        <li>
-                            <router-link to="/apps/calendar"
-                                class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
-                                <icon-calendar />
-                            </router-link>
-                        </li>
-                        <li>
-                            <router-link to="/apps/todolist"
-                                class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
-                                <icon-edit />
-                            </router-link>
-                        </li>
-                        <li>
-                            <router-link to="/apps/chat"
-                                class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
-                                <icon-chat-notification />
-                            </router-link>
-                        </li>
-                    </ul>
                 </div>
                 <div
                     class="sm:flex-1 ltr:sm:ml-0 ltr:ml-auto sm:rtl:mr-0 rtl:mr-auto flex items-center space-x-1.5 lg:space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
@@ -103,71 +81,6 @@
                                                     alt="" />
                                                 <span class="ltr:ml-3 rtl:mr-3">{{ item.name }}</span>
                                             </button>
-                                        </li>
-                                    </template>
-                                </ul>
-                            </template>
-                        </Popper>
-                    </div>
-
-                    <div class="dropdown shrink-0">
-                        <Popper :placement="store.rtlClass === 'rtl' ? 'bottom-start' : 'bottom-end'" offsetDistance="8"
-                            class="align-middle">
-                            <button type="button"
-                                class="block p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60">
-                                <icon-mail-dot />
-                            </button>
-                            <template #content="{ close }">
-                                <ul class="top-11 !py-0 text-dark dark:text-white-dark w-[300px] sm:w-[375px] text-xs">
-                                    <li class="mb-5">
-                                        <div class="overflow-hidden relative rounded-t-md !p-5 text-white">
-                                            <div
-                                                class="absolute h-full w-full bg-[url('/assets/images/menu-heade.jpg')] bg-no-repeat bg-center bg-cover inset-0">
-                                            </div>
-                                            <h4 class="font-semibold relative z-10 text-lg">Messages</h4>
-                                        </div>
-                                    </li>
-                                    <template v-for="msg in messages" :key="msg.id">
-                                        <li>
-                                            <div class="flex items-center py-3 px-5">
-                                                <div v-html="msg.image"></div>
-                                                <span class="px-3 dark:text-gray-500">
-                                                    <div class="font-semibold text-sm dark:text-white-light/90"
-                                                        v-text="msg.title"></div>
-                                                    <div v-text="msg.message"></div>
-                                                </span>
-                                                <span
-                                                    class="font-semibold bg-white-dark/20 rounded text-dark/60 px-1 ltr:ml-auto rtl:mr-auto whitespace-pre dark:text-white-dark ltr:mr-2 rtl:ml-2"
-                                                    v-text="msg.time"></span>
-                                                <button type="button" class="text-neutral-300 hover:text-danger"
-                                                    @click="removeMessage(msg.id)">
-                                                    <icon-x-circle />
-                                                </button>
-                                            </div>
-                                        </li>
-                                    </template>
-                                    <template v-if="messages.length">
-                                        <li class="border-t border-white-light text-center dark:border-white/10 mt-5">
-                                            <div class="flex items-center py-4 px-5 text-primary font-semibold group dark:text-gray-400 justify-center cursor-pointer"
-                                                @click="close()">
-                                                <span class="group-hover:underline ltr:mr-1 rtl:ml-1">VIEW ALL
-                                                    ACTIVITIES</span>
-
-                                                <icon-arrow-left
-                                                    class="group-hover:translate-x-1 transition duration-300 ltr:ml-1 rtl:mr-1" />
-                                            </div>
-                                        </li>
-                                    </template>
-                                    <template v-if="!messages.length">
-                                        <li class="mb-5">
-                                            <div
-                                                class="!grid place-content-center hover:!bg-transparent text-lg min-h-[200px]">
-                                                <div
-                                                    class="mx-auto ring-4 ring-primary/30 rounded-full mb-4 text-primary">
-                                                    <icon-info-circle :fill="true" class="w-10 h-10" />
-                                                </div>
-                                                No data available.
-                                            </div>
                                         </li>
                                     </template>
                                 </ul>
@@ -282,13 +195,6 @@
                                             <icon-user class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
 
                                             Profile
-                                        </router-link>
-                                    </li>
-                                    <li>
-                                        <router-link to="/apps/mailbox" class="dark:hover:text-white" @click="close()">
-                                            <icon-mail class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
-
-                                            Inbox
                                         </router-link>
                                     </li>
                                     <li>
