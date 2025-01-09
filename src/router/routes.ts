@@ -21,6 +21,7 @@ const routes: RouteRecordRaw[] = [
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...visitorMgtRoutes,
+    /************ ERROR ROUTE **********************/
     {
         path: '/:catchAll(.*)*',
         name: 'Error404',

@@ -5,8 +5,8 @@ const visitorMgtRoutes = [
         children: [
             {
                 path: '/',
-                name: 'VisitorMgtHome',
-                // component:
+                name: 'visitorMgtHome',
+                component: () => import('../../views/VisitorMgt/VisitorMgtHome.vue'),
             },
         ],
     },
