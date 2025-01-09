@@ -17,7 +17,7 @@ import { useMeta } from '@/composables/use-meta';
 const store = useAppStore();
 
 // meta
-useMeta({ title: 'Sales Admin' });
+useMeta({ title: 'Admin Dashboard' });
 
 const mainLayout = computed(() => {
     return store.mainLayout === 'auth' ? authLayout : appLayout;

@@ -22,7 +22,7 @@
                 }" class="h-[calc(100vh-80px)] relative">
                     <ul class="relative font-semibold space-y-0.5 p-4 py-0">
                         <li class="menu nav-item">
-                            <router-link :to="{ name: 'Dashboard' }" class="nav-link group" @click="toggleMobileMenu">
+                            <router-link :to="{ name: 'dashboard' }" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <icon-menu-dashboard class="group-hover:!text-primary shrink-0" />
 
@@ -32,66 +32,36 @@
                                 </div>
                             </router-link>
                         </li>
+                        <li class="menu nav-item">
+                            <router-link :to="{ name: 'profile' }" class="nav-link group" @click="toggleMobileMenu">
+                                <div class="flex items-center">
+                                    <icon-menu-users class="group-hover:!text-primary shrink-0" />
+
+                                    <span
+                                        class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{{
+                                            $t('profile') }}</span>
+                                </div>
+                            </router-link>
+                        </li>
 
                         <h2
                             class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
                             <icon-minus class="w-4 h-5 flex-none hidden" />
-                            <span>{{ $t('Services') }}</span>
+                            <span>{{ $t('services') }}</span>
                         </h2>
 
-                        <li class="menu nav-item">
-                            <button type="button" class="nav-link group w-full"
-                                :class="{ active: activeDropdown === 'authentication' }"
-                                @click="activeDropdown === 'authentication' ? (activeDropdown = null) : (activeDropdown = 'authentication')">
-                                <div class="flex items-center">
-                                    <icon-menu-authentication class="group-hover:!text-primary shrink-0" />
-
-                                    <span
-                                        class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{{
-                                            $t('authentication')
-                                        }}</span>
-                                </div>
-                                <div :class="{ 'rtl:rotate-90 -rotate-90': activeDropdown !== 'authentication' }">
-                                    <icon-caret-down />
-                                </div>
-                            </button>
-                            <vue-collapsible :isOpen="activeDropdown === 'authentication'">
-                                <ul class="sub-menu text-gray-500">
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/boxed-signin" target="_blank">{{ $t('login_boxed')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/boxed-signup" target="_blank">{{ $t('register_boxed')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/boxed-lockscreen" target="_blank">{{ $t('unlock_boxed')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/boxed-password-reset" target="_blank">{{
-                                            $t('recover_id_boxed') }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/cover-login" target="_blank">{{ $t('login_cover')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/cover-register" target="_blank">{{ $t('register_cover')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/cover-lockscreen" target="_blank">{{ $t('unlock_cover')
-                                            }}</router-link>
-                                    </li>
-                                    <li @click="toggleMobileMenu">
-                                        <router-link to="/auth/cover-password-reset" target="_blank">{{
-                                            $t('recover_id_cover') }}</router-link>
-                                    </li>
-                                </ul>
-                            </vue-collapsible>
-                        </li>
+                        <!-- Modules/Services Navigations -->
+                        <BillsPaymentNavigation />
+                        <CrowdfundingNavigation />
+                        <DeliveryNavigation />
+                        <EventsNavigation />
+                        <GroupMembershipNavigation />
+                        <InsuranceNavigation />
+                        <RestaurantNavigation />
+                        <TransactionsNavigation />
+                        <UsersMgtNavigation />
+                        <VisitorMgtNavigation />
+                        <VotingNavigation />
                     </ul>
                 </perfect-scrollbar>
             </div>
@@ -100,19 +70,28 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 
 import { useAppStore } from '@/stores/index';
-import VueCollapsible from 'vue-height-collapsible/vue3';
 
 import IconCaretsDown from '@/components/icon/icon-carets-down.vue';
 import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard.vue';
+import IconMenuUsers from '@/components/icon/menu/icon-menu-users.vue';
 import IconMinus from '@/components/icon/icon-minus.vue';
-import IconCaretDown from '@/components/icon/icon-caret-down.vue';
+
+import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
+import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
+import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
+import EventsNavigation from '../modules/Events/EventsNavigation.vue';
+import GroupMembershipNavigation from '../modules/GroupMembership/GroupMembershipNavigation.vue';
+import InsuranceNavigation from '../modules/Insurance/InsuranceNavigation.vue';
+import RestaurantNavigation from '../modules/Restaurant/RestaurantNavigation.vue';
+import TransactionsNavigation from '../modules/Transactions/TransactionsNavigation.vue';
+import UsersMgtNavigation from '../modules/UsersMgt/UsersMgtNavigation.vue';
+import VisitorMgtNavigation from '../modules/VisitorMgt/VisitorMgtNavigation.vue';
+import VotingNavigation from '../modules/Voting/VotingNavigation.vue';
 
 const store = useAppStore();
-const activeDropdown: any = ref('');
-const subActive: any = ref('');
 
 onMounted(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');

@@ -14,6 +14,7 @@ export const useAppStore = defineStore('app', {
         navbar: 'navbar-sticky',
         locale: 'en',
         sidebar: false,
+        activeDropdown: null,
         languageList: [
             { code: 'zh', name: 'Chinese' },
             { code: 'da', name: 'Danish' },
@@ -109,6 +110,9 @@ export const useAppStore = defineStore('app', {
         },
         toggleSidebar(state: boolean = false) {
             this.sidebar = !this.sidebar;
+        },
+        toggleActiveDropdown(payload: any = null) {
+            this.activeDropdown = this.activeDropdown === payload ? null : payload;
         },
         toggleMainLoader(state: boolean = false) {
             this.isShowMainLoader = true;
