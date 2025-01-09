@@ -8,9 +8,9 @@ export const usePageTitle = (pageTitle: any) =>
     useHead(
         computed(() => ({
             title: `${unref(pageTitle)} ${separator} ${siteTitle}`,
-        }))
+        })),
     );
 
 export const useMeta = (data: any) => {
-    return useHead({ ...data, title: `${data.title} | VRISTO - Multipurpose Tailwind Dashboard Template` });
+    return useHead({ ...data, title: `${data.title} | PAYMAX - Admin Dashboard` });
 };
