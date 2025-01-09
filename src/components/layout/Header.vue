@@ -96,26 +96,13 @@
                                     <template v-for="item in store.languageList" :key="item.code">
                                         <li>
                                             <button type="button" class="w-full hover:text-primary"
-                                                :class="{ 'bg-primary/10 text-primary': 'en' === item.code }"
+                                                :class="{ 'bg-primary/10 text-primary': i18n.locale === item.code }"
                                                 @click="changeLanguage(item), close()">
                                                 <img class="w-5 h-5 object-cover rounded-full"
                                                     :src="`/assets/images/flags/${item.code.toUpperCase()}.svg`"
                                                     alt="" />
                                                 <span class="ltr:ml-3 rtl:mr-3">{{ item.name }}</span>
                                             </button>
-                                            <!-- <button
-                                                type="button"
-                                                class="w-full hover:text-primary"
-                                                :class="{ 'bg-primary/10 text-primary': i18n.locale === item.code }"
-                                                @click="changeLanguage(item), close()"
-                                            >
-                                                <img
-                                                    class="w-5 h-5 object-cover rounded-full"
-                                                    :src="`/assets/images/flags/${item.code.toUpperCase()}.svg`"
-                                                    alt=""
-                                                />
-                                                <span class="ltr:ml-3 rtl:mr-3">{{ item.name }}</span>
-                                            </button> -->
                                         </li>
                                     </template>
                                 </ul>
@@ -783,12 +770,12 @@
                                 <li>
                                     <router-link to="/auth/cover-password-reset" target="_blank">{{
                                         $t('recover_id_cover')
-                                        }}</router-link>
+                                    }}</router-link>
                                 </li>
                                 <li>
                                     <router-link to="/auth/boxed-password-reset" target="_blank">{{
                                         $t('recover_id_boxed')
-                                        }}</router-link>
+                                    }}</router-link>
                                 </li>
                             </ul>
                         </li>
@@ -848,7 +835,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, reactive, watch } from 'vue';
-// import { useI18n } from 'vue-i18n';
+import { useI18n } from 'vue-i18n';
 
 import appSetting from '@/app-setting';
 
@@ -887,14 +874,13 @@ const route = useRoute();
 const search = ref(false);
 
 // multi language
-// const i18n = reactive(useI18n());
+const i18n = reactive(useI18n());
 const changeLanguage = (item: any) => {
-    // i18n.locale = item.code;
+    i18n.locale = item.code;
     appSetting.toggleLanguage(item);
 };
 const currentFlag = computed(() => {
-    // return `/assets/images/flags/${i18n.locale.toUpperCase()}.svg`;
-    return `/assets/images/flags/EN.svg`;
+    return `/assets/images/flags/${i18n.locale.toUpperCase()}.svg`;
 });
 
 const notifications = ref([

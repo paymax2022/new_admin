@@ -1,44 +1,48 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
+import '@/assets/css/app.css';
+import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar';
+import { createHead } from '@vueuse/head';
+import appSetting from '@/app-setting';
+import i18n from '@/i18n';
+import { TippyPlugin } from 'tippy.vue';
+import { vMaska } from 'maska/vue';
+import Popper from 'vue3-popper';
 
-const app = createApp(App)
+const app = createApp(App);
 
 // pinia store
-const pinia = createPinia()
-app.use(pinia)
+const pinia = createPinia();
+app.use(pinia);
 
 // router
-app.use(router)
+app.use(router);
 
 // main app css
-import '@/assets/css/app.css'
 
 // perfect scrollbar
-import { PerfectScrollbarPlugin } from 'vue3-perfect-scrollbar'
-app.use(PerfectScrollbarPlugin)
+app.use(PerfectScrollbarPlugin);
 
 //vue-meta
-import { createHead } from '@vueuse/head'
-const head = createHead()
-app.use(head)
+const head = createHead();
+app.use(head);
 
 // set default settings
-import appSetting from '@/app-setting'
-appSetting.init()
+appSetting.init();
+
+//vue-i18n
+app.use(i18n);
 
 // tippy tooltips
-import { TippyPlugin } from 'tippy.vue'
-app.use(TippyPlugin)
+app.use(TippyPlugin);
 
 //input mask
-import { vMaska } from 'maska/vue'
-app.directive('maska', vMaska)
+app.directive('maska', vMaska);
 
 // popper
-import Popper from 'vue3-popper'
-app.component('Popper', Popper)
+app.component('Popper', Popper);
 
-app.mount('#app')
+app.mount('#app');
