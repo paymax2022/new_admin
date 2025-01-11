@@ -8,11 +8,11 @@ const authRoutes = [
                 name: 'authLogin',
                 component: () => import('../../views/Auth/AuthLogin.vue'),
             },
-            {
-                path: 'register',
-                name: 'authRegister',
-                component: () => import('../../views/Auth/AuthRegister.vue'),
-            },
+            // {
+            //     path: 'register',
+            //     name: 'authRegister',
+            //     component: () => import('../../views/Auth/AuthRegister.vue'),
+            // },
             {
                 path: 'forgot-password',
                 name: 'authForgotPassword',
