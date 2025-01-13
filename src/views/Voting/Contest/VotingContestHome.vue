@@ -1,7 +1,6 @@
 <template>
     <div>
-        <Breadcrumb
-            :items="[{ label: 'Voting', route: { name: 'votingHome' } }, { label: 'Contests', route: { name: 'votingContestHome' } }]" />
+        <Breadcrumb :items="[{ label: 'Voting', route: { name: 'votingHome' } }, { label: 'Contests' }]" />
 
         <div class="panel pb-0 mt-6">
             <h5 class="font-semibold text-lg dark:text-white-light mb-5">Contests</h5>
@@ -44,8 +43,7 @@
                         <strong class="">{{ getRowIndex(data.value) }}</strong>
                     </template>
                     <template #Title="data">
-                        <RouterLink :to="{ name: 'votingContestDetail', params: { contestId: data.value.id } }"
-                            class="">
+                        <RouterLink :to="{ name: 'votingContestDetail', params: { contestId: data.value.id } }">
                             <div class="flex items-center">
                                 <div class="w-24 h-16 mr-4">
                                     <img class="w-full h-full object-cover" :src="data.value.logo"
@@ -76,6 +74,8 @@
                         </div>
                     </template>
                     <template #status="data">
+                        <span class="bg-danger" />
+                        <span class=" bg-warning" />
                         <span
                             :class="`badge bg-${data.value.status == 'CLOSED' ? 'danger' : data.value.status == 'PENDING' ? 'warning' : 'success'}`">
                             {{ data.value.status }}
@@ -91,13 +91,15 @@
                                 <template #content="{ close }">
                                     <ul @click="close()" class="whitespace-nowrap">
                                         <li>
-                                            <RouterLink to="#">
+                                            <RouterLink
+                                                :to="{ name: 'votingContestDetail', params: { contestId: data.value.id } }">
                                                 <IconEye class="ltr:mr-2 rtl:ml-2 shrink-0" />
                                                 View
                                             </RouterLink>
                                         </li>
                                         <li>
-                                            <RouterLink to="#">
+                                            <RouterLink
+                                                :to="{ name: 'votingContestEdit', params: { contestId: data.value.id } }">
                                                 <IconPencilPaper class="ltr:mr-2 rtl:ml-2 shrink-0" />
                                                 Edit
                                             </RouterLink>
