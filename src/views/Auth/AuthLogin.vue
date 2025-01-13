@@ -96,11 +96,11 @@
                                     </span>
                                 </div>
                             </div>
-                            <div>
-                                <label class="flex cursor-pointer items-center">
-                                    <input type="checkbox" class="form-checkbox bg-white dark:bg-black" />
-                                    <span class="text-white-dark">Subscribe to weekly newsletter</span>
-                                </label>
+                            <div class="">
+                                <router-link :to="{ name: 'authForgotPassword' }"
+                                    class="text-primary underline transition hover:text-black dark:hover:text-white">
+                                    Forget Password?
+                                </router-link>
                             </div>
                             <button type="submit"
                                 class="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
@@ -108,13 +108,13 @@
                             </button>
                         </form>
 
-                        <div class="relative my-7 text-center md:mb-9">
+                        <!-- <div class="relative my-7 text-center md:mb-9">
                             <span
                                 class="absolute inset-x-0 top-1/2 h-px w-full -translate-y-1/2 bg-white-light dark:bg-white-dark"></span>
                             <span
                                 class="relative bg-white px-2 font-bold uppercase text-white-dark dark:bg-dark dark:text-white-light">or</span>
-                        </div>
-                        <div class="mb-10 md:mb-[60px]">
+                        </div> -->
+                        <!-- <div class="mb-10 md:mb-[60px]">
                             <ul class="flex justify-center gap-3.5 text-white">
                                 <li>
                                     <a href="javascript:"
@@ -145,14 +145,14 @@
                                     </a>
                                 </li>
                             </ul>
-                        </div>
-                        <div class="text-center dark:text-white">
+                        </div> -->
+                        <!-- <div class="text-center dark:text-white">
                             Don't have an account ?
-                            <router-link to="/auth/cover-register"
+                            <router-link :to="{ name: 'authRegister' }"
                                 class="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                 SIGN UP
                             </router-link>
-                        </div>
+                        </div> -->
                     </div>
                     <p class="absolute bottom-6 w-full text-center dark:text-white">© {{ new Date().getFullYear()
                         }}.PAYMAX All Rights
@@ -179,7 +179,7 @@ import IconFacebookCircle from '@/components/icon/icon-facebook-circle.vue';
 import IconTwitter from '@/components/icon/icon-twitter.vue';
 import IconGoogle from '@/components/icon/icon-google.vue';
 
-useMeta({ title: 'Login Cover' });
+useMeta({ title: 'Login' });
 const router = useRouter();
 const store = useAppStore();
 // multi language
