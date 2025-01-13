@@ -3,10 +3,11 @@
 </template>
 
 <script lang="ts" setup>
-import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue';
-import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
+    import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue';
+    import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
-const links = [
-    { route: { name: 'visitorMgtHome' }, displayName: 'Visitor Mgt Home' },
-];
+    const links = [
+        { route: { name: 'visitorMgtHome' }, displayName: 'Visitor Mgt Home' },
+        { route: { name: 'visitorMgtTicket' }, displayName: 'Tickets' },
+    ];
 </script>

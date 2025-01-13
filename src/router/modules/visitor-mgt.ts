@@ -8,6 +8,11 @@ const visitorMgtRoutes = [
                 name: 'visitorMgtHome',
                 component: () => import('../../views/VisitorMgt/VisitorMgtHome.vue'),
             },
+            {
+                path: 'ticket',
+                name: 'visitorMgtTicket',
+                component: () => import('../../views/VisitorMgt/TicketPage.vue'),
+            },
         ],
     },
 ];
