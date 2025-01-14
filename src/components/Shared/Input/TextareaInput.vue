@@ -29,7 +29,7 @@ const props = defineProps({
     modelValue: String,
     label: String,
     id: String,
-    rows: { type: Number, default: 3 },
+    rows: { type: [Number, String], default: 3 },
     placeholder: String,
     required: { type: Boolean, default: false },
     disabled: { type: Boolean, default: false },
