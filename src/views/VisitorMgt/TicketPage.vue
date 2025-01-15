@@ -1,98 +1,126 @@
 <template>
-    <div class="">
-        <!-- <div class="flex justify-center gap-4 mb-4">
-            <button class="px-4 py-2 rounded-lg text-white" :class="currentTab === 'all' ? 'bg-blue-500' : 'bg-gray-300'" @click="currentTab = 'all'">
-                All
+    <div>
+        <div class="mb-6 border p-4 sm:grid sm:grid-cols-3 sm:grid-rows-2 sm:gap-4 sm:space-y-0 sm:mb-1 lg:flex lg:space-x-4 lg:mb-6 w-full">
+            <button
+                v-for="(tab, index) in tabs"
+                :key="index"
+                @click="setActiveTab(tab.status)"
+                :class="[
+                    'px-4 py-2 border rounded-lg w-full h-full',
+                    activeTab === tab.status ? 'bg-purple-100 text-purple-600 border-purple-500' : 'bg-white border-gray-300 hover:bg-gray-100',
+                ]"
+                :aria-selected="activeTab === tab.status ? 'true' : 'false'"
+                role="tab"
+            >
+                <span class="font-semibold">{{ tab.label }}</span>
+                <span class="text-xs text-gray-500">({{ tab.count }})</span>
             </button>
-            <button class="px-4 py-2 rounded-lg text-white" :class="currentTab === 'open' ? 'bg-blue-500' : 'bg-gray-300'" @click="currentTab = 'open'">
-                Open
-            </button>
-            <button class="px-4 py-2 rounded-lg text-white" :class="currentTab === 'closed' ? 'bg-blue-500' : 'bg-gray-300'" @click="currentTab = 'closed'">
-                Closed
-            </button>
-        </div> -->
-
-        <!-- Cards -->
-        <!-- <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div v-for="(ticket, index) in filteredTickets" :key="index" class="border border-gray-300 rounded-lg p-4 shadow-sm">
-                <p class="font-semibold text-lg">{{ ticket.title }}</p>
-                <p class="text-sm text-gray-500 mb-2">{{ ticket.id }} - {{ ticket.time }}</p>
-                <p
-                    class="text-xs font-bold py-1 px-2 rounded"
-                    :class="{
-                        'bg-red-200 text-red-600': ticket.status === 'Open',
-                        'bg-green-200 text-green-600': ticket.status === 'Closed',
-                    }"
-                >
-                    {{ ticket.status }}
-                </p>
-                <p class="text-sm mt-2">{{ ticket.description }}</p>
-                <div class="flex justify-between mt-4">
-                    <button class="bg-blue-500 text-white px-4 py-1 rounded">Pick Up</button>
-                    <button class="bg-gray-500 text-white px-4 py-1 rounded">Assign</button>
+        </div>
+        <div v-for="card in filteredCards" :key="card.id" class="border mt-4 border-gray-300 px-3 py-2">
+            <div class="flex justify-between">
+                <div>
+                    <div>
+                        <p class="text-gray-800 font-bold text-lg">{{ card.title }}</p>
+                        <p class="text-gray-600 font-semibold text-[12px]">{{ card.id }}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <div class="flex items-center space-x-2 text-[12px]">
+                            <div>
+                                <IconDoublearrow class="h-4 text-purple-600" />
+                            </div>
+                            <p class="text-purple-600">{{ card.details.requestLabel }}</p>
+                        </div>
+                        <div class="flex gap-2 text-gray-600 text-[12px]">
+                            <p>{{ card.details.status }}</p>
+                            <p>-</p>
+                            <p>{{ card.details.timeAgo }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex gap-2">
+                        <IconComment />
+                        <p>{{ card.details.comments }}</p>
+                    </div>
                 </div>
             </div>
-        </div> -->
-    </div>
-    <div>
-        <div>
-            <p>Others-Others</p>
-            <p>LG2RA-121615</p>
-        </div>
-        <div>
-            <div>
-                <p>Request</p>
+            <div class="bg-gray-200 flex justify-center py-1 rounded-md w-[35%]">
+                <p>
+                    Closed by <span>{{ card.details.closedBy }}</span>
+                </p>
             </div>
             <div>
-                <p>Closed</p>
-                <p>-</p>
-                <p>6 months ago</p>
+                <p>{{ card.details.question }}</p>
+            </div>
+            <div class="flex justify-between items-center mt-4">
+                <div class="flex space-x-8">
+                    <button type="button" class="btn btn-primary w-28">Pick Up</button>
+                    <button type="button" class="btn btn-primary w-28">Assign</button>
+                </div>
+                <div class="border border-gray-300 p-2 rounded flex items-center justify-center">
+                    <IconVisible />
+                </div>
             </div>
         </div>
-        <div></div>
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup>
+    import IconComment from '@/components/icon/icon-comment.vue';
+    import IconDoublearrow from '@/components/icon/icon-doublearrow.vue';
+    import IconVisible from '@/components/icon/icon-visible.vue';
     import { ref, computed } from 'vue';
+    const tabs = [
+        { label: 'Open', status: 'Open', count: 1 },
+        { label: 'Closed', status: 'Closed', count: 1 },
+    ];
 
-    // Array of tickets
-    // const tickets = ref([
-    //     {
-    //         id: 'LG2RA-934886',
-    //         title: 'Others - Others',
-    //         time: '5 months ago',
-    //         status: 'Closed',
-    //         description: 'Is Etag now available?',
-    //     },
-    //     {
-    //         id: 'LG2RA-803412',
-    //         title: 'Billing Request',
-    //         time: '6 months ago',
-    //         status: 'Open',
-    //         description: 'Please I need an assistant on my account, my receipt displays KGN on it instead of my name...',
-    //     },
-    //     {
-    //         id: 'LG2RA-412475',
-    //         title: 'Code Issue - Unable to generate code',
-    //         time: '6 months ago',
-    //         status: 'Open',
-    //         description: 'I have paid my service charge but my account is still disabled. I cannot generate a code...',
-    //     },
-    //     {
-    //         id: 'LG2RA-121615',
-    //         title: 'Billing Issue - Payment made but not reflecting',
-    //         time: '6 months ago',
-    //         status: 'Closed',
-    //         description: 'I am trying to reach all the contacts made available on the app and no one is picking their...',
-    //     },
-    // ]);
-
-    // const currentTab = ref('all');
-
-    // Computed tickets based on the selected tab
-    // const filteredTickets = computed(() => {
-    //     if (currentTab.value === 'all') return tickets.value;
-    //     return tickets.value.filter((ticket) => ticket.status.toLowerCase() === currentTab.value);
-    // });
+    const activeTab = ref('Open');
+    const tickets = ref([
+        {
+            id: 'LG2RA-1216158',
+            title: 'Others-Others',
+            details: {
+                status: 'Closed',
+                timeAgo: '6 months ago',
+                requestIcon: IconDoublearrow,
+                requestLabel: 'Request',
+                comments: 2,
+                closedBy: 'Veekthor TEAM',
+                question: 'Is Etag now available?',
+            },
+        },
+        {
+            id: 'LG2RA-1216159',
+            title: 'Billing Issue',
+            details: {
+                status: 'Open',
+                timeAgo: '2 days ago',
+                requestIcon: IconDoublearrow,
+                requestLabel: 'Inquiry',
+                comments: 1,
+                closedBy: 'Support TEAM',
+                question: 'When will my refund be processed?',
+            },
+        },
+        {
+            id: 'LG2RA-1216159',
+            title: 'Billing Issue',
+            details: {
+                status: 'Open',
+                timeAgo: '2 days ago',
+                requestIcon: IconDoublearrow,
+                requestLabel: 'Inquiry',
+                comments: 1,
+                closedBy: 'Support TEAM',
+                question: 'When will my refund be processed?',
+            },
+        },
+    ]);
+    const filteredCards = computed(() => {
+        return activeTab.value === 'All' ? tickets.value : tickets.value.filter((ticket) => ticket.details.status === activeTab.value);
+    });
+    function setActiveTab(status) {
+        activeTab.value = status;
+    }
 </script>

@@ -101,8 +101,15 @@
             </div>
         </div>
         <div class="justify-between flex gap-5 text-gray-900 font-semibold mt-5">
-            <div class="border border-gray-300 px-3 py-2"><p>Broadcast Message</p></div>
-            <div class="border border-gray-300 px-3 py-2"><p>Validate Code</p></div>
+            <div class="border border-gray-300 h-[40px] w-[250px] flex items-center justify-center gap-1">
+                <p>Broadcast Message</p>
+                <IconBroadcast class="fill-black w-[40px] h-[20px]" />
+            </div>
+
+            <div class="border border-gray-300 h-[40px] w-[250px] flex items-center justify-center gap-3">
+                <p>Validate Code</p>
+                <IconPlusCircle class="fill-black w-[40px] h-[20px]" />
+            </div>
         </div>
         <div class="grid lg:grid-cols-3 gap-4 mt-5">
             <div class="flex items-center justify-center bg-gray-200 border border-gray-300 h-32 hover:bg-red-200 text-black font-bold">
@@ -122,6 +129,9 @@
     import apexchart from 'vue3-apexcharts';
     import { useAppStore } from '@/stores/index';
     import { TabGroup, TabList, Tab, TabPanels, TabPanel } from '@headlessui/vue';
+    import IconBroadcast from '@/components/icon/icon-broadcast.vue';
+    import IconPlusCircle from '@/components/icon/icon-plus-circle.vue';
+
     const store = useAppStore();
 
     const pieChart = computed(() => {
