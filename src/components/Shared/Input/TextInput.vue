@@ -29,30 +29,11 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, type PropType } from 'vue';
 
-interface Props {
-    id?: string;
-    type: string;
-    placeholder?: string;
-    modelValue?: string;
-    inputClass?: string;
-    prepend?: boolean;
-    prependClass?: string;
-    append?: boolean;
-    appendClass?: string;
-    helperText?: string;
-    required?: boolean;
-    readonly?: boolean;
-    disabled?: boolean;
-    mask?: string;
-    errorMessage?: string;
-    label?: string;
-}
-
 const props = defineProps({
     id: String,
     type: { type: String as PropType<string>, default: 'text' },
     placeholder: String,
-    modelValue: String,
+    modelValue: { type: [String, Number] as PropType<string | number>, default: '' },
     inputClass: String,
     prepend: { type: Boolean, default: false },
     prependClass: String,
@@ -69,14 +50,14 @@ const props = defineProps({
 
 const emits = defineEmits(['update:modelValue']);
 
-const internalValue = ref(props.modelValue || '');
+const internalValue = ref<string | number>(props.modelValue);
 
 watch(internalValue, (newValue) => {
     emits('update:modelValue', newValue);
 });
 
 watch(() => props.modelValue, (newValue) => {
-    internalValue.value = newValue || '';
+    internalValue.value = newValue;
 });
 </script>
 
