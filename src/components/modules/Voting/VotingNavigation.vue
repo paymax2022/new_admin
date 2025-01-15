@@ -8,5 +8,7 @@ import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const links = [
     { route: { name: 'votingHome' }, displayName: 'Voting Home' },
+    { route: { name: 'votingContestHome' }, displayName: 'Contests / List' },
+    { route: { name: 'votingContestCreate' }, displayName: 'Contests / Create' },
 ];
 </script>
