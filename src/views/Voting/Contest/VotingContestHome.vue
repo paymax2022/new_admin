@@ -3,7 +3,15 @@
         <Breadcrumb :items="[{ label: 'Voting', route: { name: 'votingHome' } }, { label: 'Contests' }]" />
 
         <div class="panel pb-0 mt-6">
-            <h5 class="font-semibold text-lg dark:text-white-light mb-5">Contests</h5>
+            <div class="flex justify-between">
+                <h5 class="font-semibold text-lg dark:text-white-light mb-5">Contests</h5>
+                <div>
+                    <RouterLink :to="{ name: 'votingContestCreate' }" class="btn btn-info">
+                        <IconPlus class="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                        Create Contest
+                    </RouterLink>
+                </div>
+            </div>
 
             <div class="datatable">
                 <div class="mb-5 flex gap-2">
@@ -127,6 +135,7 @@ import IconEye from '@/components/icon/icon-eye.vue';
 import IconHorizontalDots from '@/components/icon/icon-horizontal-dots.vue';
 import IconPencilPaper from '@/components/icon/icon-pencil-paper.vue';
 import IconPencil from '@/components/icon/icon-pencil.vue';
+import IconPlus from '@/components/icon/icon-plus.vue';
 import IconTrashLines from '@/components/icon/icon-trash-lines.vue';
 import IconTrash from '@/components/icon/icon-trash.vue';
 import Breadcrumb from '@/components/Shared/Breadcrumb.vue';
