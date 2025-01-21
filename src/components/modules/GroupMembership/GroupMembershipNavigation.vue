@@ -9,5 +9,7 @@ import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const links = [
     { route: { name: 'groupMembershipHome' }, displayName: 'Group Membership Home' },
+    { route: { name: 'groupMembershipGroupHome' }, displayName: 'Groups / List' },
+    { route: { name: 'groupMembershipGroupCreate' }, displayName: 'Groups / Create' },
 ];
 </script>

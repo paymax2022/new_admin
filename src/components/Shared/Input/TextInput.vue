@@ -15,7 +15,8 @@
                 'focus:ring-blue-500',
                 'focus:border-transparent',
                 inputClass,
-                { 'rounded-l-none': prepend, 'rounded-r-none': append }
+                { 'rounded-l-none': prepend, 'rounded-r-none': append },
+                { 'file:py-2 file:px-4 file:border-0 file:font-semibold !p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary': type === 'file' },
             ]" :required="required" :readonly="readonly" :disabled="disabled" v-model="internalValue" v-maska="mask" />
             <div v-if="append" class="input-append" :class="appendClass">
                 <slot name="append"></slot>
