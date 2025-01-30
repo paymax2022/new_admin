@@ -31,7 +31,9 @@
                             <td class="whitespace-nowrap">{{ transaction.email }}</td>
                             <td>{{ transaction.phone }}</td>
                             <td class="text-center">
-                                <button @click="deleteTransaction(transaction.id)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">🗑️</button>
+                                <button @click="deleteTransaction(transaction.id)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">
+                                    <DeleteIcon class="h-5 w-5"/>
+                                </button>
                             </td>
                         </tr>
                         <!-- Show message if no results found -->
@@ -47,14 +49,13 @@
 
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
-
+    import DeleteIcon from "@/components/icon/icon-delete.vue";
     interface Transaction {
         id: string;
         name: string;
         email: string;
         phone: string;
     }
-
     const transactions = ref<Transaction[]>([
         { id: '#01', name: 'Veekthor Parloff', email: 'vparloff999@gmail.com', phone: '+2348114538964' },
         { id: '#02', name: 'Sophia Anders', email: 'sophia.anders@example.com', phone: '+1 202-555-0168' },
@@ -65,9 +66,10 @@
 
     const searchQuery = ref<string>('');
 
-    // Filter transactions based on search query
     const filteredTransactions = computed(() => {
+
         const query = searchQuery.value.toLowerCase();
+
         return transactions.value.filter(
             (transaction) =>
                 transaction.name.toLowerCase().includes(query) ||

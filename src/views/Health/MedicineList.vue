@@ -34,9 +34,13 @@
                             <td>{{ medicine.type }}</td>
                             <td class="text-center">
                                 <!-- Edit button with pencil icon -->
-                                <button @click="editMedicine(medicine)" class="p-2 text-blue-600 hover:text-blue-800" aria-label="Edit">✏️</button>
+                                <button @click="editMedicine(medicine)" class="p-2 text-blue-600 hover:text-blue-800" aria-label="Edit">
+                                    <EditIcon class="h-5 w-5" />
+                                </button>
                                 <!-- Delete button with trash icon -->
-                                <button @click="deleteMedicine(medicine.id)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">🗑️</button>
+                                <button @click="deleteMedicine(medicine.id)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">
+                                    <DeleteIcon class="h-5 w-5" />
+                                </button>
                             </td>
                         </tr>
                         <!-- Show message if no results found -->
@@ -86,6 +90,8 @@
 
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
+    import DeleteIcon from "@/components/icon/icon-delete.vue";
+    import EditIcon from "@/components/icon/icon-newEdit.vue";
 
     interface Medicine {
         id: string;

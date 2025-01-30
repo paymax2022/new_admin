@@ -33,7 +33,9 @@
                             <td class="text-center">{{ review.rating }}</td>
                             <td>{{ review.review }}</td>
                             <td class="text-center">
-                                <button @click="deleteReview(index)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">🗑️</button>
+                                <button @click="deleteReview(index)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">
+                                    <DeleteIcon class="h-5 w-5" />
+                                </button>
                             </td>
                         </tr>
                         <!-- Show message if no results found -->
@@ -49,6 +51,7 @@
 
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
+    import DeleteIcon from "@/components/icon/icon-delete.vue";
 
     interface Review {
         id: number;

@@ -1,17 +1,7 @@
 <template>
     <div>
-        <!-- Chart Section -->
-        <div class="mb-6 bg-white dark:bg-black rounded-lg">
-            <div class="mt-2">
-                <h5 class="font-semibold text-lg dark:text-white-light pl-3 mt-3">Monthly Appointment Report</h5>
-            </div>
-            <apexchart height="300" :options="lineChart" :series="lineChartSeries" class="overflow-hidden mt-2" />
-        </div>
-        <div>
-            <AppointmentTable />
-        </div>
-        <!-- Appointments Section -->
-        <div class="lg:flex gap-3 flex-wrap lg:justify-center">
+         <!-- Appointments Section -->
+         <div class="lg:flex gap-3 flex-wrap lg:justify-center">
             <div
                 v-for="(appointment, index) in appointments"
                 :key="index"
@@ -28,6 +18,17 @@
                 </div>
             </div>
         </div>
+        <!-- Chart Section -->
+        <div class="mb-6 bg-white dark:bg-black rounded-lg">
+            <div class="mt-2">
+                <h5 class="font-semibold text-lg dark:text-white-light pl-3 mt-3">Monthly Appointment Report</h5>
+            </div>
+            <apexchart height="300" :options="lineChart" :series="lineChartSeries" class="overflow-hidden mt-2" />
+        </div>
+        <div>
+            <AppointmentTable />
+        </div>
+
     </div>
 </template>
 
