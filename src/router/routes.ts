@@ -11,6 +11,7 @@ import restaurantRoutes from './modules/restaurant';
 import transactionsRoutes from './modules/transactions';
 import usersMgtRoutes from './modules/users-mgt';
 import votingRoutes from './modules/voting';
+import healthRoutes from './modules/health';
 
 const routes: RouteRecordRaw[] = [
     /************ MAIN APP ROUTES **********************/
@@ -41,6 +42,7 @@ const routes: RouteRecordRaw[] = [
     ...usersMgtRoutes,
     ...visitorMgtRoutes,
     ...votingRoutes,
+    ...healthRoutes,
     /************ ERROR ROUTE **********************/
     {
         path: '/:catchAll(.*)*',
