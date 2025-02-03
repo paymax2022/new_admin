@@ -219,6 +219,18 @@
                             <div class="p-5">
                                 <form @submit.prevent="saveDoctor">
                                     <div class="mb-5">
+    <label for="doctorImage">Doctor's Image</label>
+    <input
+        id="doctorImage"
+        type="file"
+        class="form-input"
+        @change="handleImageUpload"
+    />
+    <div v-if="params.path" class="mt-2">
+        <img :src="params.path" class="h-20 w-20 rounded-full object-cover" />
+    </div>
+</div>
+                                    <div class="mb-5">
                                         <label for="name">Name</label>
                                         <input id="name" type="text" placeholder="Enter Name" class="form-input" v-model="params.name" />
                                     </div>
@@ -284,6 +296,17 @@
     const params = ref(JSON.parse(JSON.stringify(defaultParams.value)));
     const filteredDoctorsList: any = ref([]);
     const searchDoctor = ref('');
+    const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            params.value.path = e.target.result; // Store base64 string temporarily
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
     const updateDoctorStatus = (doctor) => {
         showMessage(`Status for ${doctor.name} updated to ${doctor.status}`);
     };

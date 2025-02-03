@@ -59,11 +59,11 @@ const healthRoutes = [
                 name: 'pharmacyOrder',
                 component: () => import('../../views/Health/PharmacyOrder.vue'),
             },
-            {
-                path: 'doctor-subscription',
-                name: 'doctorSubscription',
-                component: () => import('../../views/Health/DoctorSubscription.vue'),
-            },
+            // {
+            //     path: 'doctor-subscription',
+            //     name: 'doctorSubscription',
+            //     component: () => import('../../views/Health/DoctorSubscription.vue'),
+            // },
             {
                 path: 'appointment',
                 name: 'appointmentList',
@@ -103,6 +103,16 @@ const healthRoutes = [
                 path: 'complete-payment',
                 name: 'completePayment',
                 component: () => import('../../views/Health/CompletePayment.vue'),
+            },
+            {
+                path: 'banner-page',
+                name: 'bannerPage',
+                component: () => import('../../views/Health/BannerPage.vue'),
+            },
+            {
+                path: 'payment-gateway',
+                name: 'paymentPage',
+                component: () => import('../../views/Health/PaymentGateway.vue'),
             },
         ],
     },
