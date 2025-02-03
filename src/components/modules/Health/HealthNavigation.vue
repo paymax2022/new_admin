@@ -18,11 +18,13 @@
         { route: { name: 'addressList' }, displayName: 'Address' },
         { route: { name: 'pharmacyList' }, displayName: 'Pharmacy' },
         { route: { name: 'pharmacyOrder' }, displayName: 'Pharmacy Order' },
-        { route: { name: 'doctorSubscription' }, displayName: 'Doctor Subscription' },
+        // { route: { name: 'doctorSubscription' }, displayName: 'Doctor Subscription' },
         { route: { name: 'appointmentList' }, displayName: 'Appointment' },
         { route: { name: 'pendingPayment' }, displayName: 'Pending Payment' },
         { route: { name: 'subscriptionPage' }, displayName: 'Subscription' },
         { route: { name: 'subscriberListPage' }, displayName: 'Subscriber' },
         { route: { name: 'completePayment' }, displayName: 'Complete Payment' },
+        { route: { name: 'bannerPage' }, displayName: 'Banner' },
+        { route: { name: 'paymentPage' }, displayName: 'Invoice Page' },
     ];
 </script>

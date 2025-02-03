@@ -12,33 +12,39 @@
 
         <div class="panel">
             <div class="mb-5 text-lg font-bold">Review List</div>
-            <div class="table-responsive">
-                <table>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse border border-gray-300">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th class="ltr:rounded-l-md rtl:rounded-r-md">Doctor Name</th>
-                            <th>Patient Name</th>
-                            <th>Rating</th>
-                            <th>Review</th>
-                            <th>Action</th>
+                            <th class="px-4 py-2 border-b text-left">ID</th>
+                            <th class="px-4 py-2 border-b text-left">Doctor Name</th>
+                            <th class="px-4 py-2 border-b text-left">Patient Name</th>
+                            <th class="px-4 py-2 border-b text-center">Rating</th>
+                            <th class="px-4 py-2 border-b text-left">Review</th>
+                            <th class="px-4 py-2 border-b text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Display filtered reviews -->
-                        <tr v-for="(review, index) in filteredReviews" :key="index">
-                            <td class="whitespace-nowrap">{{ review.id }}</td>
-                            <td class="whitespace-nowrap">{{ review.doctorName }}</td>
-                            <td class="whitespace-nowrap">{{ review.patientName }}</td>
-                            <td class="text-center">{{ review.rating }}</td>
-                            <td>{{ review.review }}</td>
-                            <td class="text-center">
-                                <button @click="deleteReview(index)" class="p-2 text-red-600 hover:text-red-800" aria-label="Delete">🗑️</button>
+                        <tr v-for="(review, index) in filteredReviews" :key="review.id">
+                            <td class="px-4 py-2 border-b">{{ review.id }}</td>
+                            <td class="px-4 py-2 border-b">{{ review.doctorName }}</td>
+                            <td class="px-4 py-2 border-b">{{ review.patientName }}</td>
+                            <td class="px-4 py-2 border-b text-center">{{ review.rating }}</td>
+                            <td class="px-4 py-2 border-b">{{ review.review }}</td>
+                            <td class="px-4 py-2 border-b text-center">
+                                <button
+                                    @click="deleteReview(index)"
+                                    class="p-2 text-red-600 hover:text-red-800"
+                                    aria-label="Delete"
+                                >
+                                    <DeleteIcon class="w-5 h-5" />
+                                </button>
                             </td>
                         </tr>
                         <!-- Show message if no results found -->
                         <tr v-if="filteredReviews.length === 0">
-                            <td colspan="5" class="text-center text-gray-500">No reviews found.</td>
+                            <td colspan="6" class="px-4 py-2 border-b text-center text-gray-500">No reviews found.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -49,6 +55,8 @@
 
 <script lang="ts" setup>
     import { ref, computed } from 'vue';
+    import Swal from 'sweetalert2';
+    import DeleteIcon from "@/components/icon/icon-delete.vue";
 
     interface Review {
         id: number;
@@ -79,28 +87,22 @@
         );
     });
 
-    // Delete review by index
+    // Delete review with SweetAlert confirmation
     function deleteReview(index: number) {
-        reviews.value.splice(index, 1);
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'This review will be deleted permanently!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                reviews.value.splice(index, 1);
+                Swal.fire('Deleted!', 'The review has been deleted.', 'success');
+            }
+        });
     }
 </script>
 
-<style scoped>
-    .table-responsive {
-        overflow-x: auto;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }
-    th,
-    td {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        text-align: left;
-    }
-    th {
-        background-color: #f8f8f8;
-    }
-</style>
