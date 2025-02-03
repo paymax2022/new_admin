@@ -15,6 +15,7 @@
   "dependencies": {
     "@bhplugin/vue3-datatable": "^2.0.0",
     "@headlessui/vue": "^1.7.23",
+    "@rollup/rollup-darwin-x64": "^4.32.1",
     "@suadelabs/vue3-multiselect": "^1.0.2",
     "@vueuse/core": "^12.3.0",
     "@vueuse/head": "^2.0.0",
