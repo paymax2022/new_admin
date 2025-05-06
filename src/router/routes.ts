@@ -24,6 +24,23 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../views/DashboardView.vue'),
     },
     {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/LoginView.vue'),
+        meta: { layout: 'auth' } // Optional: if you want the login page to use a minimal layout
+    },
+    {
+        path: '/admin-view',
+        name: 'admin-view',
+        component: () => import('@/views/AdminPanelView.vue'),
+        meta: { layout: 'auth' }
+    },
+    {
+        path: '/admin-home',
+        name: 'admin-home',
+        component: () => import('@/views/AdminPanelHome.vue'),
+    },
+    {
         path: '/profile',
         name: 'profile',
         component: () => import('../views/ProfileView.vue'),
