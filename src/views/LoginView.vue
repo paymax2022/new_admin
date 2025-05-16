@@ -48,11 +48,13 @@
           </div>
 
           <button
-            type="submit"
+            type="button"
             class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            @click="login"
           >
             Login
           </button>
+
         </form>
       </div>
     </div>
@@ -61,7 +63,9 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const username = ref('')
 const password = ref('')
 const showPassword = ref(false)
@@ -70,6 +74,12 @@ function handleLogin() {
   console.log('Login attempt:', username.value, password.value)
   // Add your login logic here (e.g., API call)
 }
+
+function login() {
+  // Add your login logic here if needed
+  router.push({ name: 'admin-view' })
+}
+
 </script>
 
 <style scoped>

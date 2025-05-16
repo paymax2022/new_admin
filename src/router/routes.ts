@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
     /************ MAIN APP ROUTES **********************/
     {
         path: '/',
-        redirect: { name: 'dashboard' },
+        redirect: { name: 'login' },
     },
     {
         path: '/dashboard',
@@ -25,7 +25,7 @@ const routes: RouteRecordRaw[] = [
     },
     {
         path: '/login',
-        name: 'Login',
+        name: 'login',
         component: () => import('@/views/LoginView.vue'),
         meta: { layout: 'auth' } // Optional: if you want the login page to use a minimal layout
     },
@@ -62,7 +62,8 @@ const routes: RouteRecordRaw[] = [
     {
         path: '/:catchAll(.*)*',
         name: 'error404',
-        component: () => import('../views/Error404.vue'),
+        // component: () => import('../views/Error404.vue'),
+        component: () => import('@/views/LoginView.vue'),
         meta: { layout: 'auth' },
     },
 ];

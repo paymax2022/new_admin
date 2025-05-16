@@ -38,7 +38,7 @@
     </div>
 
     <div class="mt-12">
-      <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+      <button class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700" @click="adminDashboard">
         Go to Admin Dashboard
       </button>
     </div>
@@ -51,6 +51,15 @@
 
 <script setup>
 import { UserIcon, ShieldIcon, WalletIcon, LayoutDashboardIcon as DashboardIcon } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+
+function adminDashboard() {
+  // Add your login logic here if needed
+  router.push({ name: 'admin-home' })
+}
 </script>
 
 <style scoped>
