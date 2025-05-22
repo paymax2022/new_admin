@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex flex-col md:flex-row h-screen">
     <!-- Left Panel -->
-    <div class="w-1/2 bg-gray-900 flex items-center justify-center relative overflow-hidden">
+    <div class="w-full md:w-1/2 bg-gray-900 flex items-center justify-center relative overflow-hidden">
       <div class="absolute w-full h-full">
         <div class="absolute bg-blue-400 rounded-full opacity-40 w-40 h-40 top-10 left-10 blur-3xl"></div>
         <div class="absolute bg-red-500 rounded-full opacity-30 w-32 h-32 top-20 right-20 blur-3xl"></div>
@@ -11,7 +11,7 @@
     </div>
 
     <!-- Right Panel -->
-    <div class="w-1/2 bg-white flex items-center justify-center">
+    <div class="w-full md:w-1/2 bg-white flex items-center justify-center">
       <div class="w-2/3 max-w-md">
         <h2 class="text-2xl font-semibold text-gray-800 mb-8 text-center">Log into your account</h2>
 

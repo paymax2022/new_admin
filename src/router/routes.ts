@@ -40,6 +40,11 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-home',
         component: () => import('@/views/AdminPanelHome.vue'),
     },
+        {
+        path: '/roles',
+        name: 'roles',
+        component: () => import('@/views/RolesPermissionView.vue'),
+    },
     {
         path: '/profile',
         name: 'profile',
