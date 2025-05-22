@@ -52,16 +52,6 @@
 
                         <!-- Modules/Services Navigations -->
                         <BillsPaymentNavigation />
-                        <CrowdfundingNavigation />
-                        <DeliveryNavigation />
-                        <EventsNavigation />
-                        <GroupMembershipNavigation />
-                        <InsuranceNavigation />
-                        <RestaurantNavigation />
-                        <TransactionsNavigation />
-                        <UsersMgtNavigation />
-                        <VisitorMgtNavigation />
-                        <VotingNavigation />
                     </ul>
                 </perfect-scrollbar>
             </div>
@@ -80,16 +70,7 @@ import IconMenuUsers from '@/components/icon/menu/icon-menu-users.vue';
 import IconMinus from '@/components/icon/icon-minus.vue';
 
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
-import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
-import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
-import EventsNavigation from '../modules/Events/EventsNavigation.vue';
-import GroupMembershipNavigation from '../modules/GroupMembership/GroupMembershipNavigation.vue';
-import InsuranceNavigation from '../modules/Insurance/InsuranceNavigation.vue';
-import RestaurantNavigation from '../modules/Restaurant/RestaurantNavigation.vue';
-import TransactionsNavigation from '../modules/Transactions/TransactionsNavigation.vue';
-import UsersMgtNavigation from '../modules/UsersMgt/UsersMgtNavigation.vue';
-import VisitorMgtNavigation from '../modules/VisitorMgt/VisitorMgtNavigation.vue';
-import VotingNavigation from '../modules/Voting/VotingNavigation.vue';
+
 
 const store = useAppStore();
 
