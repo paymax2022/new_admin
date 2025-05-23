@@ -44,14 +44,14 @@
                             </router-link>
                         </li>
 
-                        <h2
+                        <!-- <h2
                             class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
                             <icon-minus class="w-4 h-5 flex-none hidden" />
                             <span>{{ $t('User Management') }}</span>
-                        </h2>
+                        </h2> -->
 
                         <!-- Modules/Services Navigations -->
-                        <BillsPaymentNavigation />
+                        <UserManagementNavigation />
                     </ul>
                 </perfect-scrollbar>
             </div>
@@ -69,7 +69,8 @@ import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard.vue';
 import IconMenuUsers from '@/components/icon/menu/icon-menu-users.vue';
 import IconMinus from '@/components/icon/icon-minus.vue';
 
-import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
+
+import UserManagementNavigation from '../modules/UserManagementNavigation.vue';
 
 
 const store = useAppStore();
