@@ -191,12 +191,16 @@
                                         </div>
                                     </li>
                                     <li>
-                                        <router-link :to="{ name: 'profile' }" class="dark:hover:text-white"
-                                            @click="close()">
+                                        <button type="button" class="w-full flex items-center px-4 py-2 dark:hover:text-white" @click="showProfileModal = true; close()">
                                             <icon-user class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
-
                                             Profile
-                                        </router-link>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="w-full flex items-center px-4 py-2 dark:hover:text-white" @click="showSettingsModal = true; close()">
+                                            <icon-settings class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
+                                            Settings
+                                        </button>
                                     </li>
                                     <li>
                                         <router-link to="/auth/boxed-lockscreen" class="dark:hover:text-white"
@@ -207,11 +211,10 @@
                                         </router-link>
                                     </li>
                                     <li class="border-t border-white-light dark:border-white-light/10">
-                                        <router-link to="/auth/boxed-signin" class="text-danger !py-3" @click="close()">
+                                        <button type="button" class="w-full flex items-center px-4 py-3 text-danger hover:bg-gray-100 dark:hover:bg-gray-900" @click="handleSignOutClick(close)">
                                             <icon-logout class="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />
-
                                             Sign Out
-                                        </router-link>
+                                        </button>
                                     </li>
                                 </ul>
                             </template>
@@ -220,12 +223,313 @@
                 </div>
             </div>
         </div>
+
+        <!-- Logout Modal -->
+        <TransitionRoot appear :show="showLogoutModal" as="template">
+            <Dialog as="div" @close="showLogoutModal = false" class="relative z-[60]">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black/40"></div>
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center">
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
+                        >
+                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                                <div class="flex items-center justify-between mb-4">
+                                    <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
+                                        Ready to log out?
+                                    </DialogTitle>
+                                    <button @click="showLogoutModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                        <XMarkIcon class="h-5 w-5" />
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        You're about to end your current session. Make sure you've saved any changes.
+                                    </p>
+                                </div>
+
+                                <div class="mt-6 flex justify-end space-x-3">
+                                    <button
+                                        @click="showLogoutModal = false"
+                                        class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        @click="handleLogout"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+                                    >
+                                        Log Out
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
+
+        <!-- Profile Modal -->
+        <TransitionRoot appear :show="showProfileModal" as="template">
+            <Dialog as="div" @close="showProfileModal = false" class="relative z-[60]">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black/40"></div>
+                </TransitionChild>
+
+                <div class="fixed inset-y-0 right-0 overflow-y-auto">
+                    <div class="flex min-h-full justify-end">
+                        <TransitionChild
+                            as="template"
+                            enter="transform transition ease-in-out duration-300"
+                            enter-from="translate-x-full"
+                            enter-to="translate-x-0"
+                            leave="transform transition ease-in-out duration-300"
+                            leave-from="translate-x-0"
+                            leave-to="translate-x-full"
+                        >
+                            <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                                <div class="flex items-center justify-between mb-5">
+                                    <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                        Profile
+                                    </DialogTitle>
+                                    <button @click="showProfileModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                        <XMarkIcon class="h-5 w-5" />
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                                    View and update your profile information
+                                </p>
+
+                                <div class="space-y-6">
+                                    <!-- Profile Image -->
+                                    <div class="flex flex-col items-center">
+                                        <div class="relative">
+                                            <img class="w-24 h-24 rounded-full object-cover" src="/assets/images/user-profile.jpeg" alt="Profile" />
+                                            <button class="absolute bottom-0 right-0 bg-blue-500 text-white p-1.5 rounded-full hover:bg-blue-600">
+                                                <icon-camera class="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                        <button class="mt-2 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                            Upload Image
+                                        </button>
+                                    </div>
+
+                                    <!-- Form Fields -->
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                            <input type="text" v-model="profileData.fullName" class="form-input w-full" placeholder="Cameron Williamson" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                            <input type="email" v-model="profileData.email" class="form-input w-full" placeholder="anna.lawson@example.com" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                                            <input type="text" v-model="profileData.role" class="form-input w-full" placeholder="Administrator" disabled />
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Login</label>
+                                            <input type="text" v-model="profileData.lastLogin" class="form-input w-full" disabled />
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex justify-end space-x-3 mt-6">
+                                        <button
+                                            @click="showProfileModal = false"
+                                            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            @click="saveProfile"
+                                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                                        >
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
+
+        <!-- Settings Modal -->
+        <TransitionRoot appear :show="showSettingsModal" as="template">
+            <Dialog as="div" @close="showSettingsModal = false" class="relative z-[60]">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black/40"></div>
+                </TransitionChild>
+
+                <div class="fixed inset-y-0 right-0 overflow-y-auto">
+                    <div class="flex min-h-full justify-end">
+                        <TransitionChild
+                            as="template"
+                            enter="transform transition ease-in-out duration-300"
+                            enter-from="translate-x-full"
+                            enter-to="translate-x-0"
+                            leave="transform transition ease-in-out duration-300"
+                            leave-from="translate-x-0"
+                            leave-to="translate-x-full"
+                        >
+                            <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                                <div class="flex items-center justify-between mb-5">
+                                    <div>
+                                        <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                            Settings
+                                        </DialogTitle>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            Manage your account settings and preferences
+                                        </p>
+                                    </div>
+                                    <button @click="showSettingsModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                        <XMarkIcon class="h-5 w-5" />
+                                    </button>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <!-- Account Settings -->
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Account Settings</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
+                                                </div>
+                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Enable</button>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Password Reset</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Change your password</p>
+                                                </div>
+                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Reset</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Preferences -->
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Preferences</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Receive updates via email</p>
+                                                </div>
+                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Configure</button>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Language</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Choose your preferred language</p>
+                                                </div>
+                                                <select class="form-select text-sm py-1">
+                                                    <option>English</option>
+                                                    <option>Spanish</option>
+                                                    <option>French</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- System -->
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">System</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Light or dark mode</p>
+                                                </div>
+                                                <Switch
+                                                    v-model="isDarkMode"
+                                                    class="relative inline-flex h-6 w-11 items-center rounded-full"
+                                                    :class="isDarkMode ? 'bg-blue-600' : 'bg-gray-200'"
+                                                >
+                                                    <span class="sr-only">Toggle theme</span>
+                                                    <span
+                                                        class="inline-block h-4 w-4 transform rounded-full bg-white transition"
+                                                        :class="isDarkMode ? 'translate-x-6' : 'translate-x-1'"
+                                                    />
+                                                </Switch>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Session Timeout</h4>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">Automatically log out after inactivity</p>
+                                                </div>
+                                                <select class="form-select text-sm py-1">
+                                                    <option>30 minutes</option>
+                                                    <option>1 hour</option>
+                                                    <option>2 hours</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Save Button -->
+                                    <div class="pt-4">
+                                        <button
+                                            @click="saveSettings"
+                                            class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                                        >
+                                            Save Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
     </header>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, computed, reactive, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
 
 import appSetting from '@/app-setting';
 
@@ -243,10 +547,23 @@ import IconBellBing from '@/components/icon/icon-bell-bing.vue';
 import IconUser from '@/components/icon/icon-user.vue';
 import IconLockDots from '@/components/icon/icon-lock-dots.vue';
 import IconLogout from '@/components/icon/icon-logout.vue';
+import IconCamera from '@/components/icon/icon-camera.vue';
+import IconSettings from '@/components/icon/icon-settings.vue';
 
 const store = useAppStore();
 const route = useRoute();
 const search = ref(false);
+const router = useRouter();
+const showLogoutModal = ref(false);
+const showProfileModal = ref(false);
+const showSettingsModal = ref(false);
+const isDarkMode = ref(store.theme === 'dark');
+const profileData = ref({
+    fullName: 'Cameron Williamson',
+    email: 'anna.lawson@example.com',
+    role: 'Administrator',
+    lastLogin: '4/10/2023, 8:30:00 AM'
+});
 
 // multi language
 const i18n = reactive(useI18n());
@@ -345,5 +662,26 @@ const removeNotification = (value: number) => {
 
 const removeMessage = (value: number) => {
     messages.value = messages.value.filter((d) => d.id !== value);
+};
+
+const handleSignOutClick = (close: () => void) => {
+    showLogoutModal.value = true;
+    close();
+};
+
+const handleLogout = () => {
+    showLogoutModal.value = false;
+    // Add any logout logic here (clear tokens, etc.)
+    router.push('/auth/boxed-signin');
+};
+
+const saveProfile = () => {
+    // Add profile save logic here
+    showProfileModal.value = false;
+};
+
+const saveSettings = () => {
+    // Add settings save logic here
+    showSettingsModal.value = false;
 };
 </script>

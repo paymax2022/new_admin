@@ -44,14 +44,26 @@
                             </router-link>
                         </li>
 
-                        <!-- <h2
+                        <h2
                             class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
                             <icon-minus class="w-4 h-5 flex-none hidden" />
-                            <span>{{ $t('User Management') }}</span>
-                        </h2> -->
+                            <span>{{ $t('services') }}</span>
+                        </h2>
 
                         <!-- Modules/Services Navigations -->
                         <UserManagementNavigation />
+                        <RoleManagementNavigation />
+                        <BillsPaymentNavigation />
+                        <CrowdfundingNavigation />
+                        <DeliveryNavigation />
+                        <EventsNavigation />
+                        <GroupMembershipNavigation />
+                        <InsuranceNavigation />
+                        <RestaurantNavigation />
+                        <TransactionsNavigation />
+                        <UsersMgtNavigation />
+                        <VisitorMgtNavigation />
+                        <VotingNavigation />
                     </ul>
                 </perfect-scrollbar>
             </div>
@@ -69,9 +81,19 @@ import IconMenuDashboard from '@/components/icon/menu/icon-menu-dashboard.vue';
 import IconMenuUsers from '@/components/icon/menu/icon-menu-users.vue';
 import IconMinus from '@/components/icon/icon-minus.vue';
 
-
 import UserManagementNavigation from '../modules/UserManagementNavigation.vue';
-
+import RoleManagementNavigation from '../modules/RoleManagementNavigation.vue';
+import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
+import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
+import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
+import EventsNavigation from '../modules/Events/EventsNavigation.vue';
+import GroupMembershipNavigation from '../modules/GroupMembership/GroupMembershipNavigation.vue';
+import InsuranceNavigation from '../modules/Insurance/InsuranceNavigation.vue';
+import RestaurantNavigation from '../modules/Restaurant/RestaurantNavigation.vue';
+import TransactionsNavigation from '../modules/Transactions/TransactionsNavigation.vue';
+import UsersMgtNavigation from '../modules/UsersMgt/UsersMgtNavigation.vue';
+import VisitorMgtNavigation from '../modules/VisitorMgt/VisitorMgtNavigation.vue';
+import VotingNavigation from '../modules/Voting/VotingNavigation.vue';
 
 const store = useAppStore();
 
