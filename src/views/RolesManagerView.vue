@@ -5,27 +5,105 @@
         <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Role & Permission Management</h1>
         <p class="text-sm text-gray-500 dark:text-gray-400">Manage roles, permissions, and access control for users</p>
       </div>
-      <button @click="showCreateRoleModal = true" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Create Role</button>
+      <button v-if="activeTab === 'roles'" @click="showCreateRoleModal = true" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Create Role</button>
+      <button v-else @click="showAssignRoleModal = true" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">+ Assign Role</button>
     </div>
 
     <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
       <nav class="flex space-x-8" aria-label="Tabs">
-        <a href="#" class="text-blue-600 dark:text-blue-400 whitespace-nowrap py-4 px-1 border-b-2 border-blue-600 dark:border-blue-400 font-medium text-sm">Roles</a>
-        <a href="#" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm">Users with Roles</a>
+        <button 
+          @click="activeTab = 'roles'"
+          :class="[
+            activeTab === 'roles' 
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' 
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-b-2 border-transparent',
+            'whitespace-nowrap py-4 px-1 font-medium text-sm'
+          ]"
+        >
+          Roles
+        </button>
+        <button 
+          @click="activeTab = 'users'"
+          :class="[
+            activeTab === 'users' 
+              ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' 
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-b-2 border-transparent',
+            'whitespace-nowrap py-4 px-1 font-medium text-sm'
+          ]"
+        >
+          Users with Roles
+        </button>
       </nav>
     </div>
 
-    <div class="mb-6">
-      <input type="text" placeholder="Search roles" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+    <!-- Roles Grid -->
+    <div v-if="activeTab === 'roles'">
+      <div class="mb-6">
+        <input type="text" placeholder="Search roles" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" />
+        <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" />
+        <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" />
+        <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" />
+        <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" />
+        <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" />
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" />
-      <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" />
-      <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" />
-      <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" />
-      <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" />
-      <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" />
+    <!-- Users with Roles Table -->
+    <div v-else>
+      <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Active</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="user in users" :key="user.id">
+              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.id }}</td>
+              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.name }}</td>
+              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.email }}</td>
+              <td class="px-4 py-3">
+                <div class="flex gap-2">
+                  <span v-for="role in user.roles" :key="role" 
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  >
+                    {{ role }}
+                  </span>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.lastActive }}</td>
+              <td class="px-4 py-3 text-sm">
+                <button @click="editUserRoles(user)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                  Edit Roles
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="flex items-center justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <div>
+          Showing 1 to 10 of {{ users.length }} entries
+        </div>
+        <div class="flex gap-2">
+          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">&larr;</button>
+          <button class="px-3 py-1 bg-blue-600 text-white rounded">1</button>
+          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">2</button>
+          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">3</button>
+          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">&rarr;</button>
+        </div>
+      </div>
     </div>
 
     <!-- Create Role Modal -->
@@ -186,6 +264,157 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Edit Roles Modal -->
+    <TransitionRoot appear :show="showAssignRoleModal" as="template">
+      <Dialog as="div" @close="showAssignRoleModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-900 p-6 shadow-xl transition-all">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <UserIcon class="h-5 w-5 text-gray-400" />
+                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">Edit Roles for {{ editingUser?.name || 'User' }}</DialogTitle>
+                    </div>
+                    <button @click="showAssignRoleModal = false" class="text-gray-400 hover:text-gray-500">
+                      <XMarkIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+                  <p class="mt-2 text-sm text-gray-500">Modify role assignments for this user</p>
+                </div>
+
+                <!-- Assign Role Section -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Assign Role</label>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Admin</span>
+                        <span class="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">System</span>
+                      </div>
+                      <Switch
+                        v-model="roles.admin"
+                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        :class="[roles.admin ? 'bg-blue-600' : 'bg-gray-200']"
+                      >
+                        <span
+                          class="pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                          :class="[roles.admin ? 'translate-x-4' : 'translate-x-0']"
+                        />
+                      </Switch>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Manager</span>
+                        <span class="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">System</span>
+                      </div>
+                      <Switch
+                        v-model="roles.manager"
+                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        :class="[roles.manager ? 'bg-blue-600' : 'bg-gray-200']"
+                      >
+                        <span
+                          class="pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                          :class="[roles.manager ? 'translate-x-4' : 'translate-x-0']"
+                        />
+                      </Switch>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Agent</span>
+                        <span class="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">System</span>
+                      </div>
+                      <Switch
+                        v-model="roles.agent"
+                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        :class="[roles.agent ? 'bg-blue-600' : 'bg-gray-200']"
+                      >
+                        <span
+                          class="pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                          :class="[roles.agent ? 'translate-x-4' : 'translate-x-0']"
+                        />
+                      </Switch>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Finance</span>
+                      </div>
+                      <Switch
+                        v-model="roles.finance"
+                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        :class="[roles.finance ? 'bg-blue-600' : 'bg-gray-200']"
+                      >
+                        <span
+                          class="pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                          :class="[roles.finance ? 'translate-x-4' : 'translate-x-0']"
+                        />
+                      </Switch>
+                    </div>
+
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-900 dark:text-gray-100">Support</span>
+                      </div>
+                      <Switch
+                        v-model="roles.support"
+                        class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        :class="[roles.support ? 'bg-blue-600' : 'bg-gray-200']"
+                      >
+                        <span
+                          class="pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                          :class="[roles.support ? 'translate-x-4' : 'translate-x-0']"
+                        />
+                      </Switch>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 flex justify-end space-x-3">
+                  <button
+                    @click="showAssignRoleModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    @click="saveAssignedRoles"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                  >
+                    Save Assignments
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -196,7 +425,8 @@ import {
   UserGroupIcon,
   XMarkIcon,
   ChevronUpIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  UserIcon
 } from '@heroicons/vue/24/outline'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot, Switch } from '@headlessui/vue'
@@ -307,10 +537,13 @@ export default {
     Switch,
     XMarkIcon,
     ChevronUpIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    UserIcon
   },
   setup() {
+    const activeTab = ref('roles')
     const showCreateRoleModal = ref(false)
+    const showAssignRoleModal = ref(false)
     const openSections = ref({
       userManagement: true,
       roleManagement: false,
@@ -379,13 +612,120 @@ export default {
       showCreateRoleModal.value = false
     }
 
+    const users = ref([
+      { 
+        id: 'U100',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        roles: ['Admin', 'Finance'],
+        lastActive: '4/8/2023, 9:30:00 AM'
+      },
+      { 
+        id: 'U101',
+        name: 'Jane Smith',
+        email: 'jane.smith@example.com',
+        roles: ['Agent'],
+        lastActive: '4/8/2023, 9:15:00 AM'
+      },
+      { 
+        id: 'U102',
+        name: 'Mike Johnson',
+        email: 'mike.j@example.com',
+        roles: ['Support', 'Agent'],
+        lastActive: '4/8/2023, 9:00:00 AM'
+      },
+      { 
+        id: 'U103',
+        name: 'Sarah Wilson',
+        email: 'sarah.w@example.com',
+        roles: ['Finance'],
+        lastActive: '4/8/2023, 8:45:00 AM'
+      },
+      { 
+        id: 'U104',
+        name: 'Robert Brown',
+        email: 'robert.b@example.com',
+        roles: ['Support'],
+        lastActive: '4/8/2023, 8:30:00 AM'
+      },
+      { 
+        id: 'U105',
+        name: 'Emily Davis',
+        email: 'emily.d@example.com',
+        roles: ['Agent', 'Support'],
+        lastActive: '4/8/2023, 8:15:00 AM'
+      },
+      { 
+        id: 'U106',
+        name: 'Michael Lee',
+        email: 'michael.l@example.com',
+        roles: ['Finance'],
+        lastActive: '4/8/2023, 8:00:00 AM'
+      },
+      { 
+        id: 'U107',
+        name: 'Lisa Anderson',
+        email: 'lisa.a@example.com',
+        roles: ['Support'],
+        lastActive: '4/8/2023, 7:45:00 AM'
+      },
+      { 
+        id: 'U108',
+        name: 'David Miller',
+        email: 'david.m@example.com',
+        roles: ['Agent'],
+        lastActive: '4/8/2023, 7:30:00 AM'
+      },
+      { 
+        id: 'U109',
+        name: 'Emma Wilson',
+        email: 'emma.w@example.com',
+        roles: ['Support', 'Finance'],
+        lastActive: '4/8/2023, 7:15:00 AM'
+      }
+    ])
+
+    const editingUser = ref(null)
+
+    const editUserRoles = (user) => {
+      editingUser.value = user
+      roles.value = {
+        admin: user.roles.includes('Admin'),
+        manager: user.roles.includes('Manager'),
+        agent: user.roles.includes('Agent'),
+        finance: user.roles.includes('Finance'),
+        support: user.roles.includes('Support')
+      }
+      showAssignRoleModal.value = true
+    }
+
+    const saveAssignedRoles = () => {
+      // Handle saving assigned roles
+      showAssignRoleModal.value = false
+    }
+
+    const roles = ref({
+      admin: false,
+      manager: false,
+      agent: false,
+      finance: false,
+      support: false
+    })
+
     return {
+      activeTab,
       showCreateRoleModal,
+      showAssignRoleModal,
       openSections,
       permissions,
       sections,
       toggleSection,
-      savePermissions
+      savePermissions,
+      users,
+      editUserRoles,
+      saveAssignedRoles,
+      roles,
+      editingUser
     }
   }
 }

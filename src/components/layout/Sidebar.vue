@@ -53,6 +53,7 @@
                         <!-- Modules/Services Navigations -->
                         <UserManagementNavigation />
                         <RoleManagementNavigation />
+                        <FinancialManagementNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
                         <DeliveryNavigation />
@@ -83,6 +84,7 @@ import IconMinus from '@/components/icon/icon-minus.vue';
 
 import UserManagementNavigation from '../modules/UserManagementNavigation.vue';
 import RoleManagementNavigation from '../modules/RoleManagementNavigation.vue';
+import FinancialManagementNavigation from '../modules/FinancialManagementNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
 import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
