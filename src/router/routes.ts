@@ -41,6 +41,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/AdminPanelHome.vue'),
     },
     {
+        path: '/transactions',
+        name: 'transactions',
+        component: () => import('@/views/TransactionsView.vue'),
+    },
+    {
+        path: '/transactions-mgt',
+        name: 'transactions-mgt',
+        component: () => import('@/views/TransactionManagementView.vue'),
+    },
+    {
         path: '/roles',
         name: 'roles',
         component: () => import('@/views/RolesPermissionView.vue'),

@@ -7,7 +7,7 @@ import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue'
 import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const links = [
-  { route: { name: 'roles' }, displayName: 'Transaction Mgt' },
-  // { route: { name: 'roles-manager' }, displayName: 'Role Manager' },
+  { route: { name: 'transactions' }, displayName: 'Transactions' },
+  { route: { name: 'transactions-mgt' }, displayName: 'Transaction Mgt' },
 ];
 </script>
