@@ -63,8 +63,15 @@
               </span>
             </td>
             <td class="px-4 py-2">{{ user.registration }}</td>
-            <td class="px-4 py-2">
-              <RowActionMenu :user="user" @delete="deleteUser" />
+            <td class="px-4 py-2" @click.stop>
+              <RowActionMenu 
+                :user="user" 
+                @view="showUserDetails(user)"
+                @edit="handleEditUser(user)"
+                @adjust-balance="handleAdjustBalance(user)"
+                @change-role="handleChangeRole(user)"
+                @delete="handleDeleteUser"
+              />
             </td>
           </tr>
         </tbody>
@@ -508,6 +515,432 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Edit User Modal -->
+    <TransitionRoot appear :show="showEditUserModal" as="template">
+      <Dialog as="div" @close="showEditUserModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Edit User
+                  </DialogTitle>
+                  <button @click="showEditUserModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Update user information and settings.
+                </p>
+
+                <form @submit.prevent="handleUpdateUser" class="space-y-4">
+                  <!-- Full Name -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      v-model="editingUser.name"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Enter Full Name"
+                      required
+                    />
+                  </div>
+
+                  <!-- Email -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      v-model="editingUser.email"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Enter Email address"
+                      required
+                    />
+                  </div>
+
+                  <!-- Role -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Role
+                    </label>
+                    <select
+                      v-model="editingUser.role"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      required
+                    >
+                      <option value="" disabled>Select Role</option>
+                      <option v-for="role in roleOptions" :key="role" :value="role">
+                        {{ role }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Status -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Status
+                    </label>
+                    <select
+                      v-model="editingUser.status"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      required
+                    >
+                      <option value="" disabled>Select Status</option>
+                      <option v-for="status in statusOptions" :key="status" :value="status">
+                        {{ status }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <!-- Buttons -->
+                  <div class="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      @click="showEditUserModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Adjust Balance Modal -->
+    <TransitionRoot appear :show="showAdjustBalanceModal" as="template">
+      <Dialog as="div" @close="showAdjustBalanceModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Adjust Balance
+                  </DialogTitle>
+                  <button @click="showAdjustBalanceModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Adjust balance for John Doe
+                </p>
+
+                <form @submit.prevent="handleBalanceAdjustment" class="space-y-4">
+                  <!-- Current Balance -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Current Balance
+                    </label>
+                    <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                      ${{ adjustBalanceData.currentBalance.toFixed(2) }}
+                    </div>
+                  </div>
+
+                  <!-- Adjustment Type -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Adjustment Type
+                    </label>
+                    <select
+                      v-model="adjustBalanceData.adjustmentType"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      required
+                    >
+                      <option>Add Fund</option>
+                      <option>Subtract Fund</option>
+                    </select>
+                  </div>
+
+                  <!-- Amount -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Amount ($)
+                    </label>
+                    <input
+                      type="number"
+                      v-model="adjustBalanceData.amount"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </div>
+
+                  <!-- Reason -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Reason (Optional)
+                    </label>
+                    <select
+                      v-model="adjustBalanceData.reason"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    >
+                      <option>Manual Adjustment</option>
+                      <option>Promotional Credit</option>
+                      <option>Refund</option>
+                      <option>Error Correction</option>
+                    </select>
+                  </div>
+
+                  <!-- Buttons -->
+                  <div class="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      @click="showAdjustBalanceModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                    >
+                      Confirm adjustment
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Assign Roles Modal -->
+    <TransitionRoot appear :show="showAssignRolesModal" as="template">
+      <Dialog as="div" @close="showAssignRolesModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Assign Roles
+                  </DialogTitle>
+                  <button @click="showAssignRolesModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Assign roles to John Doe
+                </p>
+
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Available Roles
+                    </label>
+                    <div class="space-y-2">
+                      <div v-for="role in assignRolesData.availableRoles" :key="role.name" 
+                        class="relative flex items-start p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                        :class="[role.selected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-700']"
+                        @click="toggleRole(role)"
+                      >
+                        <div class="min-w-0 flex-1">
+                          <div class="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              :checked="role.selected"
+                              class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              @click.stop
+                            />
+                            <label class="font-medium text-gray-900 dark:text-white">
+                              {{ role.name }}
+                            </label>
+                          </div>
+                          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            {{ role.description }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Selected Roles
+                    </label>
+                    <div class="min-h-[40px] p-2 border rounded-lg dark:border-gray-700 flex flex-wrap gap-2">
+                      <span v-for="role in assignRolesData.selectedRoles" :key="role"
+                        class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                      >
+                        {{ role }}
+                        <button @click="toggleRole(assignRolesData.availableRoles.find(r => r.name === role))" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          ×
+                        </button>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 mt-6">
+                  <button
+                    type="button"
+                    @click="showAssignRolesModal = false"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    @click="handleAssignRoles"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                  >
+                    Assign Role
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Delete Confirmation Modal -->
+    <TransitionRoot appear :show="showDeleteModal" as="template">
+      <Dialog as="div" @close="showDeleteModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                <div class="flex justify-between items-start">
+                  <DialogTitle class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Delete User
+                  </DialogTitle>
+                  <button @click="showDeleteModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                  Are you sure you want to delete {{ userToDelete?.name }}? This action cannot be undone.
+                </p>
+
+                <div class="mt-6 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    @click="showDeleteModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    @click="confirmDelete"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700"
+                  >
+                    <svg class="w-4 h-4 mr-2 -ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Delete User
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -533,6 +966,22 @@ const showAddUserModal = ref(false)
 const showUserDetailsModal = ref(false)
 const selectedUser = ref(null)
 const activeTab = ref('Activities')
+const showEditUserModal = ref(false)
+const editingUser = ref(null)
+const showAdjustBalanceModal = ref(false)
+const showAssignRolesModal = ref(false)
+const showDeleteModal = ref(false)
+const userToDelete = ref(null)
+const assignRolesData = ref({
+  selectedRoles: ['Admin', 'Finance'],
+  availableRoles: [
+    { name: 'Admin', description: 'Full system access with all permissions', selected: false },
+    { name: 'Agent', description: 'Ability to manage referrals and handle disputes', selected: false },
+    { name: 'Finance', description: 'Access to financial transactions and wallet management', selected: false },
+    { name: 'Support', description: 'Customer support and dispute resolution access', selected: false },
+    { name: 'Customer', description: 'Standard user role with limited access', selected: false }
+  ]
+})
 
 const newUser = ref({
   fullName: '',
@@ -739,6 +1188,68 @@ const copyReferralLink = () => {
 const showUserDetails = (user) => {
   selectedUser.value = user
   showUserDetailsModal.value = true
+}
+
+const handleEditUser = (user) => {
+  editingUser.value = { ...user }
+  showEditUserModal.value = true
+}
+
+const handleAdjustBalance = (user) => {
+  adjustBalanceData.value = {
+    currentBalance: 1250.45, // This would normally come from the user object
+    adjustmentType: 'Add Fund',
+    amount: '',
+    reason: 'Manual Adjustment'
+  }
+  showAdjustBalanceModal.value = true
+}
+
+const handleBalanceAdjustment = () => {
+  // Here you would implement the actual balance adjustment logic
+  // For now, we'll just close the modal
+  showAdjustBalanceModal.value = false
+}
+
+const handleChangeRole = (user) => {
+  showAssignRolesModal.value = true
+}
+
+const handleAssignRoles = () => {
+  // Here you would implement the actual role assignment logic
+  showAssignRolesModal.value = false
+}
+
+const toggleRole = (role) => {
+  const index = assignRolesData.value.selectedRoles.indexOf(role.name)
+  if (index === -1) {
+    assignRolesData.value.selectedRoles.push(role.name)
+    role.selected = true
+  } else {
+    assignRolesData.value.selectedRoles.splice(index, 1)
+    role.selected = false
+  }
+}
+
+const handleDeleteUser = (userId) => {
+  userToDelete.value = users.value.find(u => u.id === userId)
+  showDeleteModal.value = true
+}
+
+const confirmDelete = () => {
+  if (userToDelete.value) {
+    users.value = users.value.filter(u => u.id !== userToDelete.value.id)
+    showDeleteModal.value = false
+    userToDelete.value = null
+  }
+}
+
+const handleUpdateUser = () => {
+  const index = users.value.findIndex(u => u.id === editingUser.value.id)
+  if (index !== -1) {
+    users.value[index] = { ...editingUser.value }
+  }
+  showEditUserModal.value = false
 }
 </script>
 
