@@ -433,14 +433,14 @@
                                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Two-Factor Authentication</h4>
                                                     <p class="text-xs text-gray-500 dark:text-gray-400">Add an extra layer of security</p>
                                                 </div>
-                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Enable</button>
+                                                <button @click="handleEnable2FA" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Enable</button>
                                             </div>
                                             <div class="flex items-center justify-between">
                                                 <div>
                                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Password Reset</h4>
                                                     <p class="text-xs text-gray-500 dark:text-gray-400">Change your password</p>
                                                 </div>
-                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Reset</button>
+                                                <button @click="handlePasswordReset" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Reset</button>
                                             </div>
                                         </div>
                                     </div>
@@ -454,7 +454,7 @@
                                                     <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</h4>
                                                     <p class="text-xs text-gray-500 dark:text-gray-400">Receive updates via email</p>
                                                 </div>
-                                                <button class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Configure</button>
+                                                <button @click="showEmailConfig = true" class="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400">Configure</button>
                                             </div>
                                             <div class="flex items-center justify-between">
                                                 <div>
@@ -510,6 +510,114 @@
                                         <button
                                             @click="saveSettings"
                                             class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                                        >
+                                            Save Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
+
+        <!-- Email Notification Configuration Modal -->
+        <TransitionRoot appear :show="showEmailConfig" as="template">
+            <Dialog as="div" @close="showEmailConfig = false" class="relative z-[70]">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+                </TransitionChild>
+
+                <div class="fixed inset-y-0 right-0 overflow-y-auto">
+                    <div class="flex min-h-full justify-end">
+                        <TransitionChild
+                            as="template"
+                            enter="transform transition ease-in-out duration-300"
+                            enter-from="translate-x-full"
+                            enter-to="translate-x-0"
+                            leave="transform transition ease-in-out duration-300"
+                            leave-from="translate-x-0"
+                            leave-to="translate-x-full"
+                        >
+                            <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                                <div class="flex items-center justify-between mb-5">
+                                    <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                                        Configure Email Notifications
+                                    </DialogTitle>
+                                    <button @click="showEmailConfig = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                                        <XMarkIcon class="h-5 w-5" />
+                                    </button>
+                                </div>
+                                
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                                    Choose what updates you'd like to receive in your inbox and how often. Stay in control of alerts, product updates, billing, and more.
+                                </p>
+
+                                <div class="space-y-6">
+                                    <!-- Notification Types -->
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Notification Types</h3>
+                                        <div class="space-y-3">
+                                            <label class="flex items-center">
+                                                <input type="checkbox" v-model="emailNotifications.newUserSignup" class="form-checkbox text-blue-600 rounded" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">New User Signup</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" v-model="emailNotifications.passwordChange" class="form-checkbox text-blue-600 rounded" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Password Change Request</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" v-model="emailNotifications.suspiciousActivity" class="form-checkbox text-blue-600 rounded" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Suspicious Login Activity</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="checkbox" v-model="emailNotifications.systemAlerts" class="form-checkbox text-blue-600 rounded" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">System Errors / Downtime Alerts</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email Frequency -->
+                                    <div>
+                                        <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Email Frequency</h3>
+                                        <div class="space-y-3">
+                                            <label class="flex items-center">
+                                                <input type="radio" v-model="emailNotifications.frequency" value="instant" class="form-radio text-blue-600" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Instant</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" v-model="emailNotifications.frequency" value="weekly" class="form-radio text-blue-600" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Weekly Summary</span>
+                                            </label>
+                                            <label class="flex items-center">
+                                                <input type="radio" v-model="emailNotifications.frequency" value="never" class="form-radio text-blue-600" />
+                                                <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Never (mute all)</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Unsubscribe Option -->
+                                    <div class="pt-3 border-t border-gray-200 dark:border-gray-700">
+                                        <label class="flex items-center">
+                                            <input type="checkbox" v-model="emailNotifications.unsubscribeAll" class="form-checkbox text-blue-600 rounded" />
+                                            <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Unsubscribe from all emails</span>
+                                        </label>
+                                    </div>
+
+                                    <!-- Save Button -->
+                                    <div class="mt-6">
+                                        <button
+                                            @click="saveEmailSettings"
+                                            class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-300"
                                         >
                                             Save Settings
                                         </button>
@@ -683,5 +791,31 @@ const saveProfile = () => {
 const saveSettings = () => {
     // Add settings save logic here
     showSettingsModal.value = false;
+};
+
+const handlePasswordReset = () => {
+    showSettingsModal.value = false;
+    router.push('/auth/password-reset');
+};
+
+const handleEnable2FA = () => {
+    showSettingsModal.value = false;
+    router.push('/auth/2fa-setup');
+};
+
+const showEmailConfig = ref(false);
+const emailNotifications = ref({
+    newUserSignup: false,
+    passwordChange: true,
+    suspiciousActivity: true,
+    systemAlerts: true,
+    frequency: 'instant',
+    unsubscribeAll: false
+});
+
+const saveEmailSettings = () => {
+    // Here you would typically save the notification settings to your backend
+    console.log('Saving notification settings:', emailNotifications.value);
+    showEmailConfig.value = false;
 };
 </script>
