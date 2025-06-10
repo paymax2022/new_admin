@@ -4,7 +4,7 @@
             <!-- Header with Search -->
             <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div class="">
-                    <h1 class="text-2xl font-bold text-gray-800">Restaurant Owners</h1>
+                    <h1 class="text-2xl font-bold text-gray-800">Delivery Agents</h1>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -12,7 +12,7 @@
                         <input
                             v-model="searchQuery"
                             type="text"
-                            placeholder="Search owners..."
+                            placeholder="Search agents..."
                             class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
                             @input="handleSearch"
                         />
@@ -40,7 +40,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
-                    Add Owner
+                    Add Agent
                 </button>
             </div>
             <!-- Table -->
@@ -51,23 +51,36 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAME</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">EMAIL</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PHONE</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RESTAURANT</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">BIKE NUMBER</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="owner in paginatedOwners" :key="owner.id" class="hover:bg-gray-50">
+                        <tr v-for="agent in paginatedAgents" :key="agent.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ owner.name }}</div>
+                                <div class="text-sm font-medium text-gray-900">{{ agent.name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ owner.email }}</div>
+                                <div class="text-sm text-gray-500">{{ agent.email }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ owner.phone }}</div>
+                                <div class="text-sm text-gray-500">{{ agent.phone }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500">{{ owner.restaurant }}</div>
+                                <div class="text-sm text-gray-500">{{ agent.bikeNumber }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                    :class="{
+                                        'bg-green-100 text-green-800': agent.status === 'Active',
+                                        'bg-yellow-100 text-yellow-800': agent.status === 'On Leave',
+                                        'bg-red-100 text-red-800': agent.status === 'Inactive'
+                                    }"
+                                >
+                                    {{ agent.status }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
@@ -105,8 +118,8 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr v-if="filteredOwners.length === 0">
-                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No owners found</td>
+                        <tr v-if="filteredAgents.length === 0">
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">No agents found</td>
                         </tr>
                     </tbody>
                 </table>
@@ -116,7 +129,7 @@
             <div class="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-sm text-gray-500">
                     Showing <span class="font-medium">{{ pagination.startIndex + 1 }}</span> to <span class="font-medium">{{ pagination.endIndex }}</span> of
-                    <span class="font-medium">{{ filteredOwners.length }}</span> entries
+                    <span class="font-medium">{{ filteredAgents.length }}</span> entries
                 </div>
 
                 <div class="flex items-center gap-1">
@@ -156,48 +169,49 @@
 <script setup>
     import { ref, computed, watch } from 'vue';
 
-    const restaurantOwners = ref([
-        { id: 1, name: 'Alex Chen', email: 'alex.chen@example.com', phone: '(123) 456-7890', restaurant: 'Golden Dragon' },
-        { id: 2, name: 'Maria Garcia', email: 'maria.g@example.com', phone: '(234) 567-8901', restaurant: 'Taco Fiesta' },
-        { id: 3, name: 'James Wilson', email: 'james.w@example.com', phone: '(345) 678-9012', restaurant: 'Burger Palace' },
-        { id: 4, name: 'Sophie Martin', email: 'sophie.m@example.com', phone: '(456) 789-0123', restaurant: 'French Bistro' },
-        { id: 5, name: 'David Kim', email: 'david.k@example.com', phone: '(567) 890-1234', restaurant: 'Sushi Express' },
-        { id: 6, name: 'Emma Johnson', email: 'emma.j@example.com', phone: '(678) 901-2345', restaurant: 'Pizza Heaven' },
-        { id: 7, name: 'Luca Rossi', email: 'luca.r@example.com', phone: '(789) 012-3456', restaurant: 'Pasta Amore' },
-        { id: 8, name: 'Olivia Smith', email: 'olivia.s@example.com', phone: '(890) 123-4567', restaurant: 'Steak House' },
-        { id: 9, name: 'Mohammed Ahmed', email: 'mohammed.a@example.com', phone: '(901) 234-5678', restaurant: 'Kebab King' },
-        { id: 10, name: 'Yuki Tanaka', email: 'yuki.t@example.com', phone: '(012) 345-6789', restaurant: 'Ramen World' },
+    const deliveryAgents = ref([
+        { id: 1, name: 'Raj Patel', email: 'raj.patel@example.com', phone: '(123) 456-7890', bikeNumber: 'MH01AB1234', status: 'Active' },
+        { id: 2, name: 'Priya Sharma', email: 'priya.s@example.com', phone: '(234) 567-8901', bikeNumber: 'DL02CD5678', status: 'Active' },
+        { id: 3, name: 'Amit Singh', email: 'amit.s@example.com', phone: '(345) 678-9012', bikeNumber: 'KA03EF9012', status: 'On Leave' },
+        { id: 4, name: 'Neha Gupta', email: 'neha.g@example.com', phone: '(456) 789-0123', bikeNumber: 'TN04GH3456', status: 'Active' },
+        { id: 5, name: 'Vikram Joshi', email: 'vikram.j@example.com', phone: '(567) 890-1234', bikeNumber: 'AP05IJ7890', status: 'Inactive' },
+        { id: 6, name: 'Ananya Reddy', email: 'ananya.r@example.com', phone: '(678) 901-2345', bikeNumber: 'WB06KL1234', status: 'Active' },
+        { id: 7, name: 'Rahul Mehta', email: 'rahul.m@example.com', phone: '(789) 012-3456', bikeNumber: 'GJ07MN5678', status: 'Active' },
+        { id: 8, name: 'Sneha Iyer', email: 'sneha.i@example.com', phone: '(890) 123-4567', bikeNumber: 'RJ08OP9012', status: 'On Leave' },
+        { id: 9, name: 'Arjun Kumar', email: 'arjun.k@example.com', phone: '(901) 234-5678', bikeNumber: 'UP09QR3456', status: 'Active' },
+        { id: 10, name: 'Divya Nair', email: 'divya.n@example.com', phone: '(012) 345-6789', bikeNumber: 'MP10ST7890', status: 'Inactive' },
     ]);
 
     const searchQuery = ref('');
     const perPage = ref(5);
     const currentPage = ref(1);
 
-    // Filter owners based on search query
-    const filteredOwners = computed(() => {
-        if (!searchQuery.value) return restaurantOwners.value;
+    // Filter agents based on search query
+    const filteredAgents = computed(() => {
+        if (!searchQuery.value) return deliveryAgents.value;
 
         const query = searchQuery.value.toLowerCase();
-        return restaurantOwners.value.filter(
-            (owner) =>
-                owner.name.toLowerCase().includes(query) ||
-                owner.email.toLowerCase().includes(query) ||
-                owner.phone.toLowerCase().includes(query) ||
-                owner.restaurant.toLowerCase().includes(query),
+        return deliveryAgents.value.filter(
+            (agent) =>
+                agent.name.toLowerCase().includes(query) ||
+                agent.email.toLowerCase().includes(query) ||
+                agent.phone.toLowerCase().includes(query) ||
+                agent.bikeNumber.toLowerCase().includes(query) ||
+                agent.status.toLowerCase().includes(query),
         );
     });
 
     // Pagination calculations
-    const totalPages = computed(() => Math.ceil(filteredOwners.value.length / perPage.value));
+    const totalPages = computed(() => Math.ceil(filteredAgents.value.length / perPage.value));
 
     const pagination = computed(() => {
         const startIndex = (currentPage.value - 1) * perPage.value;
-        const endIndex = Math.min(startIndex + perPage.value, filteredOwners.value.length);
+        const endIndex = Math.min(startIndex + perPage.value, filteredAgents.value.length);
         return { startIndex, endIndex };
     });
 
-    const paginatedOwners = computed(() => {
-        return filteredOwners.value.slice(pagination.value.startIndex, pagination.value.endIndex);
+    const paginatedAgents = computed(() => {
+        return filteredAgents.value.slice(pagination.value.startIndex, pagination.value.endIndex);
     });
 
     // Visible pages for pagination (max 5 pages shown)

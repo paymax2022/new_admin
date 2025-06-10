@@ -20,5 +20,6 @@
         { route: { name: 'restaurantUsers' }, displayName: 'Users' },
         { route: { name: 'restaurantCustomers' }, displayName: 'Customers' },
         { route: { name: 'restaurantOwners' }, displayName: 'Restaurannt Owners' },
+        { route: { name: 'restaurantDeliveryAgents' }, displayName: 'Delivery Agents' },
     ];
 </script>

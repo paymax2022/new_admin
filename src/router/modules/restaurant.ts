@@ -68,6 +68,11 @@ const restaurantRoutes = [
                 name: 'restaurantOwners',
                 component: () => import('../../views/Restaurant/RestaurantOwners.vue'),
             },
+            {
+                path: 'restaurant-delivery-agents',
+                name: 'restaurantDeliveryAgents',
+                component: () => import('../../views/Restaurant/RestaurantDeliveryAgent.vue'),
+            },
         ],
     },
 ];
