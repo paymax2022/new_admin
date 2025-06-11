@@ -164,13 +164,15 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="wallet in wallets" :key="wallet.id">
+          <tr v-for="wallet in wallets" 
+              :key="wallet.id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.id }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.user }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.type }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.currency }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.balance }}</td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4 whitespace-nowrap" @click.stop>
               <span :class="[
                 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                 {
@@ -182,11 +184,11 @@
                 {{ wallet.status }}
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.lastActivity }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" @click.stop>{{ wallet.lastActivity }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
               <div class="relative">
                 <button 
-                  @click="toggleActionDropdown(wallet.id)"
+                  @click="handleActionClick($event, wallet)"
                   data-dropdown="action"
                   class="text-gray-400 hover:text-gray-500"
                 >
@@ -249,6 +251,248 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Wallet Details Modal -->
+    <div v-if="selectedWallet" 
+         class="fixed inset-y-0 right-0 w-[600px] bg-white dark:bg-gray-800 shadow-xl z-50">
+      <div class="h-full flex flex-col">
+        <!-- Header -->
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-1">
+            <div class="flex items-center space-x-2">
+              <DocumentDuplicateIcon class="h-5 w-5 text-gray-400" />
+              <h2 class="text-base font-medium text-gray-900 dark:text-white">Wallet {{ selectedWallet.id }}</h2>
+            </div>
+            <button @click="closeWalletDetails" class="text-gray-400 hover:text-gray-500">
+              <XMarkIcon class="h-5 w-5" />
+            </button>
+          </div>
+          <p class="text-sm text-gray-500">User: {{ selectedWallet.user }}</p>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 px-6">
+          <!-- Wallet Info Grid -->
+          <div class="grid grid-cols-2 gap-x-6 gap-y-4">
+            <div>
+              <div class="text-sm text-gray-500">Type</div>
+              <div class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedWallet.type }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Currency</div>
+              <div class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedWallet.currency }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Balance</div>
+              <div class="mt-1 text-sm text-gray-900 dark:text-white">${{ selectedWallet.balance }}</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Status</div>
+              <div class="mt-1">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {{ selectedWallet.status }}
+                </span>
+              </div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Created On</div>
+              <div class="mt-1 text-sm text-gray-900 dark:text-white">2023-01-15</div>
+            </div>
+            <div>
+              <div class="text-sm text-gray-500">Last Activity</div>
+              <div class="mt-1 text-sm text-gray-900 dark:text-white">2023-04-07</div>
+            </div>
+          </div>
+
+          <!-- Remark -->
+          <div class="mt-6">
+            <div class="text-sm text-gray-500">Remark</div>
+            <div class="mt-1 text-sm text-gray-900 dark:text-white">
+              Recheck and update wallet before freezing account
+            </div>
+          </div>
+
+          <!-- Recent Transactions -->
+          <div class="mt-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-base font-medium text-gray-900 dark:text-white">Recent Transactions</h3>
+              <a href="#" class="text-sm text-blue-600 hover:text-blue-500">View All</a>
+            </div>
+            <table class="min-w-full">
+              <thead>
+                <tr>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase pb-3">Type</th>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase pb-3">Amount</th>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase pb-3">Description</th>
+                  <th class="text-left text-xs font-medium text-gray-500 uppercase pb-3">Date</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr v-for="transaction in recentTransactions" :key="transaction.date" class="group">
+                  <td class="py-3">
+                    <div class="flex items-center">
+                      <div :class="[
+                        'flex-shrink-0 rounded-full p-2 mr-2',
+                        transaction.type === 'credit' ? 'bg-green-100' : 'bg-red-100'
+                      ]">
+                        <ArrowUpIcon v-if="transaction.type === 'credit'" 
+                                   class="h-4 w-4 text-green-600 transform rotate-45" />
+                        <ArrowDownIcon v-else 
+                                     class="h-4 w-4 text-red-600 transform -rotate-45" />
+                      </div>
+                      <span class="text-sm text-gray-900 dark:text-white capitalize">{{ transaction.type }}</span>
+                    </div>
+                  </td>
+                  <td class="py-3">
+                    <span :class="[
+                      'text-sm font-medium',
+                      transaction.type === 'credit' ? 'text-green-600' : 'text-red-600'
+                    ]">
+                      {{ transaction.type === 'credit' ? '+' : '-' }}${{ transaction.amount }}
+                    </span>
+                  </td>
+                  <td class="py-3">
+                    <span class="text-sm text-gray-900 dark:text-white">{{ transaction.description }}</span>
+                  </td>
+                  <td class="py-3">
+                    <span class="text-sm text-gray-500">{{ transaction.date }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="p-6 bg-gray-50 dark:bg-gray-900/50">
+          <div class="flex items-center space-x-3">
+            <button 
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+              @click="handleWalletAction('freeze', selectedWallet)"
+            >
+              Freeze Wallet
+            </button>
+            <button 
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none"
+              @click="closeWalletDetails"
+            >
+              Close
+            </button>
+            <button 
+              class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none"
+            >
+              Credit Wallet
+            </button>
+            <button 
+              class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none"
+            >
+              Debit Wallet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Backdrop -->
+    <div v-if="selectedWallet" 
+         class="fixed inset-0 bg-black bg-opacity-25"
+         @click="closeWalletDetails">
+    </div>
+
+    <!-- Credit Funds Modal -->
+    <TransitionRoot appear :show="showCreditFundsModal" as="template">
+      <Dialog as="div" @close="showCreditFundsModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Credit Funds
+                  </DialogTitle>
+                  <button @click="showCreditFundsModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Add funds to wallet {{ selectedWalletForCredit?.id }}
+                </p>
+
+                <form @submit.prevent="handleCreditFunds" class="space-y-4">
+                  <!-- Amount -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Amount ($)
+                    </label>
+                    <input
+                      type="number"
+                      v-model="creditFundsData.amount"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="0.00"
+                      step="0.01"
+                      min="0"
+                      required
+                    />
+                  </div>
+
+                  <!-- Description -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Description
+                    </label>
+                    <input
+                      type="text"
+                      v-model="creditFundsData.description"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Manual credit by admin"
+                      required
+                    />
+                  </div>
+
+                  <!-- Buttons -->
+                  <div class="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      @click="showCreditFundsModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                    >
+                      Credit Funds
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -270,10 +514,13 @@ import {
   EyeIcon,
   PlusCircleIcon,
   MinusCircleIcon,
-  ChatBubbleLeftIcon
+  ChatBubbleLeftIcon,
+  XMarkIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/vue/24/outline'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 
 // Register ChartJS components
 ChartJS.register(
@@ -469,7 +716,22 @@ const toggleActionDropdown = (walletId) => {
 }
 
 const handleWalletAction = (action, wallet) => {
-  console.log(`Performing ${action} action on wallet ${wallet.id}`)
+  if (action === 'view') {
+    selectedWallet.value = wallet
+  } else if (action === 'freeze') {
+    console.log(`Freezing wallet ${wallet.id}`)
+    activeActionDropdown.value = null
+  } else if (action === 'credit') {
+    selectedWalletForCredit.value = wallet
+    showCreditFundsModal.value = true
+    activeActionDropdown.value = null
+  } else if (action === 'debit') {
+    console.log(`Debit funds from wallet ${wallet.id}`)
+    activeActionDropdown.value = null
+  } else if (action === 'remark') {
+    console.log(`Add remark to wallet ${wallet.id}`)
+    activeActionDropdown.value = null
+  }
   activeActionDropdown.value = null
 }
 
@@ -498,4 +760,68 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
+
+// Wallet Details Modal
+const selectedWallet = ref(null)
+
+const recentTransactions = [
+  {
+    type: 'credit',
+    amount: '500.00',
+    description: 'Deposit via Credit Card',
+    date: '4/7/2023, 2:30:00 PM'
+  },
+  {
+    type: 'debit',
+    amount: '150.00',
+    description: 'Withdrawal to Bank Account',
+    date: '4/5/2023, 10:15:00 AM'
+  },
+  {
+    type: 'credit',
+    amount: '500.00',
+    description: 'Referral Commission',
+    date: '4/7/2023, 2:30:00 PM'
+  },
+  {
+    type: 'credit',
+    amount: '500.00',
+    description: 'Referral Commission',
+    date: '4/7/2023, 2:30:00 PM'
+  }
+]
+
+const closeWalletDetails = () => {
+  selectedWallet.value = null
+}
+
+// Update click handler for actions to prevent row click
+const handleActionClick = (e, wallet) => {
+  e.stopPropagation()
+  toggleActionDropdown(wallet.id)
+}
+
+// Credit Funds Modal
+const showCreditFundsModal = ref(false)
+const selectedWalletForCredit = ref(null)
+const creditFundsData = ref({
+  amount: '',
+  description: 'Manual credit by admin'
+})
+
+const handleCreditFunds = () => {
+  console.log('Credit funds:', {
+    walletId: selectedWalletForCredit.value?.id,
+    amount: creditFundsData.value.amount,
+    description: creditFundsData.value.description
+  })
+  
+  // Reset form and close modal
+  creditFundsData.value = {
+    amount: '',
+    description: 'Manual credit by admin'
+  }
+  selectedWalletForCredit.value = null
+  showCreditFundsModal.value = false
+}
 </script> 
