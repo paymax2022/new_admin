@@ -21,5 +21,9 @@
         { route: { name: 'restaurantCustomers' }, displayName: 'Customers' },
         { route: { name: 'restaurantOwners' }, displayName: 'Restaurannt Owners' },
         { route: { name: 'restaurantDeliveryAgents' }, displayName: 'Delivery Agents' },
+        { route: { name: 'restaurantComplaints' }, displayName: 'Complaints' },
+        { route: { name: 'restaurantPushNotifications' }, displayName: 'Push Notifications' },
+        { route: { name: 'restaurantAppBanner' }, displayName: 'App Banner' },
+        { route: { name: 'restaurantReport' }, displayName: 'Report' },
     ];
 </script>
