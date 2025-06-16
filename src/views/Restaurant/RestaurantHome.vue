@@ -1,5 +1,5 @@
 <template>
-    <div class="space-y-6 p-4">
+    <div class="space-y-6 lg:p-4">
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div v-for="(card, index) in statsCards" :key="index" class="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
@@ -174,7 +174,7 @@
     const statsCards = [
         {
             title: 'Total Orders',
-            value: 69,
+            value: 690000,
             iconColor: 'text-blue-500',
             bgColor: 'bg-blue-50',
             svgPath: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

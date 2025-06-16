@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 bg-white rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-6">Categories</h1>
+        <h1 class="text-2xl font-bold mb-6">Edit Categories</h1>
 
         <form @submit.prevent="submitForm" class="space-y-4 lg:w-1/2">
             <!-- Name Field -->

@@ -37,7 +37,7 @@
             </div>
             <div class="flex gap-6 my-6 justify-end mx-5">
 
-                <button class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
+                <button @click="goToCreate" class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -71,7 +71,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
 
-                                    <button class="text-green-500 hover:text-green-700">
+                                    <button  @click="goToEdit" class="text-green-500 hover:text-green-700">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -144,6 +144,15 @@
 
 <script setup>
     import { ref, computed, watch } from 'vue';
+    import { useRouter } from 'vue-router';
+    const router = useRouter();
+    const goToCreate = () => {
+        router.push({ name: 'createCategories' });
+    };
+     const goToEdit = () => {
+        router.push({ name: 'editCategories' });
+    };
+
 
     const restaurants = ref([
         { id: 1, name: 'The Salad God', created_by: 'Customer Tw', status: 'Active' },
