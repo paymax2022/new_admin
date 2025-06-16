@@ -8,6 +8,16 @@ const authRoutes = [
                 name: 'authLogin',
                 component: () => import('../../views/Auth/AuthLogin.vue'),
             },
+            {
+                path: 'password-reset',
+                name: 'passwordReset',
+                component: () => import('../../views/Auth/PasswordReset.vue'),
+            },
+            {
+                path: '2fa-setup',
+                name: 'twoFactorSetup',
+                component: () => import('../../views/Auth/TwoFactorSetup.vue'),
+            },
             // {
             //     path: 'register',
             //     name: 'authRegister',
