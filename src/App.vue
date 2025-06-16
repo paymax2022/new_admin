@@ -1,10 +1,10 @@
 <template>
-  <div class="main-section antialiased relative font-nunito text-sm font-normal"
-    :class="[store.sidebar ? 'toggle-sidebar' : '', store.menu, store.layout, store.rtlClass]">
+    <div class="main-section antialiased relative font-nunito text-sm font-normal"
+        :class="[store.sidebar ? 'toggle-sidebar' : '', store.menu, store.layout, store.rtlClass]">
     <component :is="mainLayout">
       <RouterView />
     </component>
-  </div>
+    </div>
 </template>
 
 <script setup>
@@ -21,6 +21,6 @@ const store = useAppStore();
 useMeta({ title: 'Admin Dashboard' });
 
 const mainLayout = computed(() => {
-  return store.mainLayout === 'auth' ? authLayout : appLayout;
+    return store.mainLayout === 'auth' ? authLayout : appLayout;
 });
 </script>
