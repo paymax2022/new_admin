@@ -62,7 +62,7 @@
               </span>
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium flex gap-2 justify-end">
-              <button class="text-gray-500 hover:text-blue-600"><EyeIcon class="h-5 w-5" /></button>
+              <button class="text-gray-500 hover:text-blue-600" @click="openPayoutDetails(item)"><EyeIcon class="h-5 w-5" /></button>
               <button class="text-green-600 hover:text-green-800"><CheckIcon class="h-5 w-5" /></button>
               <button class="text-red-600 hover:text-red-800"><XMarkIcon class="h-5 w-5" /></button>
             </td>
@@ -87,12 +87,86 @@
         </div>
       </div>
     </div>
+    <TransitionRoot appear :show="showPayoutDetailsModal" as="template">
+      <Dialog as="div" @close="closePayoutDetails" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[450px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Payout Details
+                  </DialogTitle>
+                  <button @click="closePayoutDetails" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <div class="text-xs text-gray-500 mb-2">Transaction ID: {{ selectedPayout?.id || '' }}</div>
+                <div class="space-y-4">
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Status</div>
+                    <span :class="[
+                      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                      selectedPayout?.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' : '',
+                      selectedPayout?.status === 'Approved' ? 'bg-green-100 text-green-800' : '',
+                      selectedPayout?.status === 'Rejected' ? 'bg-red-100 text-red-800' : ''
+                    ]">
+                      {{ selectedPayout?.status }}
+                    </span>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Amount</div>
+                    <div class="text-base text-gray-900 dark:text-white">USD {{ selectedPayout?.amount?.toFixed(2) }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Beneficiary</div>
+                    <div class="text-base text-gray-900 dark:text-white">{{ selectedPayout?.user }}</div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Method</div>
+                    <div class="text-base text-gray-900 dark:text-white">{{ selectedPayout?.method }}</div>
+                    <div v-if="selectedPayout?.method === 'Bank Transfer'" class="text-sm text-gray-700 dark:text-gray-300 mt-1">
+                      Bank: Access Bank<br />
+                      Account Number: 1234567890
+                    </div>
+                  </div>
+                  <div>
+                    <div class="text-sm text-gray-500 mb-1">Requested At</div>
+                    <div class="text-base text-gray-900 dark:text-white">{{ selectedPayout?.date }}</div>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { ArrowDownTrayIcon, MagnifyingGlassIcon, FunnelIcon, EyeIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 const payoutData = ref([
   { id: 'PO-12345', user: 'John Smith', amount: 250, method: 'Bank Transfer', date: '2025-04-07', status: 'Pending' },
   { id: 'PO-12346', user: 'Jane Doe', amount: 750, method: 'PayPal', date: '2025-04-07', status: 'Rejected' },
@@ -121,4 +195,14 @@ const paginatedData = computed(() => filteredData.value.slice((currentPage.value
 function prevPage() { if (currentPage.value > 1) currentPage.value-- }
 function nextPage() { if (currentPage.value < totalPages.value) currentPage.value++ }
 function goToPage(page) { currentPage.value = page }
+const showPayoutDetailsModal = ref(false)
+const selectedPayout = ref(null)
+function openPayoutDetails(payout) {
+  selectedPayout.value = payout
+  showPayoutDetailsModal.value = true
+}
+function closePayoutDetails() {
+  showPayoutDetailsModal.value = false
+  selectedPayout.value = null
+}
 </script> 

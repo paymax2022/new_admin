@@ -85,6 +85,21 @@ const routes: RouteRecordRaw[] = [
         name: 'payouts-management',
         component: () => import('@/views/PayoutsManagementView.vue'),
     },
+    {
+        path: '/referral-network',
+        name: 'referral-network',
+        component: () => import('@/views/ReferralNetworkView.vue'),
+    },
+    {
+        path: '/referral-program-settings',
+        name: 'referral-program-settings',
+        component: () => import('@/views/ReferralProgramSettingsView.vue'),
+    },
+    {
+        path: '/dispute-management',
+        name: 'dispute-management',
+        component: () => import('@/views/DisputeManagementView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
