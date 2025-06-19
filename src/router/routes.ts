@@ -105,6 +105,11 @@ const routes: RouteRecordRaw[] = [
         name: 'analytics-dashboard',
         component: () => import('@/views/AnalyticsDashboardView.vue'),
     },
+    {
+        path: '/system-settings',
+        name: 'system-settings',
+        component: () => import('@/views/SystemSettingsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,

@@ -57,6 +57,7 @@
                         <ReferralNavigation />
                         <DisputeNavigation />
                         <ReportsNavigation />
+                        <SystemNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
                         <DeliveryNavigation />
@@ -91,6 +92,7 @@ import FinancialManagementNavigation from '../modules/FinancialManagementNavigat
 import ReferralNavigation from '../modules/ReferralNavigation.vue';
 import DisputeNavigation from '../modules/DisputeNavigation.vue';
 import ReportsNavigation from '../modules/ReportsNavigation.vue';
+import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
 import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
