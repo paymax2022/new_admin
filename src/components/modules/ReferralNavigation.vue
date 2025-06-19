@@ -1,5 +1,5 @@
 <template>
-  <DropdownNav dropdownName="roleList" title="Referral" :iconComponent="IconMenuComponents" :links="links" />
+  <DropdownNav dropdownName="referralList" title="Referral" :iconComponent="IconMenuComponents" :links="links" />
 </template>
 
 <script lang="ts" setup>

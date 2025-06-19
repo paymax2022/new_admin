@@ -1,5 +1,5 @@
 <template>
-  <DropdownNav dropdownName="roleList" title="Financial" :iconComponent="IconMenuComponents" :links="links" />
+  <DropdownNav dropdownName="financialList" title="Financial" :iconComponent="IconMenuComponents" :links="links" />
 </template>
 
 <script lang="ts" setup>

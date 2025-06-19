@@ -100,6 +100,11 @@ const routes: RouteRecordRaw[] = [
         name: 'dispute-management',
         component: () => import('@/views/DisputeManagementView.vue'),
     },
+    {
+        path: '/analytics-dashboard',
+        name: 'analytics-dashboard',
+        component: () => import('@/views/AnalyticsDashboardView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
