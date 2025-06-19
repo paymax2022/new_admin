@@ -38,17 +38,17 @@
 
     <!-- Roles Grid -->
     <div v-if="activeTab === 'roles'">
-      <div class="mb-6">
-        <input type="text" placeholder="Search roles" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-      </div>
+    <div class="mb-6">
+      <input type="text" placeholder="Search roles" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+    </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" />
-        <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" />
-        <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" />
-        <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" />
-        <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" />
-        <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" />
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" />
+      <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" />
+      <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" />
+      <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" />
+      <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" />
+      <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" />
       </div>
     </div>
 

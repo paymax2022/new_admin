@@ -588,6 +588,98 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Freeze Wallet Modal -->
+    <TransitionRoot appear :show="showFreezeWalletModal" as="template">
+      <Dialog as="div" @close="showFreezeWalletModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Freeze Wallet
+                  </DialogTitle>
+                  <button @click="showFreezeWalletModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  This will prevent the user from performing any transactions with this wallet. Are you sure you want to freeze it?
+                </p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mb-5">
+                  <div class="flex items-center mb-1">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-yellow-500 mr-2" />
+                    <span class="font-medium text-yellow-800">Important Notice</span>
+                  </div>
+                  <div class="text-xs text-yellow-700">
+                    Freezing this wallet will prevent the user from depositing, withdrawing, or transferring funds until the wallet is unfrozen.
+                  </div>
+                </div>
+                <div class="border rounded p-4 bg-gray-50 dark:bg-gray-900/30 mb-6">
+                  <div class="text-sm text-gray-500 mb-1">Wallet Details</div>
+                  <div class="flex flex-col gap-1">
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-500">Wallet ID:</span>
+                      <span class="text-gray-900 dark:text-white">{{ selectedWalletForFreeze?.id }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-500">User ID:</span>
+                      <span class="text-gray-900 dark:text-white">{{ selectedWalletForFreeze?.user }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-500">Balance:</span>
+                      <span class="text-gray-900 dark:text-white">{{ selectedWalletForFreeze?.balance }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                      <span class="text-gray-500">Current Status:</span>
+                      <span class="font-medium text-green-600" v-if="selectedWalletForFreeze?.status === 'active'">Active</span>
+                      <span class="font-medium text-red-600" v-else-if="selectedWalletForFreeze?.status === 'frozen'">Frozen</span>
+                      <span class="font-medium text-gray-600" v-else>Inactive</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    @click="showFreezeWalletModal = false"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    @click="handleFreezeWallet"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+                  >
+                    Freeze Wallet
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -611,7 +703,8 @@ import {
   MinusCircleIcon,
   ChatBubbleLeftIcon,
   XMarkIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  ExclamationTriangleIcon
 } from '@heroicons/vue/24/outline'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
@@ -814,7 +907,8 @@ const handleWalletAction = (action, wallet) => {
   if (action === 'view') {
     selectedWallet.value = wallet
   } else if (action === 'freeze') {
-    console.log(`Freezing wallet ${wallet.id}`)
+    selectedWalletForFreeze.value = wallet
+    showFreezeWalletModal.value = true
     activeActionDropdown.value = null
   } else if (action === 'credit') {
     selectedWalletForCredit.value = wallet
@@ -943,5 +1037,17 @@ const handleDebitFunds = () => {
   }
   selectedWalletForDebit.value = null
   showDebitFundsModal.value = false
+}
+
+// Freeze Wallet Modal
+const showFreezeWalletModal = ref(false)
+const selectedWalletForFreeze = ref(null)
+
+const handleFreezeWallet = () => {
+  console.log('Freeze wallet:', {
+    walletId: selectedWalletForFreeze.value?.id
+  })
+  showFreezeWalletModal.value = false
+  selectedWalletForFreeze.value = null
 }
 </script> 

@@ -21,14 +21,14 @@
                     <div>
                         <label for="email" class="block text-sm font-medium mb-1 text-gray-800 dark:text-gray-300">Email</label>
                         <div class="relative text-gray-500 dark:text-gray-400">
-                            <input
-                                id="email"
-                                v-model="email"
-                                type="email"
+                        <input
+                            id="email"
+                            v-model="email"
+                            type="email"
                                 class="form-input w-full ps-10 placeholder:text-gray-400 dark:placeholder:text-gray-500 dark:bg-[#1b2e4b] dark:text-gray-300 dark:border-gray-700"
-                                placeholder="Enter your email address"
-                                required
-                            />
+                            placeholder="Enter your email address"
+                            required
+                        />
                             <span class="absolute start-4 top-1/2 -translate-y-1/2">
                                 <icon-mail :fill="true" class="w-5 h-5" />
                             </span>
