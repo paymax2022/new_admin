@@ -147,6 +147,10 @@
           <PlusIcon class="h-4 w-4 mr-2" />
           Add Currency
         </button>
+        <button v-if="selectedWalletTab === 'exchange'" class="flex items-center px-4 py-2 border border-blue-600 text-blue-700 bg-white rounded-md text-sm font-medium hover:bg-blue-50 mr-2" @click="">
+          <PlusIcon class="h-4 w-4 mr-2" />
+          Add Rate
+        </button>
         <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium flex items-center">
           <ArrowDownTrayIcon class="h-4 w-4 mr-2" />
           Export
@@ -1086,6 +1090,36 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Exchange Rates Table -->
+    <div v-if="selectedWalletTab === 'exchange'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">From</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">To</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rate</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fee (%)</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Updated</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          <tr v-for="(rate, idx) in exchangeRates" :key="idx" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ rate.from }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ rate.to }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ rate.rate }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ rate.fee }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ rate.lastUpdated }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button class="text-gray-400 hover:text-gray-600">
+                <ArrowPathIcon class="h-5 w-5" />
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -1112,7 +1146,8 @@ import {
   DocumentDuplicateIcon,
   ExclamationTriangleIcon,
   PlusIcon,
-  ArrowDownTrayIcon
+  ArrowDownTrayIcon,
+  ArrowPathIcon
 } from '@heroicons/vue/24/outline'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
@@ -1556,4 +1591,17 @@ const handleUpdateCurrency = () => {
   console.log('Update currency:', editCurrency.value)
   showEditCurrencyModal.value = false
 }
+
+// Exchange Rates data
+const exchangeRates = ref([
+  { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'GBP', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'JPY', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'NGN', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'USD', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
+  { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' }
+])
 </script> 
