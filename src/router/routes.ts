@@ -75,6 +75,11 @@ const routes: RouteRecordRaw[] = [
         name: 'profile',
         component: () => import('../views/ProfileView.vue'),
     },
+    {
+        path: '/commission-earnings',
+        name: 'commission-earnings',
+        component: () => import('@/views/CommissionEarningsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,

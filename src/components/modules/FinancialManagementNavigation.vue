@@ -9,6 +9,7 @@ import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 const links = [
   { route: { name: 'transactions' }, displayName: 'Transactions' },
   { route: { name: 'transactions-mgt' }, displayName: 'Transaction Mgt' },
-  { route: { name: 'wallets' }, displayName: 'Wallets' }
+  { route: { name: 'wallets' }, displayName: 'Wallets' },
+  { route: { name: 'commission' }, displayName: 'Commission Earnings' }
 ];
 </script>

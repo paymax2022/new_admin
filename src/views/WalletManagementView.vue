@@ -147,7 +147,7 @@
           <PlusIcon class="h-4 w-4 mr-2" />
           Add Currency
         </button>
-        <button v-if="selectedWalletTab === 'exchange'" class="flex items-center px-4 py-2 border border-blue-600 text-blue-700 bg-white rounded-md text-sm font-medium hover:bg-blue-50 mr-2" @click="">
+        <button v-if="selectedWalletTab === 'exchange'" class="flex items-center px-4 py-2 border border-blue-600 text-blue-700 bg-white rounded-md text-sm font-medium hover:bg-blue-50 mr-2" @click="showAddRateModal = true">
           <PlusIcon class="h-4 w-4 mr-2" />
           Add Rate
         </button>
@@ -1120,6 +1120,89 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Add Exchange Rate Modal -->
+    <TransitionRoot appear :show="showAddRateModal" as="template">
+      <Dialog as="div" @close="showAddRateModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[450px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Add Exchange Rate
+                  </DialogTitle>
+                  <button @click="showAddRateModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Add a new currency exchange rate and fee.
+                </p>
+                <form @submit.prevent="handleAddRate">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">From Currency</label>
+                    <select v-model="newRate.from" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                      <option value="" disabled>Select Currency</option>
+                      <option v-for="opt in currencyOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">To Currency</label>
+                    <select v-model="newRate.to" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                      <option value="" disabled>Select Currency</option>
+                      <option v-for="opt in currencyOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exchange Rate</label>
+                    <input v-model="newRate.rate" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="1.0000" required />
+                  </div>
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fee (%)</label>
+                    <input v-model="newRate.fee" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="1.50" required />
+                  </div>
+                  <div class="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      @click="showAddRateModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-md hover:bg-blue-800"
+                    >
+                      Add Rate
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -1604,4 +1687,27 @@ const exchangeRates = ref([
   { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' },
   { from: 'USD', to: 'EUR', rate: 0.9100, fee: '1.50%', lastUpdated: '2023-04-08' }
 ])
+
+// Add Exchange Rate Modal
+const showAddRateModal = ref(false)
+const newRate = ref({
+  from: '',
+  to: '',
+  rate: '',
+  fee: ''
+})
+const currencyOptions = [
+  { label: 'USD', value: 'USD' },
+  { label: 'EUR', value: 'EUR' },
+  { label: 'GBP', value: 'GBP' },
+  { label: 'JPY', value: 'JPY' },
+  { label: 'NGN', value: 'NGN' }
+]
+
+const handleAddRate = () => {
+  console.log('Add new exchange rate:', newRate.value)
+  showAddRateModal.value = false
+  // Reset form
+  newRate.value = { from: '', to: '', rate: '', fee: '' }
+}
 </script> 
