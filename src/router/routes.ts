@@ -80,6 +80,11 @@ const routes: RouteRecordRaw[] = [
         name: 'commission-earnings',
         component: () => import('@/views/CommissionEarningsView.vue'),
     },
+    {
+        path: '/payouts-management',
+        name: 'payouts-management',
+        component: () => import('@/views/PayoutsManagementView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
