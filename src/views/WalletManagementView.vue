@@ -143,13 +143,45 @@
       </div>
 
       <div class="flex items-center space-x-3">
-        <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium">+ Export</button>
-        <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium">Reconcile Wallets</button>
+        <button v-if="selectedWalletTab === 'currencies'" class="flex items-center px-4 py-2 border border-blue-600 text-blue-700 bg-white rounded-md text-sm font-medium hover:bg-blue-50 mr-2" @click="showAddCurrencyModal = true">
+          <PlusIcon class="h-4 w-4 mr-2" />
+          Add Currency
+        </button>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium flex items-center">
+          <ArrowDownTrayIcon class="h-4 w-4 mr-2" />
+          Export
+        </button>
+        <button
+          class="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 font-medium"
+          @click="showReconcileModal = true"
+        >
+          Reconcile Wallets
+        </button>
       </div>
     </div>
 
-    <!-- Wallets Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <!-- Tabs Bar -->
+    <div class="mb-4">
+      <div class="flex border-b border-gray-200 dark:border-gray-700">
+        <button
+          v-for="tab in walletTabs"
+          :key="tab.value"
+          @click="selectedWalletTab = tab.value"
+          :class="[
+            'px-4 py-2 -mb-px text-sm font-medium focus:outline-none',
+            selectedWalletTab === tab.value
+              ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 bg-white dark:bg-gray-900'
+              : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+          ]"
+          type="button"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Wallet Table -->
+    <div v-if="selectedWalletTab === 'wallet'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
@@ -246,6 +278,43 @@
                   </div>
                 </div>
               </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Currencies Table -->
+    <div v-if="selectedWalletTab === 'currencies'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Symbol</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Balance</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+          <tr v-for="currency in currenciesTable" :key="currency.code" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.currency }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.code }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.symbol }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.totalBalance }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span :class="[
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                currency.status === 'active'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+              ]">
+                {{ currency.status.charAt(0).toUpperCase() + currency.status.slice(1) }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <button class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" @click="openEditCurrencyModal(currency)">Edit</button>
             </td>
           </tr>
         </tbody>
@@ -680,6 +749,343 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Add Remark Modal -->
+    <TransitionRoot appear :show="showAddRemarkModal" as="template">
+      <Dialog as="div" @close="showAddRemarkModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[400px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Add Remark
+                  </DialogTitle>
+                  <button @click="showAddRemarkModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Add an internal remark to {{ selectedWalletForRemark?.id }} - {{ selectedWalletForRemark?.user }}
+                </p>
+                <form @submit.prevent="handleAddRemark">
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Remark</label>
+                    <textarea
+                      v-model="remarkText"
+                      rows="5"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Enter your comment here..."
+                      required
+                    ></textarea>
+                  </div>
+                  <div class="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      @click="showAddRemarkModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-md hover:bg-blue-800"
+                    >
+                      Add Remark
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Reconcile Wallet Modal -->
+    <TransitionRoot appear :show="showReconcileModal" as="template">
+      <Dialog as="div" @close="showReconcileModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[450px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Reconcile Wallet Balances
+                  </DialogTitle>
+                  <button @click="showReconcileModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Start the wallet reconciliation process to validate balances against transaction records.
+                </p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded mb-5">
+                  <div class="flex items-center mb-1">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-yellow-500 mr-2" />
+                    <span class="font-medium text-yellow-800">Warning: This operation should be performed with caution</span>
+                  </div>
+                  <div class="text-xs text-yellow-700">
+                    Reconciliation will check all transaction records against current balances and may correct discrepancies. This operation will generate a detailed audit log.
+                  </div>
+                </div>
+                <div class="mb-6">
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Reconciliation Options</div>
+                  <div class="flex flex-col gap-3">
+                    <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200">
+                      <input type="checkbox" v-model="reconcileOptions.auditOnly" class="form-checkbox mr-2 rounded border-gray-300 dark:border-gray-600 text-blue-600" />
+                      Generate audit report only (no changes)
+                    </label>
+                    <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200">
+                      <input type="checkbox" v-model="reconcileOptions.autoFix" class="form-checkbox mr-2 rounded border-gray-300 dark:border-gray-600 text-blue-600" />
+                      Automatically fix discrepancies
+                    </label>
+                    <label class="inline-flex items-center text-sm text-gray-700 dark:text-gray-200">
+                      <input type="checkbox" v-model="reconcileOptions.notifyUsers" class="form-checkbox mr-2 rounded border-gray-300 dark:border-gray-600 text-blue-600" />
+                      Notify users of balance adjustments
+                    </label>
+                  </div>
+                </div>
+                <div class="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    @click="showReconcileModal = false"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    @click="handleStartReconciliation"
+                    class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-md hover:bg-blue-800"
+                  >
+                    Start Reconciliation
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Add Currency Modal -->
+    <TransitionRoot appear :show="showAddCurrencyModal" as="template">
+      <Dialog as="div" @close="showAddCurrencyModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[450px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Add New Currency
+                  </DialogTitle>
+                  <button @click="showAddCurrencyModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Add a new currency to the system
+                </p>
+                <form @submit.prevent="handleAddCurrency">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency Code</label>
+                    <input v-model="newCurrency.code" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="USD" required />
+                    <span class="text-xs text-gray-400">3-letter ISO code (e.g., USD, EUR)</span>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency Name</label>
+                    <input v-model="newCurrency.name" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="US Dollar" required />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Symbol</label>
+                    <input v-model="newCurrency.symbol" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="$" required />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Decimal Precision</label>
+                    <select v-model="newCurrency.decimalPrecision" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                      <option v-for="opt in decimalPrecisionOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No of Decimal places</label>
+                    <input v-model="newCurrency.decimalPlaces" type="number" min="0" max="6" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="0" required />
+                  </div>
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select v-model="newCurrency.status" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                      <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      @click="showAddCurrencyModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-md hover:bg-blue-800"
+                    >
+                      Add Currency
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Edit Currency Modal -->
+    <TransitionRoot appear :show="showEditCurrencyModal" as="template">
+      <Dialog as="div" @close="showEditCurrencyModal = false" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[450px] transform overflow-hidden bg-white dark:bg-gray-800 p-6 shadow-xl transition-all">
+                <div class="flex items-center justify-between mb-5">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                    Edit Currency
+                  </DialogTitle>
+                  <button @click="showEditCurrencyModal = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                    <XMarkIcon class="h-5 w-5" />
+                  </button>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  Update currency information
+                </p>
+                <form @submit.prevent="handleUpdateCurrency">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency Code</label>
+                    <input v-model="editCurrency.code" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" disabled />
+                    <span class="text-xs text-gray-400">Currency code cannot be changed</span>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Currency Name</label>
+                    <input v-model="editCurrency.name" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Symbol</label>
+                    <input v-model="editCurrency.symbol" type="text" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Decimal Precision</label>
+                    <select v-model="editCurrency.decimalPrecision" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                      <option v-for="opt in decimalPrecisionOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">No of Decimal places</label>
+                    <input v-model="editCurrency.decimalPlaces" type="number" min="0" max="6" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+                  </div>
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                    <select v-model="editCurrency.status" class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                      <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </div>
+                  <div class="flex gap-3 pt-2">
+                    <button
+                      type="button"
+                      @click="showEditCurrencyModal = false"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      class="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-700 border border-transparent rounded-md hover:bg-blue-800"
+                    >
+                      Update Currency
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -704,7 +1110,9 @@ import {
   ChatBubbleLeftIcon,
   XMarkIcon,
   DocumentDuplicateIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  PlusIcon,
+  ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline'
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
@@ -919,7 +1327,8 @@ const handleWalletAction = (action, wallet) => {
     showDebitFundsModal.value = true
     activeActionDropdown.value = null
   } else if (action === 'remark') {
-    console.log(`Add remark to wallet ${wallet.id}`)
+    selectedWalletForRemark.value = wallet
+    showAddRemarkModal.value = true
     activeActionDropdown.value = null
   }
   activeActionDropdown.value = null
@@ -1049,5 +1458,102 @@ const handleFreezeWallet = () => {
   })
   showFreezeWalletModal.value = false
   selectedWalletForFreeze.value = null
+}
+
+// Add Remark Modal
+const showAddRemarkModal = ref(false)
+const selectedWalletForRemark = ref(null)
+const remarkText = ref('')
+
+const handleAddRemark = () => {
+  console.log('Add remark:', {
+    walletId: selectedWalletForRemark.value?.id,
+    user: selectedWalletForRemark.value?.user,
+    remark: remarkText.value
+  })
+  showAddRemarkModal.value = false
+  selectedWalletForRemark.value = null
+  remarkText.value = ''
+}
+
+// Tabs state
+const walletTabs = [
+  { label: 'Wallet', value: 'wallet' },
+  { label: 'Currencies', value: 'currencies' },
+  { label: 'Exchange Rate', value: 'exchange' }
+]
+const selectedWalletTab = ref('wallet')
+
+// Currencies data
+const currenciesTable = ref([
+  { currency: 'US Dollar', code: 'USD', symbol: '$', totalBalance: '10,000.00', status: 'active' },
+  { currency: 'Euro', code: 'EUR', symbol: '€', totalBalance: '5,000.00', status: 'active' },
+  { currency: 'British Pound', code: 'GBP', symbol: '£', totalBalance: '2,500.00', status: 'inactive' },
+  { currency: 'Japanese Yen', code: 'JPY', symbol: '¥', totalBalance: '1,200,000', status: 'active' }
+])
+
+// Reconcile Wallet Modal
+const showReconcileModal = ref(false)
+const reconcileOptions = ref({
+  auditOnly: false,
+  autoFix: false,
+  notifyUsers: false
+})
+
+const handleStartReconciliation = () => {
+  console.log('Start reconciliation with options:', reconcileOptions.value)
+  showReconcileModal.value = false
+  // Reset options if needed
+  reconcileOptions.value = { auditOnly: false, autoFix: false, notifyUsers: false }
+}
+
+// Add Currency Modal
+const showAddCurrencyModal = ref(false)
+const newCurrency = ref({
+  code: '',
+  name: '',
+  symbol: '',
+  decimalPrecision: '0',
+  decimalPlaces: '',
+  status: 'active'
+})
+const decimalPrecisionOptions = [
+  { label: '0 (No Decimal)', value: '0' },
+  { label: '1', value: '1' },
+  { label: '2', value: '2' },
+  { label: '3', value: '3' }
+]
+const statusOptions = [
+  { label: 'Active', value: 'active' },
+  { label: 'Inactive', value: 'inactive' }
+]
+
+const handleAddCurrency = () => {
+  console.log('Add new currency:', newCurrency.value)
+  showAddCurrencyModal.value = false
+  // Reset form
+  newCurrency.value = { code: '', name: '', symbol: '', decimalPrecision: '0', decimalPlaces: '', status: 'active' }
+}
+
+// Edit Currency Modal
+const showEditCurrencyModal = ref(false)
+const editCurrency = ref({
+  code: '',
+  name: '',
+  symbol: '',
+  decimalPrecision: '0',
+  decimalPlaces: '',
+  status: 'active'
+})
+
+// Update Edit button in Currencies Table
+const openEditCurrencyModal = (currency) => {
+  editCurrency.value = { ...currency }
+  showEditCurrencyModal.value = true
+}
+
+const handleUpdateCurrency = () => {
+  console.log('Update currency:', editCurrency.value)
+  showEditCurrencyModal.value = false
 }
 </script> 
