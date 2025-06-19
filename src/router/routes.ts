@@ -75,6 +75,41 @@ const routes: RouteRecordRaw[] = [
         name: 'profile',
         component: () => import('../views/ProfileView.vue'),
     },
+    {
+        path: '/commission-earnings',
+        name: 'commission-earnings',
+        component: () => import('@/views/CommissionEarningsView.vue'),
+    },
+    {
+        path: '/payouts-management',
+        name: 'payouts-management',
+        component: () => import('@/views/PayoutsManagementView.vue'),
+    },
+    {
+        path: '/referral-network',
+        name: 'referral-network',
+        component: () => import('@/views/ReferralNetworkView.vue'),
+    },
+    {
+        path: '/referral-program-settings',
+        name: 'referral-program-settings',
+        component: () => import('@/views/ReferralProgramSettingsView.vue'),
+    },
+    {
+        path: '/dispute-management',
+        name: 'dispute-management',
+        component: () => import('@/views/DisputeManagementView.vue'),
+    },
+    {
+        path: '/analytics-dashboard',
+        name: 'analytics-dashboard',
+        component: () => import('@/views/AnalyticsDashboardView.vue'),
+    },
+    {
+        path: '/system-settings',
+        name: 'system-settings',
+        component: () => import('@/views/SystemSettingsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
