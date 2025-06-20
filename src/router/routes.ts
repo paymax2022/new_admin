@@ -115,6 +115,11 @@ const routes: RouteRecordRaw[] = [
         name: 'backup-restore',
         component: () => import('@/views/BackupRestoreView.vue'),
     },
+    {
+        path: '/activity-logs',
+        name: 'activity-logs',
+        component: () => import('@/views/ActivityLogsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
