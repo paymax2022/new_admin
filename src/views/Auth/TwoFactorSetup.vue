@@ -173,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, type ComponentPublicInstance } from 'vue';
 import { useRouter } from 'vue-router';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
@@ -181,7 +181,14 @@ const router = useRouter();
 const currentStep = ref(1);
 const method = ref('email');
 const code = ref(['', '', '', '', '', '']);
+<<<<<<< HEAD
 const codeInputs = ref<(HTMLInputElement | null)[]>([]);
+=======
+
+// ✅ Explicitly type the array contents:
+const codeInputs = ref<(Element | ComponentPublicInstance | null)[]>([]);
+
+>>>>>>> a5299228917c647fd0eadb5f4ea48065357a14de
 const showSuccessModal = ref(false);
 
 const maskedDestination = computed(() => {
@@ -213,17 +220,32 @@ const handleCodeInput = (event: Event, index: number) => {
 
     // Move to next input
     if (value && index < 6) {
+<<<<<<< HEAD
         const nextInput = codeInputs.value[index] as HTMLInputElement | null;
         nextInput?.focus();
+=======
+        const codeInputs = ref<(ComponentPublicInstance | null)[]>([]);
+>>>>>>> a5299228917c647fd0eadb5f4ea48065357a14de
     }
 };
 
+// const codeInputs = ref<(HTMLInputElement | null)[]>([]);
+
 const handleBackspace = (event: KeyboardEvent, index: number) => {
+<<<<<<< HEAD
     if (event.key === 'Backspace' && !code.value[index - 1] && index > 1) {
         const prevInput = codeInputs.value[index - 2] as HTMLInputElement | null;
         prevInput?.focus();
+=======
+  if (event.key === 'Backspace' && !code.value[index - 1] && index > 1) {
+    const prevInput = codeInputs.value[index - 2];
+    if (prevInput instanceof HTMLInputElement) {
+      prevInput.focus();
+>>>>>>> a5299228917c647fd0eadb5f4ea48065357a14de
     }
+  }
 };
+
 
 const handleResendCode = () => {
     // Implement resend code logic
