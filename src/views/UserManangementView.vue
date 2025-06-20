@@ -1255,12 +1255,22 @@ const handleUpdateUser = () => {
 
 <style scoped>
 .input {
-  @apply px-3 py-2 border rounded dark:bg-gray-800 dark:text-white;
+  padding: 0.75rem 0.75rem;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  background-color: #1f2937;
+  color: #fff;
 }
 .btn {
-  @apply px-3 py-2 text-sm font-medium border rounded disabled:opacity-50;
+  padding: 0.75rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-width: 1px;
+  border-radius: 0.375rem;
+  opacity: 1;
 }
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+  background-color: #2563eb;
+  color: #fff;
 }
 </style>

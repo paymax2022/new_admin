@@ -85,7 +85,7 @@
                             @input="handleCodeInput($event, i)"
                             @keydown.delete="handleBackspace($event, i)"
                             class="w-full h-12 text-center text-lg border rounded-md focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                            :ref="el => codeInputs[i-1] = el"
+                            :ref="el => { if (el instanceof window.HTMLInputElement) codeInputs[i-1] = el; }"
                         />
                     </div>
 
@@ -181,7 +181,7 @@ const router = useRouter();
 const currentStep = ref(1);
 const method = ref('email');
 const code = ref(['', '', '', '', '', '']);
-const codeInputs = ref([]);
+const codeInputs = ref<(HTMLInputElement | null)[]>([]);
 const showSuccessModal = ref(false);
 
 const maskedDestination = computed(() => {
@@ -213,13 +213,15 @@ const handleCodeInput = (event: Event, index: number) => {
 
     // Move to next input
     if (value && index < 6) {
-        codeInputs.value[index]?.focus();
+        const nextInput = codeInputs.value[index] as HTMLInputElement | null;
+        nextInput?.focus();
     }
 };
 
 const handleBackspace = (event: KeyboardEvent, index: number) => {
     if (event.key === 'Backspace' && !code.value[index - 1] && index > 1) {
-        codeInputs.value[index - 2]?.focus();
+        const prevInput = codeInputs.value[index - 2] as HTMLInputElement | null;
+        prevInput?.focus();
     }
 };
 
