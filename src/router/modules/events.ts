@@ -85,6 +85,11 @@ const eventsRoutes = [
                 component: () => import('../../views/Events/EditVenue.vue'),
             },
             {
+                path: 'add-venue',
+                name: 'addVenue',
+                component: () => import('../../views/Events/CreateVenue.vue'),
+            },
+            {
                 path: 'view-venue',
                 name: 'viewVenue',
                 component: () => import('../../views/Events/ViewVenue.vue'),
