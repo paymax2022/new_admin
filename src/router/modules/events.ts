@@ -83,6 +83,16 @@ const eventsRoutes = [
                 name: 'bannerPage',
                 component: () => import('../../views/Events/EventsBanner.vue'),
             },
+            {
+                path: 'view-banner',
+                name: 'viewBanner',
+                component: () => import('../../views/Events/ViewBanner.vue'),
+            },
+              {
+                path: 'edit-banner',
+                name: 'editBanner',
+                component: () => import('../../views/Events/EditBanner.vue'),
+            },
         ],
     },
 ];
