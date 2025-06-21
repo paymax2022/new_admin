@@ -91,7 +91,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <div class="flex items-center space-x-3">
-                                        <button class="text-blue-500 hover:text-blue-700">
+                                        <button  @click="goToView"  class="text-blue-500 hover:text-blue-700">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path
@@ -166,6 +166,12 @@
 
 <script setup>
     import { ref, computed, watch } from 'vue';
+     import { useRouter } from 'vue-router';
+    const router = useRouter();
+
+    const goToView = () => {
+        router.push({ name: 'viewOrder' });
+    };
     import { CubeIcon, TruckIcon, ClockIcon, CheckCircleIcon } from '@heroicons/vue/24/solid';
     const stats = [
         { label: 'Total Orders', value: 9, bg: 'bg-purple-500', icon: CubeIcon },

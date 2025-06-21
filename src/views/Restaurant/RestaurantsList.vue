@@ -1,18 +1,5 @@
 <template>
-    <div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div v-for="stat in stats" :key="stat.label" class="bg-white p-4 rounded-xl shadow-sm flex items-center border border-gray-100 space-x-4">
-                <div :class="`p-3 rounded-full text-white ${stat.bg}`">
-                    <component :is="stat.icon" class="w-6 h-6" />
-                </div>
-                <div>
-                    <p class="text-gray-500 text-sm font-medium">{{ stat.label }}</p>
-                    <p class="text-lg font-semibold text-gray-800">{{ stat.value }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="container mx-auto px-4 py-8">
+    <div class="container py-8">
         <div class="bg-white rounded-lg shadow overflow-hidden">
             <!-- Header with Search -->
             <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -49,17 +36,8 @@
                 </div>
             </div>
             <div class="flex gap-6 my-6 justify-end mx-5">
-                <button class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
-                        />
-                    </svg>
-                    Import Restaurant
-                </button>
-                <button @click="goToCreate(createRestaurant)" class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
+
+                <button @click="goToCreate" class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -92,7 +70,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
-                                    <button @click="goToDetails(listId)" class="text-blue-500 hover:text-blue-700">
+                                    <button @click="goToView" class="text-blue-500 hover:text-blue-700">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path
@@ -103,7 +81,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <button class="text-green-500 hover:text-green-700">
+                                    <button @click="goToEdit" class="text-green-500 hover:text-green-700">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -195,11 +173,16 @@
     const currentPage = ref(1);
     const router = useRouter();
 
-    const goToDetails = (listId) => {
-        router.push({ name: 'restaurantListView', params: { id: listId } });
-    };
+
+
     const goToCreate = () => {
         router.push({ name: 'createRestaurant' });
+    };
+      const goToEdit = () => {
+        router.push({ name: 'editRestaurant' });
+    };
+        const goToView = () => {
+        router.push({ name: 'restaurantListView' });
     };
     // Filter restaurants based on search query
     const filteredRestaurants = computed(() => {

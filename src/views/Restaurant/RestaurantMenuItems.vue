@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="flex gap-6 my-6 justify-end mx-5">
-                <button class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
+                <button @click="goToCreate" class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -75,7 +75,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
-                                    <button class="text-blue-500 hover:text-blue-700" title="View">
+                                    <button @click="goToView" class="text-blue-500 hover:text-blue-700" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path
@@ -86,7 +86,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <button class="text-green-500 hover:text-green-700" title="Edit">
+                                    <button @click="goToEdit" class="text-green-500 hover:text-green-700" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -96,7 +96,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <button class="text-purple-500 hover:text-purple-700" title="Modify">
+                                    <button  @click="goToVariant" class="text-purple-500 hover:text-purple-700" title="Modify">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -169,6 +169,20 @@
 
 <script setup>
     import { ref, computed, watch } from 'vue';
+    import { useRouter } from 'vue-router';
+    const router = useRouter();
+    const goToCreate = () => {
+        router.push({ name: 'createMenu' });
+    };
+    const goToView = () => {
+        router.push({ name: 'viewMenu' });
+    };
+    const goToEdit = () => {
+        router.push({ name: 'editMenu' });
+    };
+    const goToVariant = () => {
+        router.push({ name: 'variantMenu' });
+    };
 
     const menuItems = ref([
         { id: 1, name: 'The Salad God', category: 'Beverages', status: 'Active', unit_price: '50,000.00' },

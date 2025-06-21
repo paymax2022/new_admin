@@ -61,7 +61,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <button
-                  @click="editBanner(banner.id)"
+                @click="goToEdit"
+
                   class="text-indigo-600 hover:text-indigo-900 mr-3"
                 >
                   Edit
@@ -208,6 +209,11 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
+    import { useRouter } from 'vue-router';
+    const router = useRouter();
+    const goToEdit = () => {
+        router.push({ name: 'editAppBanner' });
+    };
 
 interface Banner {
   id: string;

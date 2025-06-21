@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="flex gap-6 my-6 justify-end mx-5">
-                <button class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
+                <button @click="goToCreate" class="flex items-center gap-2 px-5 py-3 rounded-lg bg-black text-white cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
@@ -73,7 +73,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
-                                    <button class="text-green-500 hover:text-green-700" title="Edit">
+                                    <button @click="goToEdit"   class="text-green-500 hover:text-green-700" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
@@ -136,7 +136,14 @@
 
 <script setup>
     import { ref, computed, watch } from 'vue';
-
+ import { useRouter } from 'vue-router';
+    const router = useRouter();
+    const goToCreate = () => {
+        router.push({ name: 'createTable' });
+    };
+      const goToEdit =  () => {
+        router.push({ name: 'editTable' });
+    };
     const Tables = ref([
         { id: 1, name: 'Table 1', capacity: 10, restaurant: 'Italian', status: 'Active' },
         { id: 2, name: 'Table 2', capacity: 10, restaurant: 'Italian', status: 'Active' },
