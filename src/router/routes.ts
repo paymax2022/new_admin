@@ -120,6 +120,11 @@ const routes: RouteRecordRaw[] = [
         name: 'activity-logs',
         component: () => import('@/views/ActivityLogsView.vue'),
     },
+    {
+        path: '/export-reports',
+        name: 'export-reports',
+        component: () => import('@/views/ExportReportsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
