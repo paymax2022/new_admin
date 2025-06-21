@@ -33,10 +33,21 @@ const eventsRoutes = [
                 name: 'eventPage',
                 component: () => import('../../views/Events/EventPage.vue'),
             },
+            {
+                path: 'edit-event',
+                name: 'editEvent',
+                component: () => import('../../views/Events/EditEvent.vue'),
+            },
+            {
+                path: 'add-event',
+                name: 'addEvent',
+                component: () => import('../../views/Events/CreateEvent.vue'),
+            },
+
              {
                 path: 'event-view',
                 name: 'eventView',
-                component: () => import('../../views/Events/EventView.vue'),
+                component: () => import('../../views/Events/newEventView.vue'),
             },
             {
                 path: 'bookingsPage',
