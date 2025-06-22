@@ -110,6 +110,21 @@ const routes: RouteRecordRaw[] = [
         name: 'system-settings',
         component: () => import('@/views/SystemSettingsView.vue'),
     },
+    {
+        path: '/backup-restore',
+        name: 'backup-restore',
+        component: () => import('@/views/BackupRestoreView.vue'),
+    },
+    {
+        path: '/activity-logs',
+        name: 'activity-logs',
+        component: () => import('@/views/ActivityLogsView.vue'),
+    },
+    {
+        path: '/export-reports',
+        name: 'export-reports',
+        component: () => import('@/views/ExportReportsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
