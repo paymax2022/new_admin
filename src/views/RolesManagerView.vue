@@ -43,12 +43,12 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" />
-      <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" />
-      <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" />
-      <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" />
-      <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" />
-      <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" />
+      <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" @edit-permissions="openPermissionsModal('Admin')" @rename-role="openRenameRoleModal('Admin', 'Full system access with all permissions')" @clone-role="openCloneRoleModal('Admin', 'Full system access with all permissions')" @delete-role="openDeleteRoleModal('Admin')" />
+      <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" @edit-permissions="openPermissionsModal('Manager')" @rename-role="openRenameRoleModal('Manager', 'Access to manage users and view reports')" @clone-role="openCloneRoleModal('Manager', 'Access to manage users and view reports')" @delete-role="openDeleteRoleModal('Manager')" />
+      <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" @edit-permissions="openPermissionsModal('Agent')" @rename-role="openRenameRoleModal('Agent', 'Ability to manage referrals and handle disputes')" @clone-role="openCloneRoleModal('Agent', 'Ability to manage referrals and handle disputes')" @delete-role="openDeleteRoleModal('Agent')" />
+      <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" @edit-permissions="openPermissionsModal('Finance')" @rename-role="openRenameRoleModal('Finance', 'Access to financial transactions and wallet management')" @clone-role="openCloneRoleModal('Finance', 'Access to financial transactions and wallet management')" @delete-role="openDeleteRoleModal('Finance')" />
+      <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" @edit-permissions="openPermissionsModal('Support')" @rename-role="openRenameRoleModal('Support', 'Customer support and dispute resolution access')" @clone-role="openCloneRoleModal('Support', 'Customer support and dispute resolution access')" @delete-role="openDeleteRoleModal('Support')" />
+      <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" @edit-permissions="openPermissionsModal('Read-Only')" @rename-role="openRenameRoleModal('Read-Only', 'View-only access to all system areas')" @clone-role="openCloneRoleModal('Read-Only', 'View-only access to all system areas')" @delete-role="openDeleteRoleModal('Read-Only')" />
       </div>
     </div>
 
@@ -120,7 +120,6 @@
         >
           <div class="fixed inset-0 bg-black bg-opacity-25" />
         </TransitionChild>
-
         <div class="fixed inset-y-0 right-0 overflow-y-auto">
           <div class="flex min-h-full justify-end">
             <TransitionChild
@@ -132,132 +131,33 @@
               leave-from="translate-x-0"
               leave-to="translate-x-full"
             >
-              <DialogPanel class="w-[500px] transform overflow-hidden bg-white dark:bg-gray-900 p-6 shadow-xl transition-all">
+              <DialogPanel class="w-full max-w-md bg-white dark:bg-gray-900 p-8 shadow-xl">
                 <div class="mb-6">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <ShieldCheckIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">Admin Permissions</DialogTitle>
-                    </div>
-                    <button @click="showCreateRoleModal = false" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
-                      <XMarkIcon class="h-5 w-5" />
-                    </button>
-                  </div>
-                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure access permissions for this role</p>
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100">Create New Role</DialogTitle>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new role with specific permissions</p>
                 </div>
-
-                <div class="space-y-4">
-                  <!-- User Management Section -->
-                  <div class="border rounded-lg border-gray-200 dark:border-gray-700">
-                    <button 
-                      @click="toggleSection('userManagement')"
-                      class="w-full flex items-center justify-between p-4 text-left"
-                    >
-                      <span class="font-medium text-gray-900 dark:text-gray-100">User Management</span>
-                      <ChevronUpIcon 
-                        :class="[
-                          'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
-                          openSections.userManagement ? '' : 'rotate-180'
-                        ]"
-                      />
-                    </button>
-                    <div v-show="openSections.userManagement" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                      <div v-for="permission in permissions.userManagement" :key="permission.name"
-                        class="flex items-center justify-between"
-                      >
-                        <div>
-                          <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ permission.name }}</div>
-                          <div class="text-sm text-gray-500 dark:text-gray-400">{{ permission.description }}</div>
-                        </div>
-                        <Switch
-                          v-model="permission.enabled"
-                          :class="[
-                            permission.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
-                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
-                          ]"
-                        >
-                          <span
-                            :class="[
-                              permission.enabled ? 'translate-x-6' : 'translate-x-1',
-                              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
-                            ]"
-                          />
-                        </Switch>
-                      </div>
-                    </div>
+                <form @submit.prevent="handleContinueToPermissions">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role Name</label>
+                    <input v-model="newRoleName" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" placeholder="Enter role name" />
                   </div>
-
-                  <!-- Other sections -->
-                  <div v-for="section in sections" :key="section.id" class="border rounded-lg border-gray-200 dark:border-gray-700">
-                    <button 
-                      @click="toggleSection(section.id)"
-                      class="w-full flex items-center justify-between p-4 text-left"
-                    >
-                      <span class="font-medium text-gray-900 dark:text-gray-100">{{ section.name }}</span>
-                      <ChevronUpIcon 
-                        :class="[
-                          'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
-                          openSections[section.id] ? '' : 'rotate-180'
-                        ]"
-                      />
-                    </button>
-                    <div v-show="openSections[section.id]" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                      <div v-for="permission in permissions[section.id]" :key="permission.name"
-                        class="flex items-center justify-between"
-                      >
-                        <div>
-                          <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ permission.name }}</div>
-                          <div class="text-sm text-gray-500 dark:text-gray-400">{{ permission.description }}</div>
-                        </div>
-                        <Switch
-                          v-model="permission.enabled"
-                          :class="[
-                            permission.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
-                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
-                          ]"
-                        >
-                          <span
-                            :class="[
-                              permission.enabled ? 'translate-x-6' : 'translate-x-1',
-                              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
-                            ]"
-                          />
-                        </Switch>
-                      </div>
-                    </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <input v-model="newRoleDescription" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" placeholder="Enter role description" />
                   </div>
-                </div>
-
-                <!-- Warning Message -->
-                <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-100 dark:border-yellow-900/50">
-                  <div class="flex">
-                    <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" />
-                    <div class="ml-3">
-                      <div class="text-sm text-yellow-700 dark:text-yellow-500">
-                        <span class="font-medium">Note: </span>
-                        This is a system role and has fixed permissions.
-                        <br />
-                        System roles have predefined permissions that cannot be modified to ensure system stability. If you need to customize permissions, please create a new role.
-                      </div>
-                    </div>
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Permission Type</label>
+                    <select v-model="newRolePermissionType" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100">
+                      <option value="" disabled>Select permission type</option>
+                      <option value="clone">Clone Existing Role</option>
+                      <option value="custom">Custom Permissions</option>
+                    </select>
                   </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="mt-6 flex justify-end space-x-3">
-                  <button
-                    @click="showCreateRoleModal = false"
-                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
-                  >
-                    Close
-                  </button>
-                  <button
-                    @click="savePermissions"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md inline-flex items-center"
-                  >
-                    <span>Save Permission</span>
-                  </button>
-                </div>
+                  <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" @click="showCreateRoleModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">Continue to Permissions</button>
+                  </div>
+                </form>
               </DialogPanel>
             </TransitionChild>
           </div>
@@ -415,6 +315,340 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Permissions Modal (Edit Permissions) -->
+    <TransitionRoot appear :show="showPermissionsModal" as="template">
+      <Dialog as="div" @close="showPermissionsModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-[500px] transform overflow-hidden bg-white dark:bg-gray-900 p-6 shadow-xl transition-all">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <ShieldCheckIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ editingRoleName }} Permissions</DialogTitle>
+                    </div>
+                    <button @click="showPermissionsModal = false" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+                      <XMarkIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure access permissions for this role</p>
+                </div>
+                <div class="space-y-4">
+                  <!-- User Management Section -->
+                  <div class="border rounded-lg border-gray-200 dark:border-gray-700">
+                    <button 
+                      @click="toggleSection('userManagement')"
+                      class="w-full flex items-center justify-between p-4 text-left"
+                    >
+                      <span class="font-medium text-gray-900 dark:text-gray-100">User Management</span>
+                      <ChevronUpIcon 
+                        :class="[
+                          'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
+                          openSections.userManagement ? '' : 'rotate-180'
+                        ]"
+                      />
+                    </button>
+                    <div v-show="openSections.userManagement" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                      <div v-for="permission in permissions.userManagement" :key="permission.name"
+                        class="flex items-center justify-between"
+                      >
+                        <div>
+                          <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ permission.name }}</div>
+                          <div class="text-sm text-gray-500 dark:text-gray-400">{{ permission.description }}</div>
+                        </div>
+                        <Switch
+                          v-model="permission.enabled"
+                          :class="[
+                            permission.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
+                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
+                          ]"
+                        >
+                          <span
+                            :class="[
+                              permission.enabled ? 'translate-x-6' : 'translate-x-1',
+                              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
+                            ]"
+                          />
+                        </Switch>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Other sections -->
+                  <div v-for="section in sections" :key="section.id" class="border rounded-lg border-gray-200 dark:border-gray-700">
+                    <button 
+                      @click="toggleSection(section.id)"
+                      class="w-full flex items-center justify-between p-4 text-left"
+                    >
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{{ section.name }}</span>
+                      <ChevronUpIcon 
+                        :class="[
+                          'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
+                          openSections[section.id] ? '' : 'rotate-180'
+                        ]"
+                      />
+                    </button>
+                    <div v-show="openSections[section.id]" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                      <div v-for="permission in permissions[section.id]" :key="permission.name"
+                        class="flex items-center justify-between"
+                      >
+                        <div>
+                          <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ permission.name }}</div>
+                          <div class="text-sm text-gray-500 dark:text-gray-400">{{ permission.description }}</div>
+                        </div>
+                        <Switch
+                          v-model="permission.enabled"
+                          :class="[
+                            permission.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
+                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
+                          ]"
+                        >
+                          <span
+                            :class="[
+                              permission.enabled ? 'translate-x-6' : 'translate-x-1',
+                              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
+                            ]"
+                          />
+                        </Switch>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Warning Message -->
+                <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-100 dark:border-yellow-900/50">
+                  <div class="flex">
+                    <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" />
+                    <div class="ml-3">
+                      <div class="text-sm text-yellow-700 dark:text-yellow-500">
+                        <span class="font-medium">Note: </span>
+                        This is a system role and has fixed permissions.
+                        <br />
+                        System roles have predefined permissions that cannot be modified to ensure system stability. If you need to customize permissions, please create a new role.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="mt-6 flex justify-end space-x-3">
+                  <button
+                    @click="showPermissionsModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                  >
+                    Close
+                  </button>
+                  <button
+                    @click="savePermissions"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md inline-flex items-center"
+                  >
+                    <span>Save Permission</span>
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Rename Role Modal -->
+    <TransitionRoot appear :show="showRenameRoleModal" as="template">
+      <Dialog as="div" @close="showRenameRoleModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-full max-w-md bg-white dark:bg-gray-900 p-8 shadow-xl">
+                <div class="mb-6">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13h3l8-8a2.828 2.828 0 10-4-4l-8 8v3z" /></svg>
+                    Edit Role
+                  </DialogTitle>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update the role name and description</p>
+                </div>
+                <form @submit.prevent="handleSaveRenameRole">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role Name</label>
+                    <input v-model="renameRoleName" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" />
+                  </div>
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <input v-model="renameRoleDescription" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" />
+                  </div>
+                  <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" @click="showRenameRoleModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                      Save Change
+                    </button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Clone Role Modal -->
+    <TransitionRoot appear :show="showCloneRoleModal" as="template">
+      <Dialog as="div" @close="showCloneRoleModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+        <div class="fixed inset-y-0 right-0 overflow-y-auto">
+          <div class="flex min-h-full justify-end">
+            <TransitionChild
+              as="template"
+              enter="transform transition ease-in-out duration-300"
+              enter-from="translate-x-full"
+              enter-to="translate-x-0"
+              leave="transform transition ease-in-out duration-300"
+              leave-from="translate-x-0"
+              leave-to="translate-x-full"
+            >
+              <DialogPanel class="w-full max-w-md bg-white dark:bg-gray-900 p-8 shadow-xl">
+                <div class="mb-6">
+                  <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17l4 4 4-4m0-5V3a1 1 0 00-1-1H5a1 1 0 00-1 1v16a1 1 0 001 1h6" /></svg>
+                    Clone Role
+                  </DialogTitle>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Create a new role based on</p>
+                </div>
+                <form @submit.prevent="handleCreateCloneRole">
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role Name</label>
+                    <input v-model="cloneRoleName" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" />
+                  </div>
+                  <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                    <input v-model="cloneRoleDescription" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" />
+                  </div>
+                  <div class="mb-6">
+                    <div class="flex items-center bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm rounded px-3 py-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" /></svg>
+                      All permissions from the original role will be copied to this new role.
+                    </div>
+                  </div>
+                  <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" @click="showCloneRoleModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Cancel</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">Create Clone</button>
+                  </div>
+                </form>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Delete Role Modal -->
+    <TransitionRoot appear :show="showDeleteRoleModal" as="template">
+      <Dialog as="div" @close="showDeleteRoleModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-40" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
+                  Delete Role
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    This action cannot be undone. This will permanently delete the role and remove it from any users who have it assigned.
+                  </p>
+                </div>
+
+                <div class="mt-4 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    @click="showDeleteRoleModal = false"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex justify-center items-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                    @click="handleDeleteRole"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    Delete Role
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -487,8 +721,9 @@ export default {
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
                     <button
+                      :disabled="system"
                       :class="[
-                        active ? 'bg-blue-500 text-white' : 'text-gray-900',
+                        system ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-blue-500 text-white' : 'text-gray-900'),
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
                       @click="$emit('rename-role')"
@@ -496,12 +731,25 @@ export default {
                       Rename Role
                     </button>
                   </MenuItem>
-                </div>
-                <div class="px-1 py-1" v-if="!system">
                   <MenuItem v-slot="{ active }">
                     <button
+                      :disabled="system"
                       :class="[
-                        active ? 'bg-red-500 text-white' : 'text-red-600',
+                        system ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-blue-500 text-white' : 'text-gray-900'),
+                        'group flex w-full items-center rounded-md px-2 py-2 text-sm'
+                      ]"
+                      @click="$emit('clone-role')"
+                    >
+                      Clone Role
+                    </button>
+                  </MenuItem>
+                </div>
+                <div class="px-1 py-1">
+                  <MenuItem v-slot="{ active }">
+                    <button
+                      :disabled="system"
+                      :class="[
+                        system ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-red-500 text-white' : 'text-red-600'),
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
                       @click="$emit('delete-role')"
@@ -543,7 +791,13 @@ export default {
   setup() {
     const activeTab = ref('roles')
     const showCreateRoleModal = ref(false)
+    const showPermissionsModal = ref(false)
+    const editingRoleName = ref('')
     const showAssignRoleModal = ref(false)
+    const showRenameRoleModal = ref(false)
+    const showCloneRoleModal = ref(false)
+    const showDeleteRoleModal = ref(false)
+    const deletingRoleName = ref('')
     const openSections = ref({
       userManagement: true,
       roleManagement: false,
@@ -609,7 +863,7 @@ export default {
 
     const savePermissions = () => {
       console.log('Saving permissions:', permissions.value)
-      showCreateRoleModal.value = false
+      showPermissionsModal.value = false
     }
 
     const users = ref([
@@ -712,10 +966,66 @@ export default {
       support: false
     })
 
+    const newRoleName = ref('')
+    const newRoleDescription = ref('')
+    const newRolePermissionType = ref('')
+    function handleContinueToPermissions() {
+      // Save new role info, then open permissions modal
+      showCreateRoleModal.value = false
+      editingRoleName.value = newRoleName.value
+      showPermissionsModal.value = true
+      // Optionally reset fields
+      // newRoleName.value = ''
+      // newRoleDescription.value = ''
+      // newRolePermissionType.value = ''
+    }
+    function openPermissionsModal(roleName) {
+      editingRoleName.value = roleName
+      showPermissionsModal.value = true
+    }
+
+    const renameRoleName = ref('')
+    const renameRoleDescription = ref('')
+    function openRenameRoleModal(name, description) {
+      renameRoleName.value = name
+      renameRoleDescription.value = description
+      showRenameRoleModal.value = true
+    }
+    function handleSaveRenameRole() {
+      // Logic to save changes
+      showRenameRoleModal.value = false
+    }
+
+    const cloneRoleName = ref('')
+    const cloneRoleDescription = ref('')
+    function openCloneRoleModal(name, description) {
+      cloneRoleName.value = name + ' (Clone)'
+      cloneRoleDescription.value = description
+      showCloneRoleModal.value = true
+    }
+    function handleCreateCloneRole() {
+      // Logic to create clone
+      showCloneRoleModal.value = false
+    }
+
+    function openDeleteRoleModal(roleName) {
+      deletingRoleName.value = roleName
+      showDeleteRoleModal.value = true
+    }
+    function handleDeleteRole() {
+      // Logic to delete role
+      showDeleteRoleModal.value = false
+    }
+
     return {
       activeTab,
       showCreateRoleModal,
+      showPermissionsModal,
+      editingRoleName,
       showAssignRoleModal,
+      showRenameRoleModal,
+      showCloneRoleModal,
+      showDeleteRoleModal,
       openSections,
       permissions,
       sections,
@@ -725,7 +1035,23 @@ export default {
       editUserRoles,
       saveAssignedRoles,
       roles,
-      editingUser
+      editingUser,
+      newRoleName,
+      newRoleDescription,
+      newRolePermissionType,
+      handleContinueToPermissions,
+      openPermissionsModal,
+      renameRoleName,
+      renameRoleDescription,
+      openRenameRoleModal,
+      handleSaveRenameRole,
+      cloneRoleName,
+      cloneRoleDescription,
+      openCloneRoleModal,
+      handleCreateCloneRole,
+      openDeleteRoleModal,
+      deletingRoleName,
+      handleDeleteRole
     }
   }
 }

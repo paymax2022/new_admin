@@ -264,3 +264,4 @@ const paginatedHistory = computed(() => historyData.value.slice((historyPage.val
   transform: translateX(0.9rem);
 }
 </style>
+ 
