@@ -293,32 +293,41 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Code</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Symbol</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Balance</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Precision</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="currency in currenciesTable" :key="currency.code" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.currency }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.name }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.code }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.symbol }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.totalBalance }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ currency.precision }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span :class="[
                 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
                 currency.status === 'active'
                   ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                  : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                  : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
               ]">
                 {{ currency.status.charAt(0).toUpperCase() + currency.status.slice(1) }}
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300" @click="openEditCurrencyModal(currency)">Edit</button>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium relative">
+              <button @click.stop="toggleCurrencyActionDropdown(currency.code)" class="text-gray-400 hover:text-gray-600">
+                <EllipsisVerticalIcon class="h-5 w-5" />
+              </button>
+              <div v-if="activeCurrencyActionDropdown === currency.code" class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div class="py-1">
+                  <button @click="openEditCurrencyModal(currency); activeCurrencyActionDropdown = null" class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">Edit Currency</button>
+                  <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                  <button @click="openDeactivateCurrencyModal(currency); activeCurrencyActionDropdown = null" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">Deactivate</button>
+                </div>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -1203,6 +1212,63 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Deactivate Currency Modal -->
+    <TransitionRoot appear :show="showDeactivateCurrencyModal" as="template">
+      <Dialog as="div" @close="showDeactivateCurrencyModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-40" />
+        </TransitionChild>
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4 text-center">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
+                  Deactivate Currency
+                </DialogTitle>
+                <div class="mt-2">
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    This will prevent users from selecting or using {{ currencyToDeactivate?.code }} for new wallets and transactions.
+                  </p>
+                </div>
+                <div class="mt-4 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    class="inline-flex justify-center rounded-md border border-transparent bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                    @click="showDeactivateCurrencyModal = false"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex justify-center items-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                    @click="confirmDeactivateCurrency"
+                  >
+                    Deactivate
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -1604,10 +1670,11 @@ const selectedWalletTab = ref('wallet')
 
 // Currencies data
 const currenciesTable = ref([
-  { currency: 'US Dollar', code: 'USD', symbol: '$', totalBalance: '10,000.00', status: 'active' },
-  { currency: 'Euro', code: 'EUR', symbol: '€', totalBalance: '5,000.00', status: 'active' },
-  { currency: 'British Pound', code: 'GBP', symbol: '£', totalBalance: '2,500.00', status: 'inactive' },
-  { currency: 'Japanese Yen', code: 'JPY', symbol: '¥', totalBalance: '1,200,000', status: 'active' }
+  { name: 'US Dollar', code: 'USD', symbol: '$', precision: 2, status: 'active' },
+  { name: 'Euro', code: 'EUR', symbol: '€', precision: 2, status: 'active' },
+  { name: 'British Pound', code: 'GBP', symbol: '£', precision: 2, status: 'inactive' },
+  { name: 'Japanese Yen', code: 'JPY', symbol: '¥', precision: 0, status: 'active' },
+  { name: 'Canadian Dollar', code: 'CAD', symbol: '$', precision: 2, status: 'active' }
 ])
 
 // Reconcile Wallet Modal
@@ -1709,5 +1776,29 @@ const handleAddRate = () => {
   showAddRateModal.value = false
   // Reset form
   newRate.value = { from: '', to: '', rate: '', fee: '' }
+}
+
+// Dropdown state for currency actions
+const activeCurrencyActionDropdown = ref(null)
+const toggleCurrencyActionDropdown = (code) => {
+  activeCurrencyActionDropdown.value = activeCurrencyActionDropdown.value === code ? null : code
+}
+// Deactivate handler
+const deactivateCurrency = (currency) => {
+  currency.status = 'inactive'
+}
+
+const showDeactivateCurrencyModal = ref(false)
+const currencyToDeactivate = ref(null)
+function openDeactivateCurrencyModal(currency) {
+  currencyToDeactivate.value = currency
+  showDeactivateCurrencyModal.value = true
+}
+function confirmDeactivateCurrency() {
+  if (currencyToDeactivate.value) {
+    currencyToDeactivate.value.status = 'inactive'
+  }
+  showDeactivateCurrencyModal.value = false
+  currencyToDeactivate.value = null
 }
 </script> 
