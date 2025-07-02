@@ -125,6 +125,26 @@ const routes: RouteRecordRaw[] = [
         name: 'export-reports',
         component: () => import('@/views/ExportReportsView.vue'),
     },
+    {
+        path: '/overview',
+        name: 'overview',
+        component: () => import('@/views/OverviewView.vue'),
+    },
+    {
+        path: '/activity-feed',
+        name: 'activity-feed',
+        component: () => import('@/views/ActivityFeedView.vue'),
+    },
+    {
+        path: '/widgets',
+        name: 'widgets',
+        component: () => import('@/views/WidgetsView.vue'),
+    },
+    {
+        path: '/directory',
+        name: 'directory',
+        component: () => import('@/views/DirectoryView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
