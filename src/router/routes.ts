@@ -145,6 +145,51 @@ const routes: RouteRecordRaw[] = [
         name: 'directory',
         component: () => import('@/views/DirectoryView.vue'),
     },
+    {
+        path: '/subscription-dashboard',
+        name: 'subscription-dashboard',
+        component: () => import('@/views/SubscriptionDashboardView.vue'),
+    },
+    {
+        path: '/plans-tiers',
+        name: 'plans-tiers',
+        component: () => import('@/views/PlansTiersView.vue'),
+    },
+    {
+        path: '/invoice-center',
+        name: 'invoice-center',
+        component: () => import('@/views/InvoiceCenterView.vue'),
+    },
+    {
+        path: '/payment-history',
+        name: 'payment-history',
+        component: () => import('@/views/PaymentHistoryView.vue'),
+    },
+    {
+        path: '/failed-payments',
+        name: 'failed-payments',
+        component: () => import('@/views/FailedPaymentsView.vue'),
+    },
+    {
+        path: '/subscription-settings',
+        name: 'subscription-settings',
+        component: () => import('@/views/SubscriptionSettingsView.vue'),
+    },
+    {
+        path: '/group-list',
+        name: 'group-list',
+        component: () => import('@/views/GroupListView.vue'),
+    },
+    {
+        path: '/manage-group-members',
+        name: 'manage-group-members',
+        component: () => import('@/views/ManageGroupMembersView.vue'),
+    },
+    {
+        path: '/communication',
+        name: 'communication',
+        component: () => import('@/views/CommunicationView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
