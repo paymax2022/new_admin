@@ -190,6 +190,16 @@ const routes: RouteRecordRaw[] = [
         name: 'communication',
         component: () => import('@/views/CommunicationView.vue'),
     },
+    {
+        path: '/polls-surveys',
+        name: 'polls-surveys',
+        component: () => import('@/views/PollsSurveysView.vue'),
+    },
+    {
+        path: '/resources',
+        name: 'resources',
+        component: () => import('@/views/ResourcesView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,

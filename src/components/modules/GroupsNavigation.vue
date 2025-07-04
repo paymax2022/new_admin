@@ -23,5 +23,7 @@ const links = [
   { route: { name: 'manage-group-members' }, displayName: 'manage members' },
   // Communication
   { route: { name: 'communication' }, displayName: 'communication' },
+  { route: { name: 'polls-surveys' }, displayName: 'polls & surveys' },
+  { route: { name: 'resources' }, displayName: 'resources' },
 ];
 </script>
