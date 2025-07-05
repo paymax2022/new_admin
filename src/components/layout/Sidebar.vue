@@ -57,6 +57,16 @@
                         <ReferralNavigation />
                         <DisputeNavigation />
                         <ReportsNavigation />
+                        <GroupsNavigation />
+                        <SubscriptionNavigation />
+                        <GroupManagementNavigation />
+                        <CommunicationNavigation />
+                        <PollsSurveysNavigation />
+                        <ResourcesNavigation />
+                        <EventsNavigation />
+                        <MeetingsNavigation />
+                        <AnalyticsGamificationNavigation />
+                        <SettingsNavigation />
                         <SystemNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
@@ -92,6 +102,7 @@ import FinancialManagementNavigation from '../modules/FinancialManagementNavigat
 import ReferralNavigation from '../modules/ReferralNavigation.vue';
 import DisputeNavigation from '../modules/DisputeNavigation.vue';
 import ReportsNavigation from '../modules/ReportsNavigation.vue';
+import GroupsNavigation from '../modules/GroupsNavigation.vue';
 import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
@@ -104,6 +115,14 @@ import TransactionsNavigation from '../modules/Transactions/TransactionsNavigati
 import UsersMgtNavigation from '../modules/UsersMgt/UsersMgtNavigation.vue';
 import VisitorMgtNavigation from '../modules/VisitorMgt/VisitorMgtNavigation.vue';
 import VotingNavigation from '../modules/Voting/VotingNavigation.vue';
+import SubscriptionNavigation from '../modules/SubscriptionNavigation.vue';
+import GroupManagementNavigation from '../modules/GroupManagementNavigation.vue';
+import CommunicationNavigation from '../modules/CommunicationNavigation.vue';
+import PollsSurveysNavigation from '../modules/PollsSurveysNavigation.vue';
+import ResourcesNavigation from '../modules/ResourcesNavigation.vue';
+import MeetingsNavigation from '../modules/MeetingsNavigation.vue';
+import AnalyticsGamificationNavigation from '../modules/AnalyticsGamificationNavigation.vue';
+import SettingsNavigation from '../modules/SettingsNavigation.vue';
 
 const store = useAppStore();
 

@@ -125,6 +125,131 @@ const routes: RouteRecordRaw[] = [
         name: 'export-reports',
         component: () => import('@/views/ExportReportsView.vue'),
     },
+    {
+        path: '/overview',
+        name: 'overview',
+        component: () => import('@/views/OverviewView.vue'),
+    },
+    {
+        path: '/activity-feed',
+        name: 'activity-feed',
+        component: () => import('@/views/ActivityFeedView.vue'),
+    },
+    {
+        path: '/widgets',
+        name: 'widgets',
+        component: () => import('@/views/WidgetsView.vue'),
+    },
+    {
+        path: '/directory',
+        name: 'directory',
+        component: () => import('@/views/DirectoryView.vue'),
+    },
+    {
+        path: '/subscription-dashboard',
+        name: 'subscription-dashboard',
+        component: () => import('@/views/SubscriptionDashboardView.vue'),
+    },
+    {
+        path: '/plans-tiers',
+        name: 'plans-tiers',
+        component: () => import('@/views/PlansTiersView.vue'),
+    },
+    {
+        path: '/invoice-center',
+        name: 'invoice-center',
+        component: () => import('@/views/InvoiceCenterView.vue'),
+    },
+    {
+        path: '/payment-history',
+        name: 'payment-history',
+        component: () => import('@/views/PaymentHistoryView.vue'),
+    },
+    {
+        path: '/failed-payments',
+        name: 'failed-payments',
+        component: () => import('@/views/FailedPaymentsView.vue'),
+    },
+    {
+        path: '/subscription-settings',
+        name: 'subscription-settings',
+        component: () => import('@/views/SubscriptionSettingsView.vue'),
+    },
+    {
+        path: '/group-list',
+        name: 'group-list',
+        component: () => import('@/views/GroupListView.vue'),
+    },
+    {
+        path: '/manage-group-members',
+        name: 'manage-group-members',
+        component: () => import('@/views/ManageGroupMembersView.vue'),
+    },
+    {
+        path: '/communication',
+        name: 'communication',
+        component: () => import('@/views/CommunicationView.vue'),
+    },
+    {
+        path: '/polls-surveys',
+        name: 'polls-surveys',
+        component: () => import('@/views/PollsSurveysView.vue'),
+    },
+    {
+        path: '/resources',
+        name: 'resources',
+        component: () => import('@/views/ResourcesView.vue'),
+    },
+    {
+        path: '/events',
+        name: 'events',
+        component: () => import('@/views/EventsView.vue'),
+    },
+    {
+        path: '/meeting-dashboard',
+        name: 'meeting-dashboard',
+        component: () => import('@/views/MeetingsDashboardView.vue'),
+    },
+    {
+        path: '/agenda-builder',
+        name: 'agenda-builder',
+        component: () => import('@/views/AgendaBuilderView.vue'),
+    },
+    {
+        path: '/documents',
+        name: 'documents',
+        component: () => import('@/views/DocumentsView.vue'),
+    },
+    {
+        path: '/action-points',
+        name: 'action-points',
+        component: () => import('@/views/ActionPointsView.vue'),
+    },
+    {
+        path: '/archive',
+        name: 'archive',
+        component: () => import('@/views/ArchiveView.vue'),
+    },
+    {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/views/SettingsView.vue'),
+    },
+    {
+        path: '/help-support',
+        name: 'help-support',
+        component: () => import('@/views/HelpSupportView.vue'),
+    },
+    {
+        path: '/gamification',
+        name: 'gamification',
+        component: () => import('@/views/GamificationView.vue'),
+    },
+    {
+        path: '/reports-analytics',
+        name: 'reports-analytics',
+        component: () => import('@/views/ReportsAnalyticsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,
