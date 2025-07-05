@@ -200,6 +200,56 @@ const routes: RouteRecordRaw[] = [
         name: 'resources',
         component: () => import('@/views/ResourcesView.vue'),
     },
+    {
+        path: '/events',
+        name: 'events',
+        component: () => import('@/views/EventsView.vue'),
+    },
+    {
+        path: '/meeting-dashboard',
+        name: 'meeting-dashboard',
+        component: () => import('@/views/MeetingsDashboardView.vue'),
+    },
+    {
+        path: '/agenda-builder',
+        name: 'agenda-builder',
+        component: () => import('@/views/AgendaBuilderView.vue'),
+    },
+    {
+        path: '/documents',
+        name: 'documents',
+        component: () => import('@/views/DocumentsView.vue'),
+    },
+    {
+        path: '/action-points',
+        name: 'action-points',
+        component: () => import('@/views/ActionPointsView.vue'),
+    },
+    {
+        path: '/archive',
+        name: 'archive',
+        component: () => import('@/views/ArchiveView.vue'),
+    },
+    {
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/views/SettingsView.vue'),
+    },
+    {
+        path: '/help-support',
+        name: 'help-support',
+        component: () => import('@/views/HelpSupportView.vue'),
+    },
+    {
+        path: '/gamification',
+        name: 'gamification',
+        component: () => import('@/views/GamificationView.vue'),
+    },
+    {
+        path: '/reports-analytics',
+        name: 'reports-analytics',
+        component: () => import('@/views/ReportsAnalyticsView.vue'),
+    },
     /************ MODULE ROUTES **********************/
     ...authRoutes,
     ...billsPaymentRoutes,

@@ -11,6 +11,8 @@ import i18n from '@/i18n';
 import { TippyPlugin } from 'tippy.vue';
 import { vMaska } from 'maska/vue';
 import Popper from 'vue3-popper';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 
 const app = createApp(App);
 

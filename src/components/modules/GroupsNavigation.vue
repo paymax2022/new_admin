@@ -7,6 +7,7 @@ import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue'
 import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const links = [
+  // Group
   { route: { name: 'overview' }, displayName: 'overview' },
   { route: { name: 'activity-feed' }, displayName: 'activity feed' },
   { route: { name: 'widgets' }, displayName: 'widgets' },
@@ -23,7 +24,23 @@ const links = [
   { route: { name: 'manage-group-members' }, displayName: 'manage members' },
   // Communication
   { route: { name: 'communication' }, displayName: 'communication' },
+  // Polls & Surveys
   { route: { name: 'polls-surveys' }, displayName: 'polls & surveys' },
+  // Resources
   { route: { name: 'resources' }, displayName: 'resources' },
+  // Events
+  { route: { name: 'events' }, displayName: 'events' },
+  // Meetings
+  { route: { name: 'meeting-dashboard' }, displayName: 'dashboard' },
+  { route: { name: 'agenda-builder' }, displayName: 'agenda builder' },
+  { route: { name: 'documents' }, displayName: 'documents' },
+  { route: { name: 'action-points' }, displayName: 'action points' },
+  { route: { name: 'archive' }, displayName: 'archive' },
+  // Analytics and Gamification
+  { route: { name: 'gamification' }, displayName: 'gamification' },
+  { route: { name: 'reports-analytics' }, displayName: 'reports & analytics' },
+  //Settings
+  { route: { name: 'settings' }, displayName: 'settings' },
+  { route: { name: 'help-support' }, displayName: 'help & support' },
 ];
 </script>
