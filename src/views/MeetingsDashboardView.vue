@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mb-2">
       <h1 class="text-2xl font-semibold">Meeting Management</h1>
       <div class="flex gap-2">
-        <button class="border border-black text-black rounded px-4 py-2 flex items-center gap-2 text-sm font-medium bg-white hover:bg-gray-50">
+        <button class="border border-black text-black rounded px-4 py-2 flex items-center gap-2 text-sm font-medium bg-white hover:bg-gray-50" @click="openTemplatesModal">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           Templates
         </button>
@@ -379,6 +379,81 @@
       </div>
     </div>
   </div>
+  <div v-if="showTemplatesModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-3xl relative">
+      <button class="absolute top-3 right-3 text-gray-400 hover:text-gray-700" @click="closeTemplatesModal">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="flex justify-between items-center mb-2">
+        <h2 class="text-xl font-semibold">Meeting Templates</h2>
+        <button class="bg-black text-white rounded px-4 py-2 flex items-center gap-2 text-sm font-medium"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg> Create Template</button>
+      </div>
+      <div class="text-sm text-gray-500 mb-4">Choose from pre-built templates or create your own custom template</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div v-for="template in meetingTemplates" :key="template.name" class="border rounded-xl p-5 bg-gray-50 flex flex-col gap-2 relative">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-semibold px-2 py-1 rounded-full" :class="template.tagColor">{{ template.tag }}</span>
+            <span class="text-xs text-gray-400">Template</span>
+          </div>
+          <div class="font-semibold">{{ template.name }}</div>
+          <div class="text-xs text-gray-500 mb-1">{{ template.description }}</div>
+          <div class="text-xs text-gray-400 mb-1">{{ template.duration }} • {{ template.sections.length }} sections</div>
+          <div class="text-xs font-medium mb-1">Agenda Sections:</div>
+          <ul class="text-xs mb-2 ml-4 list-disc">
+            <li v-for="section in template.sections" :key="section" v-html="section"></li>
+          </ul>
+          <div class="flex gap-2 mt-auto">
+            <button class="bg-black text-white px-3 py-1 rounded text-xs font-medium">Use Template</button>
+            <button class="border px-3 py-1 rounded text-xs font-medium" @click="openTemplatePreviewModal(template)">Preview</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="showTemplatePreviewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-2xl relative">
+      <button class="absolute top-3 right-3 text-gray-400 hover:text-gray-700" @click="closeTemplatePreviewModal">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+      <div class="font-semibold text-lg mb-4">Template Preview</div>
+      <div class="mb-4 p-4 rounded-lg" :class="selectedTemplate?.tagColor + ' bg-opacity-30'">
+        <div class="font-semibold text-base mb-1">{{ selectedTemplate?.name }} Template</div>
+        <div class="text-xs text-gray-500 mb-1" v-html="selectedTemplate?.description"></div>
+        <div class="flex gap-4 text-xs text-gray-600">
+          <span><svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>{{ selectedTemplate?.duration }}</span>
+          <span><svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/></svg>{{ selectedTemplate?.sections.length }} agenda sections</span>
+          <span><svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 12h2a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2h2"/></svg>Suitable for committee meetings</span>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="font-semibold mb-2">Meeting Structure Preview</div>
+        <div class="text-xs text-gray-500 mb-2">Meeting Type: Committee</div>
+        <div class="text-xs text-gray-500 mb-2">Recommended: 1-2 hours, 4 agenda sections</div>
+        <div class="font-medium mb-1">Agenda Sections:</div>
+        <div class="flex flex-col gap-2 mb-2">
+          <div v-for="section in selectedTemplate?.sections" :key="section" class="flex items-center justify-between border-b pb-1">
+            <span>{{ section.replace(/<[^>]+>/g, '') }}</span>
+            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="mb-4">
+        <div class="font-medium mb-1">Template Benefits:</div>
+        <div class="flex flex-col gap-1 text-xs">
+          <div class="flex items-center gap-2"><span class="text-green-500">●</span> Structured For Efficiency <span class="text-gray-400">Pre-defined agenda and time allocations</span></div>
+          <div class="flex items-center gap-2"><span class="text-red-500">●</span> Clear Objectives <span class="text-gray-400">Well-defined goals for each meeting section</span></div>
+        </div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button class="bg-black text-white px-4 py-2 rounded w-full">Join & Use Template</button>
+        <button class="border px-4 py-2 rounded w-full" @click="closeTemplatePreviewModal">Exit Preview</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -508,5 +583,77 @@ function closeMeetingSettingsModal() {
 function saveMeetingSettings() {
   // For demo: just close modal. Add logic to save settings if needed.
   closeMeetingSettingsModal();
+}
+
+const showTemplatesModal = ref(false);
+function openTemplatesModal() {
+  showTemplatesModal.value = true;
+}
+function closeTemplatesModal() {
+  showTemplatesModal.value = false;
+}
+const meetingTemplates = [
+  {
+    name: 'Board Meeting',
+    tag: 'Governance',
+    tagColor: 'bg-purple-100 text-purple-700',
+    description: 'Standard board meeting with financial review and strategic discussions',
+    duration: '2-3 hours',
+    sections: [
+      'Opening Remarks',
+      'Financial Review',
+      'Strategic Planning',
+      'Action Items',
+    ],
+  },
+  {
+    name: 'Committee Meeting',
+    tag: 'Committee',
+    tagColor: 'bg-blue-100 text-blue-700',
+    description: '<b>General committee meeting for project updates and planning</b>',
+    duration: '1-2 hours',
+    sections: [
+      'Welcome',
+      '<b>Previous Minutes</b>',
+      '<b>Project Updates</b>',
+      'New Business',
+    ],
+  },
+  {
+    name: 'Planning Session',
+    tag: 'Planning',
+    tagColor: 'bg-green-100 text-green-700',
+    description: 'Strategic planning and goal-setting session',
+    duration: '3-4 hours',
+    sections: [
+      'Objectives Review',
+      'Goal Setting',
+      'Strategy Planning',
+      'Action Planning',
+    ],
+  },
+  {
+    name: 'Quick Standup',
+    tag: 'Standup',
+    tagColor: 'bg-yellow-100 text-yellow-700',
+    description: 'Brief team standup for updates and blockers',
+    duration: '30 minutes',
+    sections: [
+      'Progress Updates',
+      'Blockers',
+      'Next Steps',
+    ],
+  },
+];
+
+const showTemplatePreviewModal = ref(false);
+const selectedTemplate = ref<any>(null);
+function openTemplatePreviewModal(template) {
+  selectedTemplate.value = template;
+  showTemplatePreviewModal.value = true;
+}
+function closeTemplatePreviewModal() {
+  showTemplatePreviewModal.value = false;
+  selectedTemplate.value = null;
 }
 </script> 
