@@ -45,7 +45,7 @@
                 </div>
 
                 <Vue3Datatable :loading="isLoading" :rows="rows" :columns="cols" :totalRows="rows?.length"
-                    :sortable="true" sortColumn="firstName" :hasCheckbox="true" skin="whitespace-nowrap bh-table-hover"
+                    :sortable="true" sortColumn="Title" :hasCheckbox="true" skin="whitespace-nowrap bh-table-hover"
                     :search="search">
                     <template #id="data">
                         <strong class="">{{ getRowIndex(data.value) }}</strong>
@@ -53,12 +53,9 @@
                     <template #Title="data">
                         <RouterLink :to="{ name: 'votingContestDetail', params: { contestId: data.value.id } }">
                             <div class="flex items-center">
-                                <div class="w-24 h-16 mr-4">
-                                    <img class="w-full h-full object-cover" :src="data.value.logo"
-                                        :alt="data.value.Title" />
-                                </div>
+  
                                 <div class="flex flex-col">
-                                    <span class="text-base text-primary font-black hover:underline">{{ data.value.Title
+                                    <span class="text-base text-primary font-black hover:underline">{{ data.value.title
                                         }}</span>
                                     <span class="text-sm font-semibold">{{ data.value.country }} - {{
                                         data.value.audience }}</span>
@@ -76,16 +73,14 @@
                     </template>
                     <template #duration="data">
                         <div class="text-sm flex flex-col justify-center text-center">
-                            <span>{{ data.value.start_date }}</span>
+                            <span>{{ formatDate(data.value.start_date) }}</span>
                             -
-                            <span>{{ data.value.end_date }}</span>
+                            <span>{{ formatDate(data.value.end_date) }}</span>
                         </div>
                     </template>
                     <template #status="data">
-                        <span class="bg-danger" />
-                        <span class=" bg-warning" />
                         <span
-                            :class="`badge bg-${data.value.status == 'CLOSED' ? 'danger' : data.value.status == 'PENDING' ? 'warning' : 'success'}`">
+                            :class="`badge bg-${data.value.status === 'CLOSED' ? 'danger' : data.value.status === 'PENDING' ? 'warning' : 'success'}`">
                             {{ data.value.status }}
                         </span>
                     </template>
@@ -113,7 +108,8 @@
                                             </RouterLink>
                                         </li>
                                         <li>
-                                            <button class="!text-danger hover:!text-danger">
+                                            <button class="!text-danger hover:!text-danger"
+                                                @click="deleteContest(data.value.id)">
                                                 <IconTrashLines class="ltr:mr-2 rtl:ml-2 shrink-0" />
                                                 Delete
                                             </button>
@@ -130,31 +126,27 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref, nextTick } from 'vue';
 import IconCaretDown from '@/components/icon/icon-caret-down.vue';
 import IconEye from '@/components/icon/icon-eye.vue';
 import IconHorizontalDots from '@/components/icon/icon-horizontal-dots.vue';
 import IconPencilPaper from '@/components/icon/icon-pencil-paper.vue';
-import IconPencil from '@/components/icon/icon-pencil.vue';
 import IconPlus from '@/components/icon/icon-plus.vue';
 import IconTrashLines from '@/components/icon/icon-trash-lines.vue';
-import IconTrash from '@/components/icon/icon-trash.vue';
 import Breadcrumb from '@/components/Shared/Breadcrumb.vue';
 import TextInput from '@/components/Shared/Input/TextInput.vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
-import { ref } from 'vue';
+import { RouterLink } from 'vue-router';
+import Popper from 'vue3-popper';
 
-const getRowIndex = (row) => {
-    return rows.value.findIndex(r => r === row) + 1;
-}
-
-const search = ref('')
-const isLoading = ref(false)
-
+const search = ref('');
+const isLoading = ref(false);
+const rows = ref([]);
 const cols = ref([
     { field: 'id', title: 'ID', isUnique: true, hide: false },
     { field: 'Title', title: 'Title', hide: false },
-    { field: 'Email', title: 'Created By', hide: false },
-    { field: 'Category', title: 'Category', hide: false },
+    //{ field: 'Email', title: 'Created By', hide: false },
+    //{ field: 'Category', title: 'Category', hide: false },
     { field: 'participants', title: 'Participants', hide: false },
     { field: 'round', title: 'Current Round', sort: false, hide: false },
     { field: 'fee_required', title: 'Requires Fee', hide: false },
@@ -163,327 +155,110 @@ const cols = ref([
     { field: 'duration', title: 'Duration', sort: false, hide: false },
     { field: 'status', title: 'Status', hide: false },
     { field: 'actions', title: 'Actions', sort: false, hide: false },
-]) || [];
-const rows = ref([
-    {
-        id: '1',
-        Email: 'contact@contest1.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Innovation Challenge',
-        Description: 'A contest to foster innovative ideas.',
-        Category: 'Technology',
-        Alias: 'innov_challenge',
-        campaign_leader_name: 'John Doe',
-        campaign_leader_role: 'Project Manager',
-        campaign_leader_signature: 'http://example.com/signature1.png',
-        assistant_leader_name: 'Jane Smith',
-        assistant_leader_role: 'Assistant Manager',
-        assistant_leader_signature: 'http://example.com/signature2.png',
-        round: 1,
-        fee_required: true,
-        registration_fee: 50,
-        repeat_frequency: 'Annually',
-        user_id: 'user123',
-        supported_by: 'Tech Corp',
-        brief_objective: 'Encourage innovation in the tech industry.',
-        sponsorship_email: 'sponsor@techcorp.com',
-        contest_mechanism_summary: 'Participants submit their innovative ideas for evaluation.',
-        country: 'USA',
-        audience: 'Nigeria',
-        start_date: '2025-02-01',
-        end_date: '2025-02-28',
-        created_at: '2025-01-01',
-        participants: 100,
-        prize: 10000,
-        status: 'CLOSED'
-    },
-    {
-        id: '2',
-        Email: 'info@contest2.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Art Competition',
-        Description: 'Showcase your artistic talents.',
-        Category: 'Arts',
-        Alias: 'art_comp',
-        campaign_leader_name: 'Alice Brown',
-        campaign_leader_role: 'Art Director',
-        campaign_leader_signature: 'http://example.com/signature3.png',
-        assistant_leader_name: 'Bob White',
-        assistant_leader_role: 'Coordinator',
-        assistant_leader_signature: 'http://example.com/signature4.png',
-        round: 2,
-        fee_required: false,
-        registration_fee: 0,
-        repeat_frequency: 'Quarterly',
-        user_id: 'user456',
-        supported_by: 'Art Foundation',
-        brief_objective: 'Promote and support artists.',
-        sponsorship_email: 'sponsor@artfoundation.com',
-        contest_mechanism_summary: 'Participants submit their artworks for judging.',
-        country: 'UK',
-        audience: 'International',
-        start_date: '2025-03-01',
-        end_date: '2025-03-15',
-        created_at: '2025-01-10',
-        participants: 200,
-        prize: 5000,
-        status: 'ONGOING'
-    },
-    {
-        id: '3',
-        Email: 'support@contest3.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Coding Marathon',
-        Description: 'A 24-hour coding competition.',
-        Category: 'Programming',
-        Alias: 'code_marathon',
-        campaign_leader_name: 'Charlie Green',
-        campaign_leader_role: 'Lead Developer',
-        campaign_leader_signature: 'http://example.com/signature5.png',
-        assistant_leader_name: 'Diana Blue',
-        assistant_leader_role: 'HR Manager',
-        assistant_leader_signature: 'http://example.com/signature6.png',
-        round: 1,
-        fee_required: true,
-        registration_fee: 100,
-        repeat_frequency: 'Monthly',
-        user_id: 'user789',
-        supported_by: 'Dev Hub',
-        brief_objective: 'Enhance programming skills through competition.',
-        sponsorship_email: 'sponsor@devhub.com',
-        contest_mechanism_summary: 'Participants solve coding challenges within 24 hours.',
-        country: 'Canada',
-        audience: 'Nigeria',
-        start_date: '2025-04-01',
-        end_date: '2025-04-02',
-        created_at: '2025-01-15',
-        participants: 150,
-        prize: 20000,
-        status: 'PENDING'
-    },
-    {
-        id: '4',
-        Email: 'registration@contest4.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Music Talent Hunt',
-        Description: 'Discover the next big music star.',
-        Category: 'Music',
-        Alias: 'music_hunt',
-        campaign_leader_name: 'Eli Black',
-        campaign_leader_role: 'Music Producer',
-        campaign_leader_signature: 'http://example.com/signature7.png',
-        assistant_leader_name: 'Fiona Gray',
-        assistant_leader_role: 'Event Manager',
-        assistant_leader_signature: 'http://example.com/signature8.png',
-        round: 3,
-        fee_required: false,
-        registration_fee: 0,
-        repeat_frequency: 'Biannually',
-        user_id: 'user012',
-        supported_by: 'Music Inc',
-        brief_objective: 'Find and promote musical talents.',
-        sponsorship_email: 'sponsor@musicinc.com',
-        contest_mechanism_summary: 'Participants perform live in front of judges.',
-        country: 'Australia',
-        audience: 'International',
-        start_date: '2025-05-01',
-        end_date: '2025-05-30',
-        created_at: '2025-01-20',
-        participants: 250,
-        prize: 15000,
-        status: 'ACTIVE'
-    },
-    {
-        id: '5',
-        Email: 'apply@contest5.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Startup Pitch Fest',
-        Description: 'Pitch your startup idea to investors.',
-        Category: 'Business',
-        Alias: 'startup_pitch',
-        campaign_leader_name: 'George White',
-        campaign_leader_role: 'CEO',
-        campaign_leader_signature: 'http://example.com/signature9.png',
-        assistant_leader_name: 'Hannah Black',
-        assistant_leader_role: 'COO',
-        assistant_leader_signature: 'http://example.com/signature10.png',
-        round: 1,
-        fee_required: true,
-        registration_fee: 200,
-        repeat_frequency: 'Annually',
-        user_id: 'user345',
-        supported_by: 'Invest Co',
-        brief_objective: 'Help startups get funding and mentorship.',
-        sponsorship_email: 'sponsor@investco.com',
-        contest_mechanism_summary: 'Participants pitch their startup ideas to a panel of investors.',
-        country: 'India',
-        audience: 'Nigeria',
-        start_date: '2025-06-01',
-        end_date: '2025-06-30',
-        created_at: '2025-01-25',
-        participants: 50,
-        prize: 50000,
-        status: 'PENDING'
-    },
-    {
-        id: '6',
-        Email: 'info@contest6.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Environmental Awareness Contest',
-        Description: 'Raise awareness about environmental issues.',
-        Category: 'Environment',
-        Alias: 'env_awareness',
-        campaign_leader_name: 'Ivy Brown',
-        campaign_leader_role: 'Environmental Scientist',
-        campaign_leader_signature: 'http://example.com/signature11.png',
-        assistant_leader_name: 'Jack Green',
-        assistant_leader_role: 'Researcher',
-        assistant_leader_signature: 'http://example.com/signature12.png',
-        round: 2,
-        fee_required: false,
-        registration_fee: 0,
-        repeat_frequency: 'Annually',
-        user_id: 'user678',
-        supported_by: 'Eco Org',
-        brief_objective: 'Promote environmental sustainability.',
-        sponsorship_email: 'sponsor@ecoorg.com',
-        contest_mechanism_summary: 'Participants submit projects on environmental conservation.',
-        country: 'Germany',
-        audience: 'International',
-        start_date: '2025-07-01',
-        end_date: '2025-07-31',
-        created_at: '2025-01-30',
-        participants: 300,
-        prize: 10000,
-        status: 'CLOSED'
-    },
-    {
-        id: '7',
-        Email: 'contact@contest7.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Photography Contest',
-        Description: 'Capture the best moments.',
-        Category: 'Photography',
-        Alias: 'photo_contest',
-        campaign_leader_name: 'Kevin White',
-        campaign_leader_role: 'Photographer',
-        campaign_leader_signature: 'http://example.com/signature13.png',
-        assistant_leader_name: 'Lily Black',
-        assistant_leader_role: 'Assistant Photographer',
-        assistant_leader_signature: 'http://example.com/signature14.png',
-        round: 1,
-        fee_required: true,
-        registration_fee: 25,
-        repeat_frequency: 'Quarterly',
-        user_id: 'user901',
-        supported_by: 'Photo World',
-        brief_objective: 'Encourage and reward photography talents.',
-        sponsorship_email: 'sponsor@photoworld.com',
-        contest_mechanism_summary: 'Participants submit their best photographs for judging.',
-        country: 'France',
-        audience: 'International',
-        start_date: '2025-08-01',
-        end_date: '2025-08-15',
-        created_at: '2025-02-05',
-        participants: 400,
-        prize: 15000,
-        status: 'ONGOING'
-    },
-    {
-        id: '8',
-        Email: 'register@contest8.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Science Fair',
-        Description: 'Showcase your scientific projects.',
-        Category: 'Science',
-        Alias: 'science_fair',
-        campaign_leader_name: 'Michael Gray',
-        campaign_leader_role: 'Scientist',
-        campaign_leader_signature: 'http://example.com/signature15.png',
-        assistant_leader_name: 'Nina White',
-        assistant_leader_role: 'Lab Technician',
-        assistant_leader_signature: 'http://example.com/signature16.png',
-        round: 2,
-        fee_required: false,
-        registration_fee: 0,
-        repeat_frequency: 'Annually',
-        user_id: 'user234',
-        supported_by: 'Science Assoc',
-        brief_objective: 'Promote scientific research and innovation.',
-        sponsorship_email: 'sponsor@scienceassoc.com',
-        contest_mechanism_summary: 'Participants present their scientific projects.',
-        country: 'Japan',
-        audience: 'International',
-        start_date: '2025-09-01',
-        end_date: '2025-09-30',
-        created_at: '2025-02-10',
-        participants: 150,
-        prize: 20000,
-        status: 'ACTIVE'
-    },
-    {
-        id: '9',
-        Email: 'apply@contest9.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Writing Competition',
-        Description: 'Showcase your writing skills.',
-        Category: 'Literature',
-        Alias: 'writing_comp',
-        campaign_leader_name: 'Olivia Brown',
-        campaign_leader_role: 'Editor',
-        campaign_leader_signature: 'http://example.com/signature17.png',
-        assistant_leader_name: 'Paul Black',
-        assistant_leader_role: 'Assistant Editor',
-        assistant_leader_signature: 'http://example.com/signature18.png',
-        round: 1,
-        fee_required: true,
-        registration_fee: 30,
-        repeat_frequency: 'Monthly',
-        user_id: 'user567',
-        supported_by: 'Writers Guild',
-        brief_objective: 'Encourage and reward writing talents.',
-        sponsorship_email: 'sponsor@writersguild.com',
-        contest_mechanism_summary: 'Participants submit their writings for evaluation.',
-        country: 'Brazil',
-        audience: 'International',
-        start_date: '2025-10-01',
-        end_date: '2025-10-31',
-        created_at: '2025-02-15',
-        participants: 100,
-        prize: 5000,
-        status: 'ONGOING'
-    },
-    {
-        id: '10',
-        Email: 'info@contest10.com',
-        logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-        Title: 'Cooking Contest',
-        Description: 'Show your culinary skills.',
-        Category: 'Culinary',
-        Alias: 'cooking_contest',
-        campaign_leader_name: 'Quincy Green',
-        campaign_leader_role: 'Chef',
-        campaign_leader_signature: 'http://example.com/signature19.png',
-        assistant_leader_name: 'Rachel White',
-        assistant_leader_role: 'Sous Chef',
-        assistant_leader_signature: 'http://example.com/signature20.png',
-        round: 2,
-        fee_required: false,
-        registration_fee: 0,
-        repeat_frequency: 'Biannually',
-        user_id: 'user890',
-        supported_by: 'Culinary Assoc',
-        brief_objective: 'Promote culinary arts and skills.',
-        sponsorship_email: 'sponsor@culinaryassoc.com',
-        contest_mechanism_summary: 'Participants cook and present their dishes.',
-        country: 'Italy',
-        audience: 'International',
-        start_date: '2025-11-01',
-        end_date: '2025-11-30',
-        created_at: '2025-02-20',
-        participants: 200,
-        prize: 10000,
-        status: 'CLOSED'
+]);
+
+const getRowIndex = (row) => {
+    return rows.value.findIndex(r => r === row) + 1;
+};
+
+const formatDate = (date: string) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+const fetchContests = async () => {
+    isLoading.value = true;
+    try {
+        const response = await fetch('/api/contests', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Fetched contests:', data);
+            rows.value = data.map(contest => ({
+                id: contest._id,
+                Email: contest.sponsorship_email || 'N/A',
+                title: contest.title,
+                Description: contest.description,
+                Category: contest.category || 'N/A',
+                Alias: contest.alias || 'N/A',
+                campaign_leader_name: contest.leaderName,
+                campaign_leader_role: contest.leaderRole,
+                campaign_leader_signature: contest.leaderSignature || 'N/A',
+                assistant_leader_name: contest.asstName,
+                assistant_leader_role: contest.asstRole,
+                assistant_leader_signature: contest.asstSignature || 'N/A',
+                round: contest.rounds?.length || 1,
+                fee_required: contest.participationFee > 0,
+                registration_fee: contest.participationFee,
+                repeat_frequency: contest.repeatContest || 'None',
+                user_id: contest.user_id || 'N/A',
+                supported_by: contest.supported_by || 'N/A',
+                brief_objective: contest.brief_objective || 'N/A',
+                sponsorship_email: contest.sponsorship_email || 'N/A',
+                contest_mechanism_summary: contest.contest_mechanism_summary || 'N/A',
+                country: contest.country,
+                audience: contest.audience,
+                start_date: contest.rounds?.[0]?.start_date || '',
+                end_date: contest.rounds?.[0]?.end_date || '',
+                created_at: contest.createdAt,
+                participants: contest.participants || 0,
+                prize: contest.prizeAwards?.[0]?.prize || 0,
+                status: determineStatus(contest.rounds?.[0]?.start_date, contest.rounds?.[0]?.end_date),
+            }));
+            console.log('Mapped rows:', rows.value);
+            await nextTick();
+        } else {
+            console.error('Fetch error:', response.status, response.statusText);
+            const errorText = await response.text(); // Capture error details
+            console.error('Error details:', errorText);
+            alert(`Error fetching contests: ${errorText || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error fetching contests:', error);
+        alert('Error fetching contests. Please try again later.');
+    } finally {
+        isLoading.value = false;
     }
-])
+};
+
+const determineStatus = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return 'PENDING';
+    const now = new Date('2025-07-09T03:08:00Z'); // 08:08 AM PKT (UTC+5)
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (now < start) return 'PENDING';
+    if (now > end) return 'CLOSED';
+    return 'ONGOING';
+};
+
+const deleteContest = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this contest?')) return;
+    try {
+        const response = await fetch('/api/contests', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id }),
+        });
+        if (response.ok) {
+            alert('Contest deleted successfully!');
+            rows.value = rows.value.filter(row => row.id !== id);
+        } else {
+            const errorData = await response.json();
+            alert(`Error deleting contest: ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error deleting contest:', error);
+        alert('Error deleting contest. Please try again later.');
+    }
+};
+
+onMounted(() => {
+    fetchContests();
+});
 </script>

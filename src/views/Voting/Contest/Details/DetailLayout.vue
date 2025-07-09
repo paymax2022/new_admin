@@ -3,16 +3,19 @@
         <Breadcrumb
             :items="[{ label: 'Voting', route: { name: 'votingHome' } }, { label: 'Contests', route: { name: 'votingContestHome' } }, { label: `${$route.params.contestId}` }]" />
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-6">
+        <div v-if="isLoading" class="panel mt-6">
+            <p>Loading...</p>
+        </div>
+        <div v-else-if="error" class="panel mt-6">
+            <p class="text-danger">{{ error }}</p>
+        </div>
+        <div v-else-if="contest" class="grid grid-cols-1 lg:grid-cols-3 lg:gap-6">
             <div class="panel">
                 <div class="flex justify-between">
                     <h5 class="font-semibold text-lg dark:text-white-light mb-5">Contest Details</h5>
                     <div class="flex gap-3 items-start">
-                        <RouterLink :to="{ name: 'votingContestEdit', params: { contestId: $route.params.contestId } }"
-                            class="!text-info">
-                            <IconPencilPaper class="ltr:mr-2 rtl:ml-2 shrink-0" />
-                        </RouterLink>
-                        <button class="!text-danger hover:!text-danger">
+                       
+                        <button class="!text-danger hover:!text-danger" @click="deleteContest">
                             <IconTrashLines class="ltr:mr-2 rtl:ml-2 shrink-0" />
                         </button>
                     </div>
@@ -37,9 +40,9 @@
                     <div class="flex flex-col space-y-0">
                         <span class="font-bold text-gray-300">Duration:</span>
                         <div class="flex space-x-4">
-                            <span class="">{{ contest.start_date }}</span>
+                            <span class="">{{ formatDate(contest.start_date) }}</span>
                             <span class="mx-1">-</span>
-                            <span class="">{{ contest.end_date }}</span>
+                            <span class="">{{ formatDate(contest.end_date) }}</span>
                         </div>
                     </div>
                     <div class="flex flex-col space-y-0">
@@ -89,11 +92,11 @@
                     <div class="flex justify-between">
                         <div class="flex flex-col space-y-0 w-full">
                             <span class="font-bold text-gray-300">Requires Fee:</span>
-                            <span class="text-sm">{{ contest.fee_required }}</span>
+                            <span class="text-sm">{{ contest.fee_required ? 'Yes' : 'No' }}</span>
                         </div>
                         <div class="flex flex-col space-y-0 w-full">
                             <span class="font-bold text-gray-300">Participation Fee:</span>
-                            <span class="text-sm">{{ contest.registration_fee }}</span>
+                            <span class="text-sm">${{ contest.registration_fee }}</span>
                         </div>
                     </div>
                 </div>
@@ -133,6 +136,9 @@
                 </div>
             </div>
         </div>
+        <div v-else class="panel mt-6">
+            <p>No contest data available.</p>
+        </div>
     </div>
 </template>
 
@@ -141,38 +147,118 @@ import IconInfoCircle from '@/components/icon/icon-info-circle.vue';
 import IconPencilPaper from '@/components/icon/icon-pencil-paper.vue';
 import IconTrashLines from '@/components/icon/icon-trash-lines.vue';
 import Breadcrumb from '@/components/Shared/Breadcrumb.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 
-const contest = ref({
-    id: '1',
-    Email: 'contact@contest1.com',
-    logo: 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    Title: 'Innovation Challenge',
-    Description: 'A contest to foster innovative ideas. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum deserunt a consequuntur, cupiditate dolorem magni eum vitae rem quaerat saepe amet incidunt unde reprehenderit debitis expedita minus quibusdam facilis quisquam. Libero, excepturi! Necessitatibus dolore, eos illo officia culpa consequuntur aut sapiente.Reprehenderit nisi alias facere vel commodi, ut at vero.Quod molestiae repellendus commodi non quibusdam accusantium rem voluptatum eligendi! Minus ipsam sequi, eius sunt nobis veniam deleniti beatae ut molestias inventore recusandae eligendi fuga neque quia, explicabo asperiores similique totam sapiente, delectus nesciunt.Quidem, molestiae facilis! Fugit, sapiente vitae. Nihil assumenda dolor inventore nisi facilis in sed, facere ipsum beatae omnis officiis sunt ipsam dolores a, alias tenetur amet dolorum est distinctio architecto eius magni rerum! Atque, mollitia expedita?',
-    Category: 'Technology',
-    Alias: 'innov_challenge',
-    campaign_leader_name: 'John Doe',
-    campaign_leader_role: 'Project Manager',
-    campaign_leader_signature: 'http://example.com/signature1.png',
-    assistant_leader_name: 'Jane Smith',
-    assistant_leader_role: 'Assistant Manager',
-    assistant_leader_signature: 'http://example.com/signature2.png',
-    round: 1,
-    fee_required: true,
-    registration_fee: 50,
-    repeat_frequency: 'Annually',
-    user_id: 'user123',
-    supported_by: 'Tech Corp',
-    brief_objective: 'Encourage innovation in the tech industry.',
-    sponsorship_email: 'sponsor@techcorp.com',
-    contest_mechanism_summary: 'Participants submit their innovative ideas for evaluation.',
-    country: 'USA',
-    audience: 'Nigeria',
-    start_date: '2025-02-01',
-    end_date: '2025-02-28',
-    created_at: '2025-01-01',
-    participants: 100,
-    prize: 10000,
-    status: 'CLOSED'
-})
+const route = useRoute();
+const contest = ref<any>(null);
+const isLoading = ref(true);
+const error = ref<string | null>(null);
+
+const formatDate = (date: string) => {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+const fetchContestDetail = async () => {
+    const contestId = route.params.contestId as string;
+    if (!contestId) {
+        error.value = 'No contest ID provided';
+        isLoading.value = false;
+        return;
+    }
+    isLoading.value = true;
+    error.value = null;
+    try {
+        const response = await fetch(`/api/contests/${contestId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Fetched contest detail:', data);
+            // Map API response to match the expected contest structure
+            contest.value = {
+                id: data._id,
+                Email: data.sponsorship_email || 'N/A',
+                logo: data.image || 'https://images.unsplash.com/photo-1735216228027-fe31c23474ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                Title: data.title,
+                Description: data.description,
+                Category: data.category || 'N/A',
+                Alias: data.alias || 'N/A',
+                campaign_leader_name: data.leaderName,
+                campaign_leader_role: data.leaderRole,
+                campaign_leader_signature: data.leaderSignature || 'N/A',
+                assistant_leader_name: data.asstName,
+                assistant_leader_role: data.asstRole,
+                assistant_leader_signature: data.asstSignature || 'N/A',
+                round: data.rounds?.length || 1,
+                fee_required: data.participationFee > 0,
+                registration_fee: data.participationFee,
+                repeat_frequency: data.repeatContest || 'None',
+                user_id: data.user_id || 'N/A',
+                supported_by: data.supported_by || 'N/A',
+                brief_objective: data.brief_objective || 'N/A',
+                sponsorship_email: data.sponsorship_email || 'N/A',
+                contest_mechanism_summary: data.contest_mechanism_summary || 'N/A',
+                country: data.country,
+                audience: data.audience,
+                start_date: data.rounds?.[0]?.start_date || '',
+                end_date: data.rounds?.[0]?.end_date || '',
+                created_at: data.createdAt,
+                participants: data.participants || 0,
+                prize: data.prizeAwards?.[0]?.prize || 0,
+                status: determineStatus(data.rounds?.[0]?.start_date, data.rounds?.[0]?.end_date),
+            };
+        } else {
+            const errorText = await response.text();
+            error.value = `Error fetching contest: ${errorText || 'Unknown error'}`;
+        }
+    } catch (error) {
+        console.error('Error fetching contest detail:', error);
+        error.value = 'Error fetching contest details. Please try again later.';
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const determineStatus = (startDate: string, endDate: string) => {
+    if (!startDate || !endDate) return 'PENDING';
+    const now = new Date('2025-07-09T03:34:00Z'); // 08:34 AM PKT (UTC+5)
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (now < start) return 'PENDING';
+    if (now > end) return 'CLOSED';
+    return 'ONGOING';
+};
+
+const deleteContest = async () => {
+    if (!confirm('Are you sure you want to delete this contest?')) return;
+    const contestId = route.params.contestId as string;
+    try {
+        const response = await fetch('/api/contests', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: contestId }),
+        });
+        if (response.ok) {
+            alert('Contest deleted successfully!');
+            router.push({ name: 'votingContestHome' });
+        } else {
+            const errorData = await response.json();
+            alert(`Error deleting contest: ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error deleting contest:', error);
+        alert('Error deleting contest. Please try again later.');
+    }
+};
+
+onMounted(() => {
+    fetchContestDetail();
+});
 </script>

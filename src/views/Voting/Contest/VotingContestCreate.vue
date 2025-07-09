@@ -7,7 +7,7 @@
             <h5 class="font-semibold text-lg dark:text-white-light">Create Contest</h5>
         </div>
 
-        <form class="mb-8 mt-6">
+        <form class="mb-8 mt-6" @submit.prevent="submitContest">
             <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-6">
                 <div class="panel col-span-2">
                     <h5 class="font-semibold text-lg dark:text-white-light mb-5">Contest Details</h5>
@@ -144,6 +144,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from 'vue-router';
 import IconPlus from '@/components/icon/icon-plus.vue';
 import IconTrash from '@/components/icon/icon-trash.vue';
 import Breadcrumb from '@/components/Shared/Breadcrumb.vue';
@@ -153,8 +154,10 @@ import Multiselect from '@suadelabs/vue3-multiselect';
 import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
 import { ref } from 'vue';
 
-const audience = ['Nigeria', 'International']
-const countries = ['Nigeria', 'USA', 'UK', 'Canada', 'India']
+const router = useRouter();
+
+const audience = ['Nigeria', 'International'];
+const countries = ['Nigeria', 'USA', 'UK', 'Canada', 'India'];
 const roles = ['CEO', 'President', 'Vice President'];
 const repeatContest = ['None', 'Monthly', 'Quarterly', 'Yearly'];
 
@@ -178,7 +181,7 @@ const contestData = ref({
     participationFee: 0,
     min_age: '',
     juryWinnig: ''
-})
+});
 
 const rounds = ref([
     {
@@ -240,4 +243,31 @@ const removeOtherBenefit = (index: number) => {
     otherBenefits.value.splice(index, 1);
 };
 
+const submitContest = async () => {
+    try {
+        const response = await fetch('/api/contests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...contestData.value,
+                rounds: rounds.value,
+                prizeAwards: prizeAwards.value,
+                otherBenefits: otherBenefits.value,
+            }),
+        });
+
+        if (response.ok) {
+    
+            router.push({ path: '/voting/contests' });
+        } else {
+            const errorData = await response.json();
+            alert(`Error creating contest: ${errorData.message || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error submitting contest:', error);
+        alert('Error creating contest. Please try again later.');
+    }
+};
 </script>
