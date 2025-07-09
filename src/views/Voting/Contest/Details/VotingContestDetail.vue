@@ -31,7 +31,7 @@
                     <div class="space-x-4 flex items-center">
                         <span class="font-bold text-gray-400">{{ i }}</span>
                         <div class="w-10 h-10 rounded overflow-hidden">
-                            <img class="w-full h-full object-cover" src="/assets/images/user-profile.jpeg" alt="Adam Ife" />
+                            <img class="w-full h-full object-cover" :src="contact.image" :alt="contact.name" />
                         </div>
                         <span class="font-bold">{{ contact.name }}</span>
                     </div>
