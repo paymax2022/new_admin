@@ -5,7 +5,11 @@ import vue from '@vitejs/plugin-vue';
 import vueDevTools from 'vite-plugin-vue-devtools';
 import path from 'path';
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+import { config } from 'dotenv';
 
+// Load environment variables from .env file
+config();
+console.log('VITE_API_TARGET:', process.env.VITE_API_TARGET);
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
