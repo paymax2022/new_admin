@@ -27,7 +27,7 @@ export default defineConfig({
     server: {
         proxy: {
             '/api': {
-                target: "https://www.spotlightng.com",
+                target: process.env.VITE_API_TARGET || "https://www.spotlightng.com",
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, '/api'),
             },
