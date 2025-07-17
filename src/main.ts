@@ -12,6 +12,8 @@ import { TippyPlugin } from 'tippy.vue';
 import { vMaska } from 'maska/vue';
 import Popper from 'vue3-popper';
 import { Chart, registerables } from 'chart.js';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 Chart.register(...registerables);
 
 const app = createApp(App);
@@ -46,5 +48,19 @@ app.directive('maska', vMaska);
 
 // popper
 app.component('Popper', Popper);
+
+app.use(Toast, {
+  position: 'top-right',
+  timeout: 4000,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  hideProgressBar: false,
+  closeButton: 'button',
+  icon: true,
+  rtl: false,
+});
 
 app.mount('#app');

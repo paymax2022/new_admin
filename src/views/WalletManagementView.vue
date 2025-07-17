@@ -1301,6 +1301,7 @@ import {
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import walletService from '@/services/walletService';
 
 // Register ChartJS components
 ChartJS.register(
@@ -1383,62 +1384,25 @@ const doughnutChartOptions = {
 }
 
 // Wallet Data
-const wallets = ref([
-  {
-    id: 'W0001',
-    user: 'John Doe',
-    type: 'Main',
-    currency: 'USD',
-    balance: '$5750.45',
-    status: 'active',
-    lastActivity: '2023-04-07'
-  },
-  {
-    id: 'W0002',
-    user: 'John Doe',
-    type: 'Savings',
-    currency: 'EUR',
-    balance: '€1750.45',
-    status: 'active',
-    lastActivity: '2023-04-07'
-  },
-  {
-    id: 'W0003',
-    user: 'John Doe',
-    type: 'Main',
-    currency: 'USD',
-    balance: '$2750.45',
-    status: 'frozen',
-    lastActivity: '2023-04-07'
-  },
-  {
-    id: 'W0004',
-    user: 'John Doe',
-    type: 'Bonus',
-    currency: 'USD',
-    balance: '$250.45',
-    status: 'active',
-    lastActivity: '2023-04-07'
-  },
-  {
-    id: 'W0005',
-    user: 'John Doe',
-    type: 'Main',
-    currency: 'USD',
-    balance: '$1750.45',
-    status: 'inactive',
-    lastActivity: '2023-04-07'
-  },
-  {
-    id: 'W0006',
-    user: 'John Doe',
-    type: 'Main',
-    currency: 'USD',
-    balance: '$750.45',
-    status: 'active',
-    lastActivity: '2023-04-07'
+const wallets = ref([])
+const walletCountByCurrency = ref([])
+const loadingWallets = ref(false)
+
+onMounted(async () => {
+  loadingWallets.value = true
+  try {
+    // Fetch active wallets
+    const res = await walletService.getActiveWallets()
+    wallets.value = res.data?.data || []
+    // Fetch wallet count by currency
+    const res2 = await walletService.getWalletCountByCurrency()
+    walletCountByCurrency.value = res2.data?.data || []
+  } catch (e) {
+    // Error handled globally by api.ts interceptor
+  } finally {
+    loadingWallets.value = false
   }
-])
+})
 
 // Dropdown states
 const showCurrencyDropdown = ref(false)

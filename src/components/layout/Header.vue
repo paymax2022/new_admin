@@ -643,6 +643,7 @@ import appSetting from '@/app-setting';
 
 import { useRoute } from 'vue-router';
 import { useAppStore } from '@/stores/index';
+import { useAuthStore } from '@/stores/auth';
 
 import IconMenu from '@/components/icon/icon-menu.vue';
 import IconSearch from '@/components/icon/icon-search.vue';
@@ -666,6 +667,7 @@ const showLogoutModal = ref(false);
 const showProfileModal = ref(false);
 const showSettingsModal = ref(false);
 const isDarkMode = ref(store.theme === 'dark');
+const authStore = useAuthStore();
 const profileData = ref({
     fullName: 'Cameron Williamson',
     email: 'anna.lawson@example.com',
@@ -779,8 +781,8 @@ const handleSignOutClick = (close: () => void) => {
 
 const handleLogout = () => {
     showLogoutModal.value = false;
-    // Add any logout logic here (clear tokens, etc.)
-    router.push('/auth/boxed-signin');
+    authStore.logout();
+    router.push({ name: 'login' });
 };
 
 const saveProfile = () => {
@@ -795,12 +797,12 @@ const saveSettings = () => {
 
 const handlePasswordReset = () => {
     showSettingsModal.value = false;
-    router.push('/auth/password-reset');
+    router.push({ name: 'passwordReset' });
 };
 
 const handleEnable2FA = () => {
     showSettingsModal.value = false;
-    router.push('/auth/2fa-setup');
+    router.push({ name: 'twoFactorSetup' });
 };
 
 const showEmailConfig = ref(false);

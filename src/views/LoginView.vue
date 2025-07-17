@@ -19,7 +19,7 @@
           <div class="mb-4">
             <label class="block text-gray-600 mb-2">User Name</label>
             <input
-              v-model="username"
+              v-model="email"
               type="email"
               placeholder="abc@xyzmail.com"
               class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -48,9 +48,8 @@
           </div>
 
           <button
-            type="button"
+            type="submit"
             class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-            @click="login"
           >
             Login
           </button>
@@ -62,23 +61,45 @@
 </template>
 
 <script setup>
+import { useToast } from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import authService from '@/services/authService';
+import { useAuthStore } from '@/stores/auth';
 
-const router = useRouter()
-const username = ref('')
-const password = ref('')
-const showPassword = ref(false)
+const router = useRouter();
+const toast = useToast();
+const email = ref('');
+const password = ref('');
+const showPassword = ref(false);
+const loading = ref(false);
+const authStore = useAuthStore();
 
-function handleLogin() {
-  console.log('Login attempt:', username.value, password.value)
-  // Add your login logic here (e.g., API call)
-}
+const handleLogin = async () => {
+  loading.value = true;
+  try {
+    const response = await authService.login({ email: email.value, password: password.value });
+    const access_token = response?.data?.data?.access_token;
+    if (access_token) {
+      authStore.login(access_token);
+      console.log('login successful');
+      toast.success('Login successful!');
+      router.push('/dashboard');
+    } else {
+      toast.error('No token received.');
+    }
+  } catch (error) {
+    toast.error(error?.response?.data?.message || 'Login failed');
+  } finally {
+    loading.value = false;
+  }
+};
 
-function login() {
-  // Add your login logic here if needed
-  router.push({ name: 'admin-view' })
-}
+// function login() {
+//   // Add your login logic here if needed
+//   router.push({ name: 'admin-view' })
+// }
 
 </script>
 
