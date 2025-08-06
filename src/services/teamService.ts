@@ -13,4 +13,8 @@ export default {
   verifyInvite(token: string) {
     return api.get('/api/v1/admin/team/verify', { params: { token } });
   },
+  // New APIs from the JSON specification
+  assignRoleToAdmin(data: { userId: string; roleId: string }) {
+    return api.put('/api/v1/admin/team/assign-role', data);
+  },
 }; 

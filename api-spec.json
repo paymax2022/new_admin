@@ -1,0 +1,2236 @@
+{
+  "v": 8,
+  "id": "cm6gjks2s00jchllai0r80fg9",
+  "name": "Admin Paymax",
+  "folders": [
+    {
+      "v": 8,
+      "id": "cmbzp49uc3a1d2triewzdg367",
+      "name": "team",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "invite",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/team/invite",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\",\n  \"roleId\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "resend invite",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/team/invite-resend",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "setup team member",
+          "method": "PUT",
+          "endpoint": "http://localhost:8000/api/v1/admin/team/setup",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"firstName\": \"nnamsok@gmail.com\",\n  \"lastName\": \"\",\n  \"password\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "verify invite",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/team/verify",
+          "params": [
+            {
+              "key": "token",
+              "value": "9000",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "assign role to admin",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/team/assign-role",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUxNjU5MjA5LCJpYXQiOjE3NDk5MzEyMDl9.bFllX-zvPiY1Hk8OAN_LrCjlVRX4qnO2agLiTetjyME",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"roleId\": \"\",\n  \"userId\": \"\"\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqt_27d12cdb-e448-4a78-a249-f6b85754f954"
+    },
+    {
+      "v": 8,
+      "id": "cmbzpkzlh35ln13phny62n1k2",
+      "name": "auth",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "login",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/login",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"admin1@paymax.ng\",\n  \"password\": \"Password123@\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "forget password",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/forgot-password",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "check otp",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/otp/check",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\",\n  \"otp\": \"1234\",\n  \"purpose\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "send otp",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/otp/email",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\",\n  \"purpose\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "reset password",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/reset-password",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"nnamsok@gmail.com\",\n  \"otp\": \"1234\",\n  \"newPassword\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "update admin",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/update",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"firstname\": \"string\",\n  \"lastname\": \"string\",\n  \"use2fa\": false\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "admin profile",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/me",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"firstname\": \"string\",\n  \"lastname\": \"string\",\n  \"use2fa\": false\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "verify 2fa login",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/auth/verify/login",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n   \"email\": \"nnamsok@gmail.com\",\n  \"otp\": \"1234\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqt_b3883ada-a530-4c24-8f50-6bd48c1b8335"
+    },
+    {
+      "v": 8,
+      "id": "cmbzpqpmu3a1o2triyxvfg0k8",
+      "name": "wallets",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "Active wallets",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/active",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTE2NTM3NzUsImlhdCI6MTc0OTkyNTc3NX0.GxNJ8IaXGbLoqhpi_Bz7zGdH7yZI0DkIGh6zfSnGLBg",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTE2NTM3NzUsImlhdCI6MTc0OTkyNTc3NX0.GxNJ8IaXGbLoqhpi_Bz7zGdH7yZI0DkIGh6zfSnGLBg",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Wallet distribution",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/currency-count",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTE2NTM3NzUsImlhdCI6MTc0OTkyNTc3NX0.GxNJ8IaXGbLoqhpi_Bz7zGdH7yZI0DkIGh6zfSnGLBg",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTE2NTM3NzUsImlhdCI6MTc0OTkyNTc3NX0.GxNJ8IaXGbLoqhpi_Bz7zGdH7yZI0DkIGh6zfSnGLBg",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Adjust wallet balance",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/adjust",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUzNDU1NTQyLCJpYXQiOjE3NTE3Mjc1NDJ9.b_iyUaw8xPokJWT-jalTiySokHSrS0iZM0NaYp7-jIA",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUzNDU1NTQyLCJpYXQiOjE3NTE3Mjc1NDJ9.b_iyUaw8xPokJWT-jalTiySokHSrS0iZM0NaYp7-jIA",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"67d35c1d4e4ed4b3d371fe5c\",\n  \"amount\": 1000,\n  \"type\": \"add\",\n  \"reason\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Freeze/unfreeze wallet",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/update",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUzNDU1NTQyLCJpYXQiOjE3NTE3Mjc1NDJ9.b_iyUaw8xPokJWT-jalTiySokHSrS0iZM0NaYp7-jIA",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3ZjNlYzMzMjc4YzVmZjYzMGZkMWEyYyIsIlVzZXJUeXBlIjoiTUVSQ0hBTlQiLCJJc01lcmNoYW50Ijp0cnVlLCJNZXJjaGFudElkIjoiNjgwN2QzNzliNGZhNzgxYzNhNTZkNGRjIiwiZXhwIjoxNzUzNDU1NTQyLCJpYXQiOjE3NTE3Mjc1NDJ9.b_iyUaw8xPokJWT-jalTiySokHSrS0iZM0NaYp7-jIA",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"67d35c1d4e4ed4b3d371fe5c\",\n  \"status\": \"active\" //active or frozen or inactive\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Fetch user wallets ",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/user/6875e650c5ec54bddba01916",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"67d35c1d4e4ed4b3d371fe5c\",\n  \"amount\": 1000,\n  \"type\": \"add\",\n  \"reason\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Fetch all wallets",
+          "method": "GET",
+          "endpoint": "http://localhost:8000/api/v1/admin/wallets",
+          "params": [
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "userId",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "tierid",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": "asc or desc"
+            },
+            {
+              "key": "startDate",
+              "value": "2000-01-01",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "endDate",
+              "value": "2001-02-01",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "search",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "active",
+              "active": true,
+              "description": "active,inactive, frozen"
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"67d35c1d4e4ed4b3d371fe5c\",\n  \"amount\": 1000,\n  \"type\": \"add\",\n  \"reason\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Fetch wallet by ID",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/6875e67fc5ec54bddba01917",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Wallet management",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/wallets/recent",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_e4111e2a-2524-4584-9a7f-24b7af283eb6"
+    },
+    {
+      "v": 8,
+      "id": "cmbzptcmi3a1s2tri50ro2yp7",
+      "name": "transactions",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "transactions",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/transactions",
+          "params": [
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": "asc or desc"
+            },
+            {
+              "key": "entry",
+              "value": "",
+              "active": true,
+              "description": "DEBIT or CREDIT"
+            },
+            {
+              "key": "search",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "category",
+              "value": "null",
+              "active": true,
+              "description": "airtime,electricity,data,multi_currency, tv"
+            },
+            {
+              "key": "receiver",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "currency",
+              "value": "null",
+              "active": true,
+              "description": "NGN, USD"
+            },
+            {
+              "key": "userId",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "SUCCESSFUL",
+              "active": true,
+              "description": "SUCCESSFUL,PENDING,FAILED"
+            },
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "start_date",
+              "value": "2001-01-01",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "end_date",
+              "value": "2001-02-01",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "transaction",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/transactions/684d61664552bcae0b9fea29",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "transaction total",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/transactions/total",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTA0MDA2NjcsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NDgwMDA2NjcsInNlc3Npb25SZWYiOiIyODhlOTViMzc2NDZlODI4OCJ9.Xaqo9KnpNZBiaqvKj00wYXx3Q4n7X_8suFRnReF9yZQ; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f653f7de-1ed2-4509-8948-12dbcc4e27ec=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTAxOTgzNjYsImlkIjoiZjY1M2Y3ZGUtMWVkMi00NTA5LTg5NDgtMTJkYmNjNGUyN2VjIiwib3JpZ19pYXQiOjE3NTAxMTE5NjZ9.H1UeTRQBNOl3wjDbLo1A_8SAKUuYrwp3fIR4M3BS1fQ; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_5f49f398-6125-4df8-8710-a84d20e4af5c"
+    },
+    {
+      "v": 8,
+      "id": "cmd4qm2ln31lnvw1ay2auwbgw",
+      "name": "school",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "dashboard",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/school/dashboard",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Get school per month",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/school/monthly-count",
+          "params": [
+            {
+              "key": "year",
+              "value": "2025",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 4900bf52-4528-4052-9d07-cf6b781bca2a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMwMDQxOTcsImlkIjoiNDkwMGJmNTItNDUyOC00MDUyLTlkMDctY2Y2Yjc4MWJjYTJhIiwib3JpZ19pYXQiOjE3MzE0MDQxOTd9.01zd7O8tXvrl7XWf7GYTpy2GNgRoO0HqvPRTROxH3SM; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Get Monthly revenue",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/school/revenue",
+          "params": [
+            {
+              "key": "year",
+              "value": "2025",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQzMTkyMDUsImlhdCI6MTc1MjU5MTIwNX0.s8yiBHHJf24n61tEV_ELqiQbcEQ8AcOAGhmkc_JSjKo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_cc37d001-fe8d-4251-ae2d-7ed8dfb15ed3"
+    },
+    {
+      "v": 8,
+      "id": "cmdbvb4tz03c3109m2bnn7fe9",
+      "name": "users",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "Create user",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/add",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"email\": \"joe@gmail.com\",\n  \"firstname\": \"string\",\n  \"lastname\": \"string\",\n  \"phonenumber\": \"08036014519\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "user registrations",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/registrations",
+          "params": [
+            {
+              "key": "year",
+              "value": "2025",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "ACTIVE",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "fetch user by id",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/633312842ea57bc530eac2cb",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Count user by year and status",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/count",
+          "params": [
+            {
+              "key": "year",
+              "value": "2025",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "BLOCKED",
+              "active": true,
+              "description": "BLOCKED,UNVERIFIED,ACTIVE,PENDING,DEACTIVATED"
+            }
+          ],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Update user",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/users/customer/update",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"firstname\": \"string\",\n  \"lastname\": \"string\",\n  \"use2fa\": false,\n  \"userId\": \"\",\n  \"status\": \"\",\n  \"role\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "fetch users",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/users",
+          "params": [
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "search",
+              "value": "user",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "BLOCKED",
+              "active": true,
+              "description": "BLOCKED,UNVERIFIED,ACTIVE,DEACTIVATED,PENDING"
+            },
+            {
+              "key": "startDate",
+              "value": "2000-01-01",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "endDate",
+              "value": "2000-02-01",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "role",
+              "value": "",
+              "active": true,
+              "description": "SYSTEM_ADMIN, USER, ADMIN"
+            },
+            {
+              "key": "userType",
+              "value": "",
+              "active": true,
+              "description": "CUSTOMER,MERCHANT,DEVELOPER,AGENT,PARTNER,HEALTHCARE,AGRICULTURE,EDUCATION,REAL ESTATE,RESTAURANTS,LOGISTICS,TRANSPORTATION,EVENTS,ADMIN,SYS_ADMIN,CONTEST,"
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "User referrals",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/users/1234555",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Referrals summary",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/summary/1234555",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_7fc62d61-ef7d-4095-8eba-432d0ea9afee"
+    },
+    {
+      "v": 8,
+      "id": "cmdbvnq8b1qlr8lh3ajwugda2",
+      "name": "roles and permissions",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "create role",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles/create",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"Admin\",\n  \"permissionIds\": [\n    \"687d034a609b3cb35daf16be\"\n  ]\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "fetch roles",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles",
+          "params": [
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "search",
+              "value": "null",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "permissions",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/permissions",
+          "params": [
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "search",
+              "value": "null",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "fetch role by ID",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles/687d0e3c679c28ff44a3faa5",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "fetch permission by ID",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/admin/permissions/687d034a609b3cb35daf16be",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Add permission to role",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles/add-permission",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3MjkwNDIsImlhdCI6MTc1MzAwMTA0Mn0.MFYBXGCMd6hJLtYyV4EiByFi7qdFxQRxlYH3lijrfRU",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"roleId\": \"\",\n  \"permissionIds\": []\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "edit role",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles/update",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3NjI2MTIsImlhdCI6MTc1MzAzNDYxMn0.uQtmsiI9ExSEwitap4vVO1k9b8zrPwOVOglPyb8xfMk",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3NjI2MTIsImlhdCI6MTc1MzAzNDYxMn0.uQtmsiI9ExSEwitap4vVO1k9b8zrPwOVOglPyb8xfMk",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"687d0e3c679c28ff44a3faa5\",\n  \"name\": \"\",\n  \"description\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "delete role ",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>>/api/v1/admin/roles/455677777",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3NjI2MTIsImlhdCI6MTc1MzAzNDYxMn0.uQtmsiI9ExSEwitap4vVO1k9b8zrPwOVOglPyb8xfMk",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; dd86a950-0845-4895-9813-fe0f7541730b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTMxNzE4NjgsImlkIjoiZGQ4NmE5NTAtMDg0NS00ODk1LTk4MTMtZmUwZjc1NDE3MzBiIiwib3JpZ19pYXQiOjE3MzE1NzE4Njh9.Zg9FRb1-zZsxskFtl9G88RWmiiX_lv6MjOSmO2xNwoI; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImFkbWluMUBwYXltYXgubmciLCJOYW1lIjoiIiwiVXNlcklkIjoiNjg0YTg5ODRhMTI5ZDBlOTJjZjAyMmNhIiwiVXNlclR5cGUiOiJTWVNfQURNSU4iLCJJc01lcmNoYW50IjpudWxsLCJNZXJjaGFudElkIjpudWxsLCJleHAiOjE3NTQ3NjI2MTIsImlhdCI6MTc1MzAzNDYxMn0.uQtmsiI9ExSEwitap4vVO1k9b8zrPwOVOglPyb8xfMk",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"id\": \"687d0e3c679c28ff44a3faa5\",\n  \"name\": \"\",\n  \"description\": \"\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_121c396c-648b-4710-a455-8bed1120452c"
+    },
+    {
+      "v": 8,
+      "id": "cmdbw7rio03ck109m325ah68s",
+      "name": "currencies",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "update currency",
+          "method": "PATCH",
+          "endpoint": "<<baseurl>>/api/v1/currencies",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3YWI3YTlmMjA0NmYxMjNjMmY2NGYyZCIsIlVzZXJUeXBlIjoiQ1VTVE9NRVIiLCJleHAiOjE3NDM1MTE1NDAsImlhdCI6MTc0MTc4MzU0MH0.hQdXrOKU4xpCGj2YjIH8QmCm__F1YtfY3NBZrZNa7bA",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"name\": \"United States Of America Dollar\", //optional\n  \"id\": \"67d35d29ad62e0af8a98d7f5\",\n  \"status\": false, //optional\n   \"rateToNGN\": 1000\n}\n"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Get currencies",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/currencies/list",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<auth-token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {
+            "Get currencies": {
+              "name": "Get currencies",
+              "originalRequest": {
+                "v": "5",
+                "name": "Get currencies",
+                "method": "GET",
+                "endpoint": "<<baseurl>>/api/v1/currencies",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "contentType": null,
+                  "body": null
+                },
+                "auth": {
+                  "authType": "bearer",
+                  "token": "<<token>>",
+                  "authActive": true
+                },
+                "requestVariables": []
+              },
+              "status": "OK",
+              "code": 200,
+              "headers": [
+                {
+                  "key": "content-length",
+                  "value": "183"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\"data\":[{\"id\":\"67c814ef1747eb0b258d2536\",\"active\":true,\"created_at\":\"2025-03-05T09:10:07.998Z\",\"updated_at\":\"2025-03-05T09:10:07.998Z\",\"name\":\"Naira\",\"symbol\":\"₦\",\"code\":\"NGN\",\"country\":\"Nigeria\"}],\"message\":\"Currencies retrieved successfully\",\"ok\":true}"
+            },
+            "Get currencies (ALL)": {
+              "name": "Get currencies (ALL)",
+              "originalRequest": {
+                "v": "5",
+                "name": "Get currencies",
+                "method": "GET",
+                "endpoint": "<<baseurl>>/api/v1/currencies",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "contentType": null,
+                  "body": null
+                },
+                "auth": {
+                  "authType": "bearer",
+                  "token": "<<auth-token>>",
+                  "authActive": true
+                },
+                "requestVariables": []
+              },
+              "status": "OK",
+              "code": 200,
+              "headers": [
+                {
+                  "key": "content-length",
+                  "value": "259"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\"data\":[{\"id\":\"67c814ef1747eb0b258d2536\",\"active\":true,\"created_at\":\"2025-03-05T09:10:07.998Z\",\"updated_at\":\"2025-03-05T09:10:07.998Z\",\"name\":\"Naira\",\"symbol\":\"₦\",\"code\":\"NGN\",\"country\":\"Nigeria\"},{\"id\":\"681cc0d0cd0a6f597df4e5a8\",\"active\":true,\"created_at\":\"2025-05-08T14:33:52.933Z\",\"updated_at\":\"2025-05-08T14:33:52.933Z\",\"name\":\"United States Of America Dollar\",\"symbol\":\"$\",\"code\":\"USD\"}],\"message\":\"Currencies retrieved successfully\",\"ok\":true}"
+            }
+          }
+        },
+        {
+          "v": "14",
+          "name": "create currency",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/currencies",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6Im5uYW1zb2tAZ21haWwuY29tIiwiTmFtZSI6InN0cmluZyIsIlVzZXJJZCI6IjY3YWI3YTlmMjA0NmYxMjNjMmY2NGYyZCIsIlVzZXJUeXBlIjoiQ1VTVE9NRVIiLCJleHAiOjE3NDM1MTE1NDAsImlhdCI6MTc0MTc4MzU0MH0.hQdXrOKU4xpCGj2YjIH8QmCm__F1YtfY3NBZrZNa7bA",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"symbol\": \"USD\",\n  \"name\": \"United States Of America Dollar\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Get currency",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/currencies/admin/67c814ef1747eb0b258d2536",
+          "params": [],
+          "headers": [],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "<<token>>",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {
+            "Get currency": {
+              "name": "Get currency",
+              "originalRequest": {
+                "v": "5",
+                "name": "Get currency",
+                "method": "GET",
+                "endpoint": "<<baseurl>>/api/v1/currencies/67c814ef1747eb0b258d2536",
+                "headers": [],
+                "params": [],
+                "body": {
+                  "contentType": null,
+                  "body": null
+                },
+                "auth": {
+                  "authType": "bearer",
+                  "token": "<<token>>",
+                  "authActive": true
+                },
+                "requestVariables": []
+              },
+              "status": "OK",
+              "code": 200,
+              "headers": [
+                {
+                  "key": "content-length",
+                  "value": "182"
+                },
+                {
+                  "key": "content-type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\"data\":{\"id\":\"67c814ef1747eb0b258d2536\",\"active\":true,\"created_at\":\"2025-03-05T09:10:07.998Z\",\"updated_at\":\"2025-03-05T09:10:07.998Z\",\"name\":\"Naira\",\"symbol\":\"₦\",\"code\":\"NGN\",\"country\":\"Nigeria\"},\"message\":\"Currency retrieved successfully\",\"ok\":true}"
+            }
+          }
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_4c9b49b6-809b-4d5f-92c8-4781a04c6792"
+    },
+    {
+      "v": 8,
+      "id": "cmdhpzt290orip0pmp3icdip5",
+      "name": "commission",
+      "folders": [],
+      "requests": [
+        {
+          "v": "14",
+          "name": "Commission setting",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions/settings/681cdae0042a826769cdb26c",
+          "params": [],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Commission Settings",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions/settings",
+          "params": [
+            {
+              "key": "page",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "start_date",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "end_date",
+              "value": "null",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Commissions",
+          "method": "GET",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions",
+          "params": [
+            {
+              "key": "page",
+              "value": "1",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "limit",
+              "value": "10",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "start_date",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "end_date",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "sort",
+              "value": "asc",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "user_id",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "transaction_id",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "status",
+              "value": "null",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "settlement_status",
+              "value": "null",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "headers": [
+            {
+              "key": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+              "active": true,
+              "description": ""
+            },
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "bearer",
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6InRlc3Q1MDBAZ3JyLmxhIiwiTmFtZSI6IiIsIlVzZXJJZCI6IjY4ODBmMjQ1YmU3NzNkM2U2MGRmMGJlOCIsIlVzZXJUeXBlIjoiU1lTX0FETUlOIiwiSXNNZXJjaGFudCI6bnVsbCwiTWVyY2hhbnRJZCI6bnVsbCwiZXhwIjoxNzU1MDA5OTQ5LCJpYXQiOjE3NTMyODE5NDl9.nxCosAUmcxIGR47iH9n_OZaybsuf5mpZCG5_0cIbVeo",
+            "authActive": true
+          },
+          "body": {
+            "contentType": null,
+            "body": null
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Update commission settings",
+          "method": "PUT",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions/update",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"commissionID\": \"1234567890abcdef\",\n  \"admin_percentage\": 10.5,\n  \"referrer_percentage\": 5,\n  \"partner_percentage\": 7.5,\n  \"developer_percentage\": 2.5,\n  \"agent_percentage\": 3,\n  \"commission_percentage\": 15\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Single commission payout",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions/pay",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"commissionID\": \"1234567890abcdef\"\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        },
+        {
+          "v": "14",
+          "name": "Bulk commission payout",
+          "method": "POST",
+          "endpoint": "<<baseurl>>/api/v1/referrals/admin/commissions/pay/bulk",
+          "params": [],
+          "headers": [
+            {
+              "key": "Cookie",
+              "value": "0371bb1e-d07a-4ec9-ba46-2d14da95e29c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI1NzQyMTMsImlkIjoiMDM3MWJiMWUtZDA3YS00ZWM5LWJhNDYtMmQxNGRhOTVlMjljIiwib3JpZ19pYXQiOjE3NTAxNzQyMTMsInNlc3Npb25SZWYiOiIxZjlhZjk3OWMyNTQ1ZWNiYSJ9.5kcX8c6VlbpgTZMuCh6gFsEGyKpJC_fcAQMoVmG9ePg; 86b2e373-b8c6-4146-a573-75c55b48c427=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI2MzM5NjEsImlkIjoiODZiMmUzNzMtYjhjNi00MTQ2LWE1NzMtNzVjNTViNDhjNDI3Iiwib3JpZ19pYXQiOjE3NTAyMzM5NjEsInNlc3Npb25SZWYiOiIzODhhM2JkYzc3YzYxNGUxNSJ9.4SelSqoI1CVIWR-pNmYexy4Rw8B7noB3Z7EXsEw-46o; acec2d87-ced9-4fa4-945b-0bbfd52f8d6c=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTM4MzcsImlkIjoiYWNlYzJkODctY2VkOS00ZmE0LTk0NWItMGJiZmQ1MmY4ZDZjIiwib3JpZ19pYXQiOjE3MzM0MTM4Mzd9.9E8WO7w-dItLxDV-ElgyjR7xzoPcLEzZGCUD_jlqtVk; cc80efe2-2b14-4484-875f-2aaf9278b722=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwNTI0NjYwMDUsImlkIjoiY2M4MGVmZTItMmIxNC00NDg0LTg3NWYtMmFhZjkyNzhiNzIyIiwib3JpZ19pYXQiOjE3NTAwNjYwMDUsInNlc3Npb25SZWYiOiJjZmJlM2I2NTViNzkzODQzOSJ9.8KPvx19qjbO48XQzCiCrbv-s0UCjEij9e8Y8mWX0d28; d1bd2231-045f-4b6b-9344-6ef794add3d5=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU2OTMxODcsImlkIjoiZDFiZDIyMzEtMDQ1Zi00YjZiLTkzNDQtNmVmNzk0YWRkM2Q1Iiwib3JpZ19pYXQiOjE3MzMyOTMxODd9.kWRo2RfrW6TP7mrnZThsBki5DrfRlikw8TxNQniKtHM; f784d71b-3a60-4f2f-8ca4-34d9246670b0=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzk3NzczMjQsImlkIjoiZjc4NGQ3MWItM2E2MC00ZjJmLThjYTQtMzRkOTI0NjY3MGIwIiwib3JpZ19pYXQiOjE3MzczNzczMjQsInNlc3Npb25SZWYiOiJiZmMyMmRjOGRjOTQ4ODE5OSJ9.5Hg3zt103yOI_u8DBET5bge6B7RCB2pgNiwo5wX4AF0; f9d98780-053a-4241-ba0a-1f363d07887b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjIwMzU4MTU5MDgsImlkIjoiZjlkOTg3ODAtMDUzYS00MjQxLWJhMGEtMWYzNjNkMDc4ODdiIiwib3JpZ19pYXQiOjE3MzM0MTU5MDh9.I5VoCiXPLBSrP8Uo2mLTFuh8U4vdygdVIB9OqKfijNo",
+              "active": true,
+              "description": ""
+            }
+          ],
+          "preRequestScript": "",
+          "testScript": "",
+          "auth": {
+            "authType": "inherit",
+            "authActive": true
+          },
+          "body": {
+            "contentType": "application/json",
+            "body": "{\n  \"commission_ids\": [\"1234567890abcdef\"]\n}"
+          },
+          "requestVariables": [],
+          "responses": {}
+        }
+      ],
+      "auth": {
+        "authType": "inherit",
+        "authActive": true
+      },
+      "headers": [],
+      "_ref_id": "coll_mdlxwpqu_ab994740-3372-452d-8755-cc01e8e590dc"
+    }
+  ],
+  "requests": [],
+  "auth": {
+    "authType": "inherit",
+    "authActive": true
+  },
+  "headers": [],
+  "_ref_id": "coll_mdlxwpqu_a2ea0108-88ee-4ab3-af86-23467fab272b"
+}

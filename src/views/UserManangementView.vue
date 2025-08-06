@@ -79,10 +79,25 @@
 
       <!-- Pagination -->
       <div class="flex justify-between items-center px-4 py-3 border-t text-sm dark:text-white">
-        <span>Showing {{ startIndex + 1 }} - {{ endIndex }} of {{ filteredUsers.length }}</span>
+        <span v-if="isLoading">Loading users...</span>
+        <span v-else-if="totalUsers === 0">No users found</span>
+        <span v-else>Showing {{ totalUsers > 0 ? startIndex + 1 : 0 }} - {{ endIndex }} of {{ totalUsers }}</span>
         <div class="flex gap-2">
-          <button class="btn" :disabled="currentPage === 1" @click="currentPage--">Previous</button>
-          <button class="btn" :disabled="endIndex >= filteredUsers.length" @click="currentPage++">Next</button>
+          <button 
+            class="btn" 
+            :disabled="!hasPreviousPage || isLoading" 
+            @click="currentPage = Math.max(1, currentPage - 1); fetchUsers()"
+          >
+            Previous
+          </button>
+          <span class="flex items-center px-2">{{ currentPage }} / {{ Math.max(1, totalPages) }}</span>
+          <button 
+            class="btn" 
+            :disabled="!hasNextPage || isLoading" 
+            @click="currentPage = Math.min(totalPages || Infinity, currentPage + 1); fetchUsers()"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
@@ -128,20 +143,32 @@
                 </p>
 
                 <form @submit.prevent="handleAddUser" class="space-y-4">
-                  <!-- Full Name -->
+                  <!-- First Name -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Full Name
+                      First Name
                     </label>
                     <input
                       type="text"
-                      v-model="newUser.fullName"
+                      v-model="newUser.firstname"
                       class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="Enter Full Name"
+                      placeholder="Enter First Name"
                       required
                     />
                   </div>
-
+                  <!-- Last Name -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      v-model="newUser.lastname"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Enter Last Name"
+                      required
+                    />
+                  </div>
                   <!-- Email -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -155,7 +182,19 @@
                       required
                     />
                   </div>
-
+                  <!-- Phone Number -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      v-model="newUser.phonenumber"
+                      class="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                      placeholder="Enter Phone Number"
+                      required
+                    />
+                  </div>
                   <!-- Role -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -254,13 +293,26 @@
                     <div class="col-span-4">
                       <!-- User Profile Card -->
                       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 text-center border dark:border-gray-700">
-                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div v-if="selectedUser?.photo" class="w-20 h-20 mx-auto mb-4">
+                          <img :src="selectedUser.photo" alt="User profile" class="w-full h-full object-cover rounded-full" />
+                        </div>
+                        <div v-else class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                           <icon-user class="w-12 h-12 text-gray-500 dark:text-gray-400" />
                         </div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedUser?.name }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                          {{ selectedUser?.first_name || '' }} {{ selectedUser?.lastname || '' }}
+                        </h3>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">{{ selectedUser?.email }}</p>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-600 text-white">
-                          Active
+                        <span 
+                          class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                          :class="{
+                            'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': selectedUser?.status === 'ACTIVE',
+                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': selectedUser?.status === 'PENDING',
+                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': selectedUser?.status === 'BLOCKED' || selectedUser?.status === 'DEACTIVATED',
+                            'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400': selectedUser?.status === 'UNVERIFIED'
+                          }
+                        ">
+                          {{ selectedUser?.status || 'Unknown' }}
                         </span>
                       </div>
 
@@ -273,36 +325,142 @@
                             <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.id }}</span>
                           </div>
                           <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">User Type:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.userType || 'N/A' }}</span>
+                          </div>
+                          <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Role:</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.role }}</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.role || 'N/A' }}</span>
+                          </div>
+                          <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Phone:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.phone || 'N/A' }}</span>
                           </div>
                           <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Registered:</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedUser?.registration }}</span>
-                          </div>
-                          <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">KYC Status:</span>
-                            <span class="text-sm font-medium text-green-600 flex items-center">
-                              <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                              Verified
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                              {{ selectedUser?.createdAt ? new Date(selectedUser.createdAt).toLocaleString() : 'N/A' }}
                             </span>
                           </div>
                           <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Referrals:</span>
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">12</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Last Login:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                              {{ selectedUser?.lastlogin && selectedUser.lastlogin !== '0001-01-01T00:00:00Z' ? new Date(selectedUser.lastlogin).toLocaleString() : 'Never' }}
+                            </span>
                           </div>
                           <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Wallet Balance:</span>
-                            <span class="text-sm font-bold text-gray-900 dark:text-white">$1,250.45</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">2FA Enabled:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                              {{ selectedUser?.use2fa ? 'Yes' : 'No' }}
+                            </span>
+                          </div>
+                          <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Referred By:</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                              {{ selectedUser?.referred_by && selectedUser.referred_by !== '000000000000000000000000' ? selectedUser.referred_by : 'None' }}
+                            </span>
                           </div>
                         </div>
                       </div>
 
+                      <!-- Addresses -->
+                      <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 border dark:border-gray-700">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Addresses</h4>
+                        
+                        <!-- Shipping Address -->
+                        <div v-if="selectedUser?.shippingAddress" class="mb-4">
+                          <h5 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Shipping Address</h5>
+                          <div class="text-sm text-gray-600 dark:text-gray-400">
+                            <p v-if="selectedUser.shippingAddress.streetName || selectedUser.shippingAddress.houseNumber">
+                              {{ selectedUser.shippingAddress.streetName }} {{ selectedUser.shippingAddress.houseNumber }}
+                              {{ selectedUser.shippingAddress.apartmentNumber ? ', Apt ' + selectedUser.shippingAddress.apartmentNumber : '' }}
+                            </p>
+                            <p v-if="selectedUser.shippingAddress.city || selectedUser.shippingAddress.state || selectedUser.shippingAddress.postalCode">
+                              {{ selectedUser.shippingAddress.city }}, {{ selectedUser.shippingAddress.state }} {{ selectedUser.shippingAddress.postalCode }}
+                            </p>
+                            <p v-if="selectedUser.shippingAddress.country">{{ selectedUser.shippingAddress.country }}</p>
+                            <p v-if="!selectedUser.shippingAddress.streetName && !selectedUser.shippingAddress.city && !selectedUser.shippingAddress.country">
+                              No shipping address provided
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <!-- Home Address -->
+                        <div v-if="selectedUser?.homeAddress" class="mb-4">
+                          <h5 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Home Address</h5>
+                          <div class="text-sm text-gray-600 dark:text-gray-400">
+                            <p v-if="selectedUser.homeAddress.streetName || selectedUser.homeAddress.houseNumber">
+                              {{ selectedUser.homeAddress.streetName }} {{ selectedUser.homeAddress.houseNumber }}
+                              {{ selectedUser.homeAddress.apartmentNumber ? ', Apt ' + selectedUser.homeAddress.apartmentNumber : '' }}
+                            </p>
+                            <p v-if="selectedUser.homeAddress.city || selectedUser.homeAddress.state || selectedUser.homeAddress.postalCode">
+                              {{ selectedUser.homeAddress.city }}, {{ selectedUser.homeAddress.state }} {{ selectedUser.homeAddress.postalCode }}
+                            </p>
+                            <p v-if="selectedUser.homeAddress.country">{{ selectedUser.homeAddress.country }}</p>
+                            <p v-if="!selectedUser.homeAddress.streetName && !selectedUser.homeAddress.city && !selectedUser.homeAddress.country">
+                              No home address provided
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <!-- Work Address -->
+                        <div v-if="selectedUser?.workAddress" class="mb-4">
+                          <h5 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">Work Address</h5>
+                          <div class="text-sm text-gray-600 dark:text-gray-400">
+                            <p v-if="selectedUser.workAddress.streetName || selectedUser.workAddress.houseNumber">
+                              {{ selectedUser.workAddress.streetName }} {{ selectedUser.workAddress.houseNumber }}
+                              {{ selectedUser.workAddress.apartmentNumber ? ', Apt ' + selectedUser.workAddress.apartmentNumber : '' }}
+                            </p>
+                            <p v-if="selectedUser.workAddress.city || selectedUser.workAddress.state || selectedUser.workAddress.postalCode">
+                              {{ selectedUser.workAddress.city }}, {{ selectedUser.workAddress.state }} {{ selectedUser.workAddress.postalCode }}
+                            </p>
+                            <p v-if="selectedUser.workAddress.country">{{ selectedUser.workAddress.country }}</p>
+                            <p v-if="!selectedUser.workAddress.streetName && !selectedUser.workAddress.city && !selectedUser.workAddress.country">
+                              No work address provided
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Notification Preferences -->
+                      <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg p-6 border dark:border-gray-700">
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Notification Preferences</h4>
+                        <div class="grid grid-cols-3 gap-4">
+                          <div class="flex items-center">
+                            <div class="w-4 h-4 mr-2">
+                              <div class="w-full h-full rounded-full" :class="{
+                                'bg-green-500': selectedUser?.notificationPreferences?.email,
+                                'bg-gray-300 dark:bg-gray-600': !selectedUser?.notificationPreferences?.email
+                              }"></div>
+                            </div>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">Email</span>
+                          </div>
+                          <div class="flex items-center">
+                            <div class="w-4 h-4 mr-2">
+                              <div class="w-full h-full rounded-full" :class="{
+                                'bg-green-500': selectedUser?.notificationPreferences?.inApp,
+                                'bg-gray-300 dark:bg-gray-600': !selectedUser?.notificationPreferences?.inApp
+                              }"></div>
+                            </div>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">In-App</span>
+                          </div>
+                          <div class="flex items-center">
+                            <div class="w-4 h-4 mr-2">
+                              <div class="w-full h-full rounded-full" :class="{
+                                'bg-green-500': selectedUser?.notificationPreferences?.sms,
+                                'bg-gray-300 dark:bg-gray-600': !selectedUser?.notificationPreferences?.sms
+                              }"></div>
+                            </div>
+                            <span class="text-sm text-gray-700 dark:text-gray-300">SMS</span>
+                          </div>
+                        </div>
+                      </div>
+                      
                       <!-- Quick Actions -->
                       <div class="mt-6">
                         <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">Quick Actions</h4>
                         <div class="grid grid-cols-2 gap-3">
-                          <button class="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                          <button @click="handleEditUser(selectedUser)" class="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <icon-pencil class="w-4 h-4" />
                             Edit
                           </button>
@@ -310,13 +468,13 @@
                             <icon-wallet class="w-4 h-4" />
                             Wallet
                           </button>
-                          <button class="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                          <button @click="handleChangeRole(selectedUser)" class="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <icon-user-circle class="w-4 h-4" />
                             Role
                           </button>
                           <button class="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                             <icon-ban class="w-4 h-4" />
-                            Suspend
+                            {{ selectedUser?.status === 'ACTIVE' ? 'Suspend' : 'Activate' }}
                           </button>
                         </div>
                       </div>
@@ -882,11 +1040,11 @@
         <TransitionChild
           as="template"
           enter="duration-300 ease-out"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
+          enter-from="opacity-0 scale-95"
+          enter-to="opacity-100 scale-100"
           leave="duration-200 ease-in"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
+          leave-from="opacity-100 scale-100"
+          leave-to="opacity-0 scale-95"
         >
           <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
         </TransitionChild>
@@ -945,7 +1103,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import DropdownFilter from '@/components/DropdownFilter.vue'
@@ -957,7 +1115,13 @@ import IconWallet from '@/components/icon/icon-wallet.vue'
 import IconUserCircle from '@/components/icon/icon-user-circle.vue'
 import IconBan from '@/components/icon/icon-ban.vue'
 import IconInfoCircle from '@/components/icon/icon-info-circle.vue'
+import userService from '@/services/userService'
+import { useToast } from 'vue-toastification'
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
+const toast = useToast()
 const search = ref('')
 const selectedStatus = ref('All Status')
 const selectedRole = ref('All Roles')
@@ -984,48 +1148,216 @@ const assignRolesData = ref({
 })
 
 const newUser = ref({
-  fullName: '',
+  firstname: '',
+  lastname: '',
   email: '',
-  role: '',
-  status: ''
+  phonenumber: '',
+  role: ''
 })
 
 const statuses = ['All Status', 'Active', 'Inactive', 'Suspended']
 const roles = ['All Roles', 'Admin', 'Agent', 'Customer']
 
-const generateUsers = () => {
-  const dummy = []
-  for (let i = 1; i <= 100; i++) {
-    dummy.push({
-      id: `U${1000 + i}`,
-      name: `User ${i}`,
-      email: `user${i}@example.com`,
-      role: roles[i % roles.length] || 'Customer',
-      status: statuses[i % statuses.length] || 'Active',
-      registration: `2023-01-${(i % 28 + 1).toString().padStart(2, '0')}`,
-    })
-  }
-  return dummy
+// API data and loading states
+const users = ref([])
+const isLoading = ref(true)
+const totalUsers = ref(0)
+const totalPages = ref(0)
+const apiError = ref(false)
+
+// Mock data for fallback when API fails
+const getMockUsers = () => {
+  return Array.from({ length: 10 }, (_, i) => ({
+    id: `mock-${i + 1}`,
+    name: `Test User ${i + 1}`,
+    email: `user${i + 1}@example.com`,
+    role: i % 3 === 0 ? 'Admin' : i % 3 === 1 ? 'Agent' : 'Customer',
+    status: i % 4 === 0 ? 'INACTIVE' : 'ACTIVE',
+    registration: new Date(Date.now() - i * 86400000).toLocaleDateString(),
+    rawData: {
+      id: `mock-${i + 1}`,
+      first_name: `Test`,
+      lastname: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      role: i % 3 === 0 ? 'ADMIN' : i % 3 === 1 ? 'AGENT' : 'CUSTOMER',
+      status: i % 4 === 0 ? 'INACTIVE' : 'ACTIVE',
+      createdAt: new Date(Date.now() - i * 86400000).toISOString()
+    }
+  }))
 }
 
-const users = ref(generateUsers())
+// Fetch users from API
+const fetchUsers = async () => {
+  try {
+    isLoading.value = true
+    apiError.value = false
+    
+    const response = await userService.getUsers({
+      page: currentPage.value,
+      limit: perPage,
+      search: search.value || undefined,
+      status: selectedStatus.value !== 'All Status' ? selectedStatus.value.toUpperCase() : undefined,
+      role: selectedRole.value !== 'All Roles' ? selectedRole.value.toUpperCase() : undefined
+    })
+    
+    console.log('API Response:', response.data) // Debug log
+    
+    if (response.data && Array.isArray(response.data.data)) {
+      if (response.data.data.length === 0) {
+         // Handle empty array response
+         users.value = []
+         totalUsers.value = 0
+         totalPages.value = 1
+       } else {
+         users.value = response.data.data.map(user => ({
+           id: user.id,
+           name: `${user.first_name || ''} ${user.lastname || ''}`.trim() || 'Unnamed User',
+           email: user.email,
+           role: user.role || 'User',
+           status: user.status || 'ACTIVE',
+           registration: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A',
+           rawData: user // Store the raw data for detailed view
+         }))
+       }
+       
+       // If pagination info is available in the response
+      if (response.data.pagination) {
+        totalUsers.value = response.data.pagination.total || users.value.length
+        totalPages.value = response.data.pagination.pages || 1
+      } else if (response.data.totalItems !== undefined && response.data.totalPages !== undefined) {
+        // Alternative pagination format
+        totalUsers.value = response.data.totalItems
+        totalPages.value = response.data.totalPages
+      } else if (response.data.total !== undefined) {
+        // Another possible format
+        totalUsers.value = response.data.total
+        totalPages.value = Math.ceil(totalUsers.value / perPage) || 1
+      } else {
+        // Fallback if pagination info is not available
+        // If we have a full page of results, assume there are more
+        if (response.data.data.length >= perPage) {
+          // Set a high number to ensure next button is enabled
+          totalUsers.value = perPage * 100 // Arbitrary large number
+          totalPages.value = 100 // Arbitrary large number
+        } else {
+          totalUsers.value = users.value.length
+          totalPages.value = Math.ceil(totalUsers.value / perPage) || 1
+        }
+      }
+      
+      // Ensure we have at least one page
+      if (totalPages.value === 0) totalPages.value = 1
+      
+      // If current page is greater than total pages, reset to page 1
+      if (currentPage.value > totalPages.value && totalPages.value > 0) {
+        currentPage.value = 1
+      }
+    } else {
+      // Handle empty or invalid response
+      console.warn('API returned unexpected data format:', response.data)
+      
+      if (users.value.length === 0) {
+        // Use mock data as fallback only if we have no existing data
+        users.value = getMockUsers()
+        totalUsers.value = users.value.length
+        totalPages.value = Math.ceil(totalUsers.value / perPage) || 1
+        toast.warning('Using sample data for display')
+      } else {
+        // Keep existing data if we have it
+        toast.error('Failed to refresh user data')
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching users:', error)
+    apiError.value = true
+    
+    if (users.value.length === 0) {
+      // Use mock data as fallback only if we have no existing data
+      users.value = getMockUsers()
+      totalUsers.value = users.value.length
+      totalPages.value = Math.ceil(totalUsers.value / perPage) || 1
+      toast.warning('Using sample data for display')
+    } else {
+      // Keep existing data if we have it
+      toast.error('Failed to refresh user data')
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
 const allSelected = computed(() => selectedRows.value.length === users.value.length)
 
-const filteredUsers = computed(() => {
-  return users.value.filter(u => {
-    return (
-      (selectedStatus.value === 'All Status' || u.status === selectedStatus.value) &&
-      (selectedRole.value === 'All Roles' || u.role === selectedRole.value) &&
-      (u.name.toLowerCase().includes(search.value.toLowerCase()) || u.email.toLowerCase().includes(search.value.toLowerCase()))
-    )
-  })
+// With API-based filtering, we don't need to filter locally
+// The API handles filtering based on the parameters we send
+const filteredUsers = computed(() => users.value)
+
+// Initialize data when component mounts
+onMounted(() => {
+  fetchUsers()
 })
 
 const currentPage = ref(1)
 const perPage = 10
-const startIndex = computed(() => (currentPage.value - 1) * perPage)
-const endIndex = computed(() => Math.min(startIndex.value + perPage, filteredUsers.value.length))
-const paginatedUsers = computed(() => filteredUsers.value.slice(startIndex.value, endIndex.value))
+
+// With API pagination, we don't need to compute these locally
+// Instead, we'll use the API's pagination
+const paginatedUsers = computed(() => users.value)
+
+// Calculate pagination display values with safety checks
+const startIndex = computed(() => {
+  if (totalUsers.value === 0) return 0
+  return (currentPage.value - 1) * perPage
+})
+
+const endIndex = computed(() => {
+  if (totalUsers.value === 0) return 0
+  return Math.min(startIndex.value + paginatedUsers.value.length, totalUsers.value)
+})
+
+// Computed properties to control button states
+const hasPreviousPage = computed(() => currentPage.value > 1)
+const hasNextPage = computed(() => {
+  // If we have a total count from the API, use it to determine if there are more pages
+  if (totalUsers.value > 0) {
+    return currentPage.value < totalPages.value
+  }
+  // If we don't have a total count but have a full page of results, assume there might be more
+  return paginatedUsers.value.length >= perPage
+})
+
+// Debug computed property to help troubleshoot pagination
+const paginationDebugInfo = computed(() => {
+  return {
+    currentPage: currentPage.value,
+    totalPages: totalPages.value,
+    totalUsers: totalUsers.value,
+    usersOnCurrentPage: paginatedUsers.value.length,
+    hasPreviousPage: hasPreviousPage.value,
+    hasNextPage: hasNextPage.value,
+    perPage
+  }
+})
+
+// Log pagination debug info when it changes
+watch(paginationDebugInfo, (info) => {
+  console.log('Pagination Debug Info:', info)
+}, { deep: true })
+
+// Watch for changes that should trigger a new API call
+const watchDependencies = () => {
+  fetchUsers()
+}
+
+// Reset to page 1 when filters change
+const resetPageAndFetch = () => {
+  currentPage.value = 1
+  fetchUsers()
+}
+
+// We don't need to watch currentPage anymore since we're calling fetchUsers directly in the pagination buttons
+
+// Watch for changes in filters - reset to page 1
+watch([selectedStatus, selectedRole, search], resetPageAndFetch, { debounce: 300 })
 
 function toggleSelectAll() {
   selectedRows.value = allSelected.value ? [] : users.value.map(u => u.id)
@@ -1058,29 +1390,32 @@ function deleteUser(id) {
   users.value = users.value.filter(u => u.id !== id)
 }
 
-const roleOptions = ['Admin', 'Agent', 'Customer']
+const roleOptions = ['CUSTOMER', 'AGENT', 'PARTNER', 'DEVELOPER', 'MERCHANT']
 const statusOptions = ['Active', 'Inactive']
 
-const handleAddUser = () => {
-  // Add new user logic here
-  const user = {
-    id: `U${1000 + users.value.length + 1}`,
-    name: newUser.value.fullName,
-    email: newUser.value.email,
-    role: newUser.value.role,
-    status: newUser.value.status,
-    registration: new Date().toISOString().split('T')[0]
-  }
-  
-  users.value.unshift(user)
-  showAddUserModal.value = false
-  
-  // Reset form
-  newUser.value = {
-    fullName: '',
-    email: '',
-    role: '',
-    status: ''
+const handleAddUser = async () => {
+  try {
+    const response = await userService.createUser({
+      email: newUser.value.email,
+      firstname: newUser.value.firstname,
+      lastname: newUser.value.lastname,
+      phonenumber: newUser.value.phonenumber,
+      role: newUser.value.role.toUpperCase()
+    });
+    if (response.data && response.data.ok) {
+      toast.success(response.data.message || 'Account created successfully');
+      fetchUsers();
+      showAddUserModal.value = false;
+      newUser.value = {
+        firstname: '',
+        lastname: '',
+        email: '',
+        phonenumber: '',
+        role: ''
+      };
+    }
+  } catch (error) {
+    console.error('Error creating user:', error);
   }
 }
 
@@ -1185,9 +1520,40 @@ const copyReferralLink = () => {
   // You might want to add a toast notification here
 }
 
-const showUserDetails = (user) => {
-  selectedUser.value = user
-  showUserDetailsModal.value = true
+const showUserDetails = async (user) => {
+  try {
+    // First set basic user info from the list
+    selectedUser.value = user
+    showUserDetailsModal.value = true
+    
+    // Then fetch detailed user information
+    const response = await userService.getUserById(user.id)
+    if (response.data && response.data.data) {
+      const userData = response.data.data
+      
+      // Update the selected user with detailed information
+      selectedUser.value = {
+        ...user,
+        fullDetails: userData,
+        // Map specific fields for the UI
+        photo: userData.photo,
+        first_name: userData.first_name,
+        lastname: userData.lastname,
+        phone: userData.phone,
+        status: userData.status,
+        createdAt: userData.createdAt,
+        lastlogin: userData.lastlogin,
+        use2fa: userData.use2fa,
+        userType: userData.userType,
+        shippingAddress: userData.shippingAddress,
+        homeAddress: userData.homeAddress,
+        workAddress: userData.workAddress,
+        notificationPreferences: userData.notificationPreferences
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching user details:', error)
+  }
 }
 
 const handleEditUser = (user) => {
@@ -1236,20 +1602,43 @@ const handleDeleteUser = (userId) => {
   showDeleteModal.value = true
 }
 
-const confirmDelete = () => {
+const confirmDelete = async () => {
   if (userToDelete.value) {
-    users.value = users.value.filter(u => u.id !== userToDelete.value.id)
-    showDeleteModal.value = false
-    userToDelete.value = null
+    try {
+      // Call API to delete user
+      const response = await userService.deleteUser(userToDelete.value.id);
+      
+      if (response.data && response.data.ok) {
+        // Refresh the user list
+        fetchUsers();
+        showDeleteModal.value = false;
+        userToDelete.value = null;
+      }
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
   }
 }
 
-const handleUpdateUser = () => {
-  const index = users.value.findIndex(u => u.id === editingUser.value.id)
-  if (index !== -1) {
-    users.value[index] = { ...editingUser.value }
+const handleUpdateUser = async () => {
+  try {
+    // Call API to update user
+    const response = await userService.updateUser({
+      userId: editingUser.value.id,
+      firstname: editingUser.value.name.split(' ')[0] || '',
+      lastname: editingUser.value.name.split(' ').slice(1).join(' ') || '',
+      status: editingUser.value.status.toUpperCase(),
+      role: editingUser.value.role.toUpperCase()
+    });
+    
+    if (response.data && response.data.ok) {
+      // Refresh the user list
+      fetchUsers();
+      showEditUserModal.value = false;
+    }
+  } catch (error) {
+    console.error('Error updating user:', error);
   }
-  showEditUserModal.value = false
 }
 </script>
 

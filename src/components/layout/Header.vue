@@ -177,16 +177,19 @@
                                     <li>
                                         <div class="flex items-center px-4 py-4">
                                             <div class="flex-none">
-                                                <img class="rounded-md w-10 h-10 object-cover"
-                                                    src="/assets/images/user-profile.jpeg" alt="" />
+                                                <div class="w-10 h-10 rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H5V21H19V9Z"/>
+                                                    </svg>
+                                                </div>
                                             </div>
                                             <div class="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 class="text-base">
-                                                    John Doe<span
+                                                    Admin<span
                                                         class="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
                                                 </h4>
                                                 <a class="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white"
-                                                    href="javascript:;">johndoe@gmail.com</a>
+                                                    href="javascript:;">admin@paymax.com</a>
                                             </div>
                                         </div>
                                     </li>
@@ -329,7 +332,11 @@
                                     <!-- Profile Image -->
                                     <div class="flex flex-col items-center">
                                         <div class="relative">
-                                            <img class="w-24 h-24 rounded-full object-cover" src="/assets/images/user-profile.jpeg" alt="Profile" />
+                                            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                                                <svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 9H14V4H5V21H19V9Z"/>
+                                                </svg>
+                                            </div>
                                             <button class="absolute bottom-0 right-0 bg-blue-500 text-white p-1.5 rounded-full hover:bg-blue-600">
                                                 <icon-camera class="w-4 h-4" />
                                             </button>
@@ -346,9 +353,16 @@
                                             <input type="text" v-model="profileData.fullName" class="form-input w-full" placeholder="Cameron Williamson" />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                                            <input type="email" v-model="profileData.email" class="form-input w-full" placeholder="anna.lawson@example.com" />
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                        <input
+                                            type="email"
+                                            v-model="profileData.email"
+                                            class="form-input w-full bg-gray-100"
+                                            placeholder="anna.lawson@example.com"
+                                            readonly
+                                        />
                                         </div>
+
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
                                             <input type="text" v-model="profileData.role" class="form-input w-full" placeholder="Administrator" disabled />
@@ -369,9 +383,14 @@
                                         </button>
                                         <button
                                             @click="saveProfile"
-                                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                                            :disabled="isUpdatingProfile"
+                                            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                         >
-                                            Save Changes
+                                            <svg v-if="isUpdatingProfile" class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            {{ isUpdatingProfile ? 'Saving...' : 'Save Changes' }}
                                         </button>
                                     </div>
                                 </div>
@@ -644,6 +663,7 @@ import appSetting from '@/app-setting';
 import { useRoute } from 'vue-router';
 import { useAppStore } from '@/stores/index';
 import { useAuthStore } from '@/stores/auth';
+import authService from '@/services/authService';
 
 import IconMenu from '@/components/icon/icon-menu.vue';
 import IconSearch from '@/components/icon/icon-search.vue';
@@ -669,12 +689,13 @@ const showSettingsModal = ref(false);
 const isDarkMode = ref(store.theme === 'dark');
 const authStore = useAuthStore();
 const profileData = ref({
-    fullName: 'Cameron Williamson',
-    email: 'anna.lawson@example.com',
-    role: 'Administrator',
-    lastLogin: '4/10/2023, 8:30:00 AM'
+    fullName: '',
+    email: '',
+    role: '',
+    lastLogin: ''
 });
 
+const isUpdatingProfile = ref(false);
 // multi language
 const i18n = reactive(useI18n());
 const changeLanguage = (item: any) => {
@@ -737,8 +758,21 @@ const messages = ref([
     },
 ]);
 
-onMounted(() => {
+onMounted(async () => {
     setActiveDropdown();
+    // Fetch real admin details
+    try {
+        const res = await authService.getCurrentAdmin();
+        if (res && res.data && res.data.data) {
+            const d = res.data.data;
+            profileData.value.fullName = `${d.first_name} ${d.last_name}`;
+            profileData.value.email = d.email;
+            profileData.value.role = d.role;
+            profileData.value.lastLogin = d.last_login ? new Date(d.last_login).toLocaleString() : '';
+        }
+    } catch (e) {
+        // fallback or error handling
+    }
 });
 
 watch(route, (to, from) => {
@@ -785,9 +819,49 @@ const handleLogout = () => {
     router.push({ name: 'login' });
 };
 
-const saveProfile = () => {
-    // Add profile save logic here
-    showProfileModal.value = false;
+const saveProfile = async () => {
+    if (isUpdatingProfile.value) return;
+    
+    isUpdatingProfile.value = true;
+    try {
+        // Split full name into first and last name
+        const nameParts = profileData.value.fullName.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        
+        const updateData = {
+            first_name: firstName,
+            last_name: lastName,
+            email: profileData.value.email
+        };
+        
+        const response = await authService.updateProfile(updateData);
+        
+        if (response && response.data && response.data.ok) {
+            // Show success message (you can implement a toast notification here)
+            console.log('Profile updated successfully');
+            showProfileModal.value = false;
+            
+            // Optionally refresh the admin data
+            try {
+                const res = await authService.getCurrentAdmin();
+                if (res && res.data && res.data.data) {
+                    const d = res.data.data;
+                    profileData.value.fullName = `${d.first_name} ${d.last_name}`;
+                    profileData.value.email = d.email;
+                    profileData.value.role = d.role;
+                    profileData.value.lastLogin = d.last_login ? new Date(d.last_login).toLocaleString() : '';
+                }
+            } catch (e) {
+                console.error('Error refreshing admin data:', e);
+            }
+        }
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        // Show error message (you can implement a toast notification here)
+    } finally {
+        isUpdatingProfile.value = false;
+    }
 };
 
 const saveSettings = () => {

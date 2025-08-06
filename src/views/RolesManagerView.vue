@@ -42,14 +42,24 @@
       <input type="text" placeholder="Search roles" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <RoleCard role="Admin" users="5" :system="true" description="Full system access with all permissions" @edit-permissions="openPermissionsModal('Admin')" @rename-role="openRenameRoleModal('Admin', 'Full system access with all permissions')" @clone-role="openCloneRoleModal('Admin', 'Full system access with all permissions')" @delete-role="openDeleteRoleModal('Admin')" />
-      <RoleCard role="Manager" :system="true" users="12" description="Access to manage users and view reports" @edit-permissions="openPermissionsModal('Manager')" @rename-role="openRenameRoleModal('Manager', 'Access to manage users and view reports')" @clone-role="openCloneRoleModal('Manager', 'Access to manage users and view reports')" @delete-role="openDeleteRoleModal('Manager')" />
-      <RoleCard role="Agent" users="28" description="Ability to manage referrals and handle disputes" @edit-permissions="openPermissionsModal('Agent')" @rename-role="openRenameRoleModal('Agent', 'Ability to manage referrals and handle disputes')" @clone-role="openCloneRoleModal('Agent', 'Ability to manage referrals and handle disputes')" @delete-role="openDeleteRoleModal('Agent')" />
-      <RoleCard role="Finance" users="5" description="Access to financial transactions and wallet management" @edit-permissions="openPermissionsModal('Finance')" @rename-role="openRenameRoleModal('Finance', 'Access to financial transactions and wallet management')" @clone-role="openCloneRoleModal('Finance', 'Access to financial transactions and wallet management')" @delete-role="openDeleteRoleModal('Finance')" />
-      <RoleCard role="Support" users="12" description="Customer support and dispute resolution access" @edit-permissions="openPermissionsModal('Support')" @rename-role="openRenameRoleModal('Support', 'Customer support and dispute resolution access')" @clone-role="openCloneRoleModal('Support', 'Customer support and dispute resolution access')" @delete-role="openDeleteRoleModal('Support')" />
-      <RoleCard role="Read-Only" users="28" description="View-only access to all system areas" @edit-permissions="openPermissionsModal('Read-Only')" @rename-role="openRenameRoleModal('Read-Only', 'View-only access to all system areas')" @clone-role="openCloneRoleModal('Read-Only', 'View-only access to all system areas')" @delete-role="openDeleteRoleModal('Read-Only')" />
+    <div v-if="loadingRoles" class="text-center py-8 text-gray-500">Loading roles...</div>
+    <div v-else-if="rolesError" class="text-center py-8 text-red-500">{{ rolesError }}</div>
+    <div v-else>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <RoleCard
+          v-for="role in rolesList"
+          :key="role._id"
+          :role="role.name"
+          :users="role.users_count || 0"
+          :system="role.scope === 'system'"
+          :description="role.description || ''"
+          @edit-permissions="openPermissionsModal(role.name)"
+          @rename-role="openRenameRoleModal(role.name, role.description || '')"
+          @clone-role="openCloneRoleModal(role.name, role.description || '')"
+          @delete-role="openDeleteRoleModal(role.name)"
+        />
       </div>
+    </div>
     </div>
 
     <!-- Users with Roles Table -->
@@ -354,63 +364,24 @@
                   </div>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure access permissions for this role</p>
                 </div>
-                <div class="space-y-4">
-                  <!-- User Management Section -->
-                  <div class="border rounded-lg border-gray-200 dark:border-gray-700">
+                <div v-if="loadingPermissions" class="text-center py-8 text-gray-500">Loading permissions...</div>
+                <div v-else-if="permissionsError" class="text-center py-8 text-red-500">{{ permissionsError }}</div>
+                <div v-else class="space-y-4">
+                  <div v-for="(permissions, resource) in groupedPermissions" :key="resource" class="border rounded-lg border-gray-200 dark:border-gray-700">
                     <button 
-                      @click="toggleSection('userManagement')"
+                      @click="toggleSection(resource)"
                       class="w-full flex items-center justify-between p-4 text-left"
                     >
-                      <span class="font-medium text-gray-900 dark:text-gray-100">User Management</span>
+                      <span class="font-medium text-gray-900 dark:text-gray-100">{{ resource.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}</span>
                       <ChevronUpIcon 
                         :class="[
                           'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
-                          openSections.userManagement ? '' : 'rotate-180'
+                          openSections[resource] ? '' : 'rotate-180'
                         ]"
                       />
                     </button>
-                    <div v-show="openSections.userManagement" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                      <div v-for="permission in permissions.userManagement" :key="permission.name"
-                        class="flex items-center justify-between"
-                      >
-                        <div>
-                          <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ permission.name }}</div>
-                          <div class="text-sm text-gray-500 dark:text-gray-400">{{ permission.description }}</div>
-                        </div>
-                        <Switch
-                          v-model="permission.enabled"
-                          :class="[
-                            permission.enabled ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
-                            'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out'
-                          ]"
-                        >
-                          <span
-                            :class="[
-                              permission.enabled ? 'translate-x-6' : 'translate-x-1',
-                              'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out mt-1'
-                            ]"
-                          />
-                        </Switch>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Other sections -->
-                  <div v-for="section in sections" :key="section.id" class="border rounded-lg border-gray-200 dark:border-gray-700">
-                    <button 
-                      @click="toggleSection(section.id)"
-                      class="w-full flex items-center justify-between p-4 text-left"
-                    >
-                      <span class="font-medium text-gray-900 dark:text-gray-100">{{ section.name }}</span>
-                      <ChevronUpIcon 
-                        :class="[
-                          'h-5 w-5 transform transition-transform text-gray-500 dark:text-gray-400',
-                          openSections[section.id] ? '' : 'rotate-180'
-                        ]"
-                      />
-                    </button>
-                    <div v-show="openSections[section.id]" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
-                      <div v-for="permission in permissions[section.id]" :key="permission.name"
+                    <div v-show="openSections[resource]" class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
+                      <div v-for="permission in permissions" :key="permission.id"
                         class="flex items-center justify-between"
                       >
                         <div>
@@ -665,6 +636,7 @@ import {
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot, Switch } from '@headlessui/vue'
 import { ref, computed } from 'vue'
+import rolePermissionService from '@/services/rolePermissionService'
 
 export default {
   components: {
@@ -807,6 +779,73 @@ export default {
       reportAnalytics: false
     })
 
+    // --- API roles integration ---
+    const rolesList = ref([])
+    const loadingRoles = ref(false)
+    const rolesError = ref(null)
+
+    // --- API permissions integration ---
+    const permissionsList = ref([])
+    const loadingPermissions = ref(false)
+    const permissionsError = ref(null)
+    const groupedPermissions = ref({})
+
+    const fetchRoles = async () => {
+      loadingRoles.value = true
+      try {
+        const res = await rolePermissionService.getRoles({ page: 1, limit: 20 })
+        rolesList.value = res.data.data || []
+      } catch (e) {
+        rolesError.value = e.message || 'Failed to fetch roles'
+      } finally {
+        loadingRoles.value = false
+      }
+    }
+
+    const fetchPermissions = async () => {
+      loadingPermissions.value = true
+      try {
+        const res = await rolePermissionService.getPermissions({ page: 1, limit: 50 })
+        permissionsList.value = res.data.data || []
+        
+        // Group permissions by resource
+        groupedPermissions.value = permissionsList.value.reduce((acc, permission) => {
+          const resource = permission.resource
+          if (!acc[resource]) {
+            acc[resource] = []
+          }
+          acc[resource].push({
+            id: permission.id,
+            name: permission.action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            description: permission.description,
+            action: permission.action,
+            resource: permission.resource,
+            scope: permission.scope,
+            enabled: false // Default to false, will be set based on role permissions
+          })
+          return acc
+        }, {})
+      } catch (e) {
+        permissionsError.value = e.message || 'Failed to fetch permissions'
+      } finally {
+        loadingPermissions.value = false
+      }
+    }
+
+    const addPermissionToRole = async (roleId, permissionIds) => {
+      try {
+        await rolePermissionService.addPermissionToRole({ roleId, permissionIds })
+        // Refresh roles after adding permissions
+        await fetchRoles()
+      } catch (e) {
+        console.error('Failed to add permissions to role:', e)
+      }
+    }
+
+    // Initialize data
+    fetchRoles()
+    fetchPermissions()
+
     const permissions = ref({
       userManagement: [
         { name: 'View Users', description: 'View user lists and profiles', enabled: true },
@@ -861,9 +900,33 @@ export default {
       openSections.value[sectionId] = !openSections.value[sectionId]
     }
 
-    const savePermissions = () => {
-      console.log('Saving permissions:', permissions.value)
-      showPermissionsModal.value = false
+    const savePermissions = async () => {
+      try {
+        // Get the current role being edited
+        const currentRole = rolesList.value.find(role => role.name === editingRoleName.value)
+        if (!currentRole) {
+          console.error('Role not found:', editingRoleName.value)
+          return
+        }
+
+        // Collect all enabled permissions
+        const enabledPermissionIds = []
+        Object.values(groupedPermissions.value).forEach(permissions => {
+          permissions.forEach(permission => {
+            if (permission.enabled) {
+              enabledPermissionIds.push(permission.id)
+            }
+          })
+        })
+
+        // Add permissions to role
+        await addPermissionToRole(currentRole._id, enabledPermissionIds)
+        
+        console.log('Permissions saved successfully for role:', editingRoleName.value)
+        showPermissionsModal.value = false
+      } catch (error) {
+        console.error('Failed to save permissions:', error)
+      }
     }
 
     const users = ref([
@@ -1051,7 +1114,15 @@ export default {
       handleCreateCloneRole,
       openDeleteRoleModal,
       deletingRoleName,
-      handleDeleteRole
+      handleDeleteRole,
+      rolesList,
+      loadingRoles,
+      rolesError,
+      permissionsList,
+      loadingPermissions,
+      permissionsError,
+      groupedPermissions,
+      addPermissionToRole
     }
   }
 }

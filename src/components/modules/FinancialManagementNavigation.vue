@@ -7,8 +7,8 @@ import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue'
 import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const links = [
-  { route: { name: 'transactions' }, displayName: 'Transactions' },
-  { route: { name: 'transactions-mgt' }, displayName: 'Transaction Mgt' },
+  // { route: { name: 'transactions' }, displayName: 'Transactions' },
+  { route: { name: 'transactions' }, displayName: 'Transaction Mgt' },
   { route: { name: 'wallets' }, displayName: 'Wallets' },
   { route: { name: 'commission-earnings' }, displayName: 'Commission' },
   { route: { name: 'payouts-management' }, displayName: 'Payouts' }

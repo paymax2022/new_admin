@@ -32,7 +32,7 @@
                                 </div>
                             </router-link>
                         </li>
-                        <li class="menu nav-item">
+                        <!-- <li class="menu nav-item">
                             <router-link :to="{ name: 'profile' }" class="nav-link group" @click="toggleMobileMenu">
                                 <div class="flex items-center">
                                     <icon-menu-users class="group-hover:!text-primary shrink-0" />
@@ -42,7 +42,7 @@
                                             $t('profile') }}</span>
                                 </div>
                             </router-link>
-                        </li>
+                        </li> -->
 
                         <h2
                             class="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
@@ -57,16 +57,8 @@
                         <ReferralNavigation />
                         <DisputeNavigation />
                         <ReportsNavigation />
-                        <GroupsNavigation />
-                        <SubscriptionNavigation />
-                        <GroupManagementNavigation />
-                        <CommunicationNavigation />
-                        <PollsSurveysNavigation />
-                        <ResourcesNavigation />
-                        <EventsNavigation />
-                        <MeetingsNavigation />
-                        <AnalyticsGamificationNavigation />
-                        <SettingsNavigation />
+                        <!-- <GroupsNavigation /> -->
+                        <GroupNavigation />
                         <SystemNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
@@ -102,7 +94,8 @@ import FinancialManagementNavigation from '../modules/FinancialManagementNavigat
 import ReferralNavigation from '../modules/ReferralNavigation.vue';
 import DisputeNavigation from '../modules/DisputeNavigation.vue';
 import ReportsNavigation from '../modules/ReportsNavigation.vue';
-import GroupsNavigation from '../modules/GroupsNavigation.vue';
+// import GroupsNavigation from '../modules/GroupsNavigation.vue';
+import GroupNavigation from '../modules/GroupNavigation.vue';
 import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
@@ -123,8 +116,43 @@ import ResourcesNavigation from '../modules/ResourcesNavigation.vue';
 import MeetingsNavigation from '../modules/MeetingsNavigation.vue';
 import AnalyticsGamificationNavigation from '../modules/AnalyticsGamificationNavigation.vue';
 import SettingsNavigation from '../modules/SettingsNavigation.vue';
+import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue';
+import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
 
 const store = useAppStore();
+
+const links = [
+  // Subscription
+  { route: { name: 'subscription-dashboard' }, displayName: 'subscription dashboard' },
+  { route: { name: 'plans-tiers' }, displayName: 'plans & tiers' },
+  { route: { name: 'invoice-center' }, displayName: 'invoice center' },
+  { route: { name: 'payment-history' }, displayName: 'payment history' },
+  { route: { name: 'failed-payments' }, displayName: 'failed payments' },
+  { route: { name: 'subscription-settings' }, displayName: 'subscription settings' },
+  // Group Management
+  { route: { name: 'group-list' }, displayName: 'group list' },
+  { route: { name: 'manage-group-members' }, displayName: 'manage members' },
+  // Communication
+  { route: { name: 'communication' }, displayName: 'communication' },
+  // Polls & Surveys
+  { route: { name: 'polls-surveys' }, displayName: 'polls & surveys' },
+  // Resources
+  { route: { name: 'resources' }, displayName: 'resources' },
+  // Events
+  { route: { name: 'events' }, displayName: 'events' },
+  // Meetings
+  { route: { name: 'meeting-dashboard' }, displayName: 'dashboard' },
+  { route: { name: 'agenda-builder' }, displayName: 'agenda builder' },
+  { route: { name: 'documents' }, displayName: 'documents' },
+  { route: { name: 'action-points' }, displayName: 'action points' },
+  { route: { name: 'archive' }, displayName: 'archive' },
+  // Analytics & Gamification
+  { route: { name: 'gamification' }, displayName: 'gamification' },
+  { route: { name: 'reports-analytics' }, displayName: 'reports & analytics' },
+  // Settings
+  { route: { name: 'settings' }, displayName: 'settings' },
+  { route: { name: 'help-support' }, displayName: 'help & support' },
+];
 
 onMounted(() => {
     const selector = document.querySelector('.sidebar ul a[href="' + window.location.pathname + '"]');

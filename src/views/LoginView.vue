@@ -44,7 +44,7 @@
           </div>
 
           <div class="mb-6 text-left">
-            <a href="#" class="text-blue-600 text-sm hover:underline">Forgot Password?</a>
+            <router-link :to="{ name: 'passwordReset' }" class="text-blue-600 text-sm hover:underline">Forgot Password?</router-link>
           </div>
 
           <button
@@ -90,7 +90,8 @@ const handleLogin = async () => {
       toast.error('No token received.');
     }
   } catch (error) {
-    toast.error(error?.response?.data?.message || 'Login failed');
+    // toast.error(error?.response?.data?.message || 'Login failed');
+    console.error(error?.response?.data?.message || 'Login failed');
   } finally {
     loading.value = false;
   }

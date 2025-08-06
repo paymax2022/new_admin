@@ -22,7 +22,26 @@
           <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Wallets</h3>
           <WalletIcon class="h-5 w-5 text-blue-500" />
         </div>
-        <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">6</p>
+        <div v-if="loadingActiveWallets" class="flex items-center">
+          <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>
+          <span class="text-sm text-gray-500">Loading...</span>
+        </div>
+        <div v-else>
+          <p class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ activeWalletsData.count || 0 }}</p>
+          <div v-if="activeWalletsData.percent_change !== undefined" class="flex items-center mt-1">
+            <span :class="[
+              'text-xs font-medium',
+              activeWalletsData.is_increasing 
+                ? 'text-green-600 dark:text-green-400' 
+                : 'text-red-600 dark:text-red-400'
+            ]">
+              {{ activeWalletsData.is_increasing ? '+' : '-' }}{{ activeWalletsData.percent_change }}%
+            </span>
+            <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">
+              vs {{ activeWalletsData.previous_month || 0 }} last month
+            </span>
+          </div>
+        </div>
       </div>
 
       <!-- Recent Deposits Card -->
@@ -70,6 +89,8 @@
         <div class="relative flex-1 max-w-xs">
           <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
+            v-model="searchQuery"
+            @input="handleSearchInput"
             type="text"
             placeholder="Search Wallet"
             class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100"
@@ -97,7 +118,7 @@
                 v-for="currency in currencies" 
                 :key="currency.value"
                 href="#" 
-                @click.prevent="selectCurrency(currency)"
+                @click.prevent="handleCurrencyFilter(currency)"
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 :class="{'bg-blue-50 dark:bg-blue-900/20': selectedCurrency === currency.label}"
               >
@@ -128,7 +149,7 @@
                 v-for="status in statuses" 
                 :key="status.value"
                 href="#" 
-                @click.prevent="selectStatus(status)"
+                @click.prevent="handleStatusFilter(status)"
                 class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 :class="{'bg-blue-50 dark:bg-blue-900/20': selectedStatus === status.label}"
               >
@@ -186,106 +207,107 @@
 
     <!-- Wallet Table -->
     <div v-if="selectedWalletTab === 'wallet'" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-        <thead class="bg-gray-50 dark:bg-gray-900/50">
-          <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Activity</th>
-            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-          <tr v-for="wallet in wallets" 
-              :key="wallet.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.id }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.user }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.type }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.currency }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.balance }}</td>
-            <td class="px-6 py-4 whitespace-nowrap" @click.stop>
-              <span :class="[
-                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                {
-                  'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400': wallet.status === 'active',
-                  'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': wallet.status === 'frozen',
-                  'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400': wallet.status === 'inactive'
-                }
-              ]">
-                {{ wallet.status }}
-              </span>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" @click.stop>{{ wallet.lastActivity }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
-              <div class="relative">
-                <button 
-                  @click="handleActionClick($event, wallet)"
-                  data-dropdown="action"
-                  class="text-gray-400 hover:text-gray-500"
-                >
-                  <EllipsisVerticalIcon class="h-5 w-5" />
-                </button>
-                <!-- Actions Dropdown -->
-                <div v-if="activeActionDropdown === wallet.id" 
-                     class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                  <div class="py-1 divide-y divide-gray-100 dark:divide-gray-700">
-                    <div class="px-4 py-3">
-                      <p class="text-base font-semibold text-gray-900 dark:text-white">Actions</p>
-                    </div>
-                    <div class="py-1">
-                      <a 
-                        href="#" 
-                        @click.prevent="handleWalletAction('view', wallet)"
-                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      >
-                        <EyeIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                        View Details
-                      </a>
-                      <a 
-                        href="#" 
-                        @click.prevent="handleWalletAction('credit', wallet)"
-                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      >
-                        <PlusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                        Credit Funds
-                      </a>
-                      <a 
-                        href="#" 
-                        @click.prevent="handleWalletAction('debit', wallet)"
-                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      >
-                        <MinusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                        Debit Funds
-                      </a>
-                      <a 
-                        href="#" 
-                        @click.prevent="handleWalletAction('freeze', wallet)"
-                        class="group flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                      >
-                        <NoSymbolIcon class="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500 dark:text-red-400 dark:group-hover:text-red-300" />
-                        Freeze Website
-                      </a>
-                      <a 
-                        href="#" 
-                        @click.prevent="handleWalletAction('remark', wallet)"
-                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      >
-                        <ChatBubbleLeftIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                        Add Remark
-                      </a>
+      <div v-if="loadingWallets" class="flex justify-center items-center py-10">
+        <span class="text-blue-600 font-semibold">Loading...</span>
+      </div>
+      <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900/50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Currency</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Balance</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tier</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Created At</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="wallet in wallets" :key="wallet.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.id }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.name || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.wallet_type }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.currency }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.balance }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="[
+                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                  wallet.active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
+                ]">
+                  {{ wallet.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.tier?.name || '-' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ new Date(wallet.created_at).toLocaleString() }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
+                <div class="relative">
+                  <button 
+                    @click="handleActionClick($event, wallet)"
+                    data-dropdown="action"
+                    class="text-gray-400 hover:text-gray-500"
+                  >
+                    <EllipsisVerticalIcon class="h-5 w-5" />
+                  </button>
+                  <!-- Actions Dropdown -->
+                  <div v-if="activeActionDropdown === wallet.id" 
+                       class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div class="py-1 divide-y divide-gray-100 dark:divide-gray-700">
+                      <div class="px-4 py-3">
+                        <p class="text-base font-semibold text-gray-900 dark:text-white">Actions</p>
+                      </div>
+                      <div class="py-1">
+                        <a 
+                          href="#" 
+                          @click.prevent="handleWalletAction('view', wallet)"
+                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        >
+                          <EyeIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                          View Details
+                        </a>
+                        <a 
+                          href="#" 
+                          @click.prevent="handleWalletAction('credit', wallet)"
+                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        >
+                          <PlusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                          Credit Funds
+                        </a>
+                        <a 
+                          href="#" 
+                          @click.prevent="handleWalletAction('debit', wallet)"
+                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        >
+                          <MinusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                          Debit Funds
+                        </a>
+                        <a 
+                          href="#" 
+                          @click.prevent="handleWalletAction('freeze', wallet)"
+                          class="group flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        >
+                          <NoSymbolIcon class="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500 dark:text-red-400 dark:group-hover:text-red-300" />
+                          Freeze Website
+                        </a>
+                        <a 
+                          href="#" 
+                          @click.prevent="handleWalletAction('remark', wallet)"
+                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                        >
+                          <ChatBubbleLeftIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                          Add Remark
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- Currencies Table -->
@@ -1385,24 +1407,91 @@ const doughnutChartOptions = {
 
 // Wallet Data
 const wallets = ref([])
-const walletCountByCurrency = ref([])
 const loadingWallets = ref(false)
 
-onMounted(async () => {
+// Active Wallets Stats Data
+const activeWalletsData = ref({
+  count: 0,
+  is_increasing: false,
+  percent_change: 0,
+  previous_month: 0
+})
+const loadingActiveWallets = ref(false)
+
+// Search and filter parameters
+const searchQuery = ref('')
+const currentPage = ref(1)
+const itemsPerPage = ref(50)
+const sortOrder = ref('desc')
+
+// Function to fetch active wallets stats
+const fetchActiveWalletsStats = async () => {
+  loadingActiveWallets.value = true
+  try {
+    const res = await walletService.getActiveWallets()
+    if (res.data?.ok && res.data?.data) {
+      activeWalletsData.value = res.data.data
+    }
+  } catch (e) {
+    console.error('Error fetching active wallets stats:', e)
+    activeWalletsData.value = {
+      count: 0,
+      is_increasing: false,
+      percent_change: 0,
+      previous_month: 0
+    }
+  } finally {
+    loadingActiveWallets.value = false
+  }
+}
+
+// Function to fetch wallets with parameters
+const fetchWallets = async (params = {}) => {
   loadingWallets.value = true
   try {
-    // Fetch active wallets
-    const res = await walletService.getActiveWallets()
+    const apiParams = {
+      page: currentPage.value,
+      limit: itemsPerPage.value,
+      sort: sortOrder.value,
+      search: searchQuery.value,
+      ...params
+    }
+    
+    const res = await walletService.getAllWallets(apiParams)
     wallets.value = res.data?.data || []
-    // Fetch wallet count by currency
-    const res2 = await walletService.getWalletCountByCurrency()
-    walletCountByCurrency.value = res2.data?.data || []
   } catch (e) {
-    // Error handled globally by api.ts interceptor
+    console.error('Error fetching wallets:', e)
+    wallets.value = []
   } finally {
     loadingWallets.value = false
   }
+}
+
+onMounted(async () => {
+  await Promise.all([
+    fetchWallets(),
+    fetchActiveWalletsStats()
+  ])
 })
+
+// Search handler
+const handleSearchInput = () => {
+  currentPage.value = 1
+  fetchWallets()
+}
+
+// Filter handlers
+const handleCurrencyFilter = (currency) => {
+  selectCurrency(currency)
+  currentPage.value = 1
+  fetchWallets({ currency: currency.value !== 'all' ? currency.value : undefined })
+}
+
+const handleStatusFilter = (status) => {
+  selectStatus(status)
+  currentPage.value = 1
+  fetchWallets({ status: status.value !== 'all' ? status.value : undefined })
+}
 
 // Dropdown states
 const showCurrencyDropdown = ref(false)
