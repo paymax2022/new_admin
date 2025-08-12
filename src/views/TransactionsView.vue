@@ -16,6 +16,7 @@
           <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
             v-model="searchQuery"
+            @input="handleSearchChange"
             type="text"
             placeholder="Search by user or transaction ID"
             class="w-full rounded-md border border-gray-300 pl-10 pr-4 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400"
@@ -25,7 +26,7 @@
       <!-- Filters -->
       <div class="flex items-center space-x-3">
         <div class="w-40">
-          <select v-model="statusFilter" class="block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
+          <select v-model="statusFilter" @change="watchStatusFilter" class="block w-full rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100">
             <option value="">All Status</option>
             <option value="SUCCESSFUL">Completed</option>
             <option value="PENDING">Pending</option>
@@ -35,9 +36,9 @@
         </div>
         <!-- Native Date Range Picker -->
         <div class="flex items-center space-x-2">
-          <input type="date" v-model="startDate" @change="onDateChange" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
+          <input type="date" v-model="startDate" @change="watchDateFilters" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
           <span class="text-gray-500">to</span>
-          <input type="date" v-model="endDate" @change="onDateChange" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
+          <input type="date" v-model="endDate" @change="watchDateFilters" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100" />
         </div>
         <!-- Actions -->
         <button @click="refresh" class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
@@ -49,10 +50,46 @@
         <button @click="printTable" class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
           <PrinterIcon class="h-4 w-4 mr-2" />
         </button>
-        <button @click="exportCSV" class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        <div class="relative">
+          <button 
+            @click="showExportDropdown = !showExportDropdown"
+            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            data-export-button
+          >
           <ArrowDownTrayIcon class="h-4 w-4 mr-2" />
           Export
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          <!-- Export Dropdown -->
+          <div v-if="showExportDropdown" 
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50"
+            data-export-dropdown
+          >
+            <div class="py-1">
+              <button
+                @click="exportToExcel"
+                class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export to Excel
+              </button>
+              <button
+                @click="exportToPDF"
+                class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Export to PDF
         </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div v-if="loading" class="flex justify-center items-center py-10">
@@ -123,6 +160,10 @@ import {
   ArrowDownTrayIcon
 } from '@heroicons/vue/24/outline'
 import transactionService from '@/services/transactionService'
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { useToast } from 'vue-toastification';
 
 export default {
   name: 'TransactionsView',
@@ -134,6 +175,7 @@ export default {
     ArrowDownTrayIcon
   },
   setup() {
+    const toast = useToast()
     const transactions = ref([])
     const loading = ref(false)
     const page = ref(1)
@@ -144,6 +186,7 @@ export default {
     const statusFilter = ref('')
     const startDate = ref('')
     const endDate = ref('')
+    const showExportDropdown = ref(false)
 
     const fetchTransactions = async (pageNum = 1) => {
       loading.value = true
@@ -152,10 +195,7 @@ export default {
           page: pageNum,
           limit: rowsPerPage.value,
         }
-        if (startDate.value) params.start_date = startDate.value
-        if (endDate.value) params.end_date = endDate.value
-        if (searchQuery.value) params.q = searchQuery.value
-        if (statusFilter.value) params.status = statusFilter.value
+        // Only send page and limit to backend - filtering will be done client-side
         const res = await transactionService.getTransactions(params)
         const data = res.data
         transactions.value = data.data || []
@@ -164,7 +204,10 @@ export default {
         totalCount.value = data.total_count || 0
         totalPages.value = Math.ceil(totalCount.value / rowsPerPage.value)
       } catch (e) {
+        console.error('Error fetching transactions:', e)
         transactions.value = []
+        totalCount.value = 0
+        totalPages.value = 1
       } finally {
         loading.value = false
       }
@@ -172,7 +215,28 @@ export default {
 
     onMounted(() => {
       fetchTransactions()
+      
+      // Add click outside listener to close export dropdown
+      document.addEventListener('click', (e) => {
+        const exportButton = document.querySelector('[data-export-button]')
+        const exportDropdown = document.querySelector('[data-export-dropdown]')
+        
+        if (exportButton && exportDropdown) {
+          if (!exportButton.contains(e.target) && !exportDropdown.contains(e.target)) {
+            showExportDropdown.value = false
+          }
+        }
+      })
     })
+
+    // Watch for filter changes
+    const watchStatusFilter = () => {
+      watchFilters()
+    }
+
+    const watchDateFilters = () => {
+      watchFilters()
+    }
 
     const goToPage = (p) => {
       if (p < 1 || p > totalPages.value) return
@@ -180,14 +244,133 @@ export default {
     }
 
     const onDateChange = () => {
+      // Reset to page 1 when filters change
+      page.value = 1
       fetchTransactions(1)
     }
 
     const refresh = () => fetchTransactions(page.value)
     const printTable = () => window.print()
-    const exportCSV = () => {
-      // Implement CSV export logic for filteredTransactions.value
+    
+    // Watch for filter changes and reset pagination
+    const watchFilters = () => {
+      if (searchQuery.value || statusFilter.value || startDate.value || endDate.value) {
+        // For now, we'll fetch all data and filter client-side
+        // In a real app, you'd want to implement server-side filtering
+        fetchTransactions(1)
+      }
     }
+
+    // Watch for search query changes
+    const debouncedSearch = ref(null)
+    const handleSearchChange = () => {
+      if (debouncedSearch.value) clearTimeout(debouncedSearch.value)
+      debouncedSearch.value = setTimeout(() => {
+        watchFilters()
+      }, 500)
+    }
+
+    const exportToExcel = () => {
+      // Determine which transactions to export (filtered or all)
+      const transactionsToExport = filteredTransactions.value.length > 0 
+        ? filteredTransactions.value
+        : transactions.value
+
+      if (transactionsToExport.length === 0) {
+        toast.warning('No transactions to export')
+        showExportDropdown.value = false
+        return
+      }
+
+      // Format data for Excel
+      const excelData = transactionsToExport.map(transaction => ({
+        'Transaction ID': transaction.id,
+        'Date': new Date(transaction.created_at).toLocaleString(),
+        'User': transaction.user ? `${transaction.user.first_name} ${transaction.user.lastname}` : 'N/A',
+        'Email': transaction.user?.email || 'N/A',
+        'Type': transaction.category,
+        'Amount': formatCurrency(transaction.amount),
+        'Status': transaction.status,
+        'Payment Method': transaction.payment_method,
+        'Currency': transaction.currency
+      }))
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData)
+      const workbook = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions")
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 10)
+      const filename = `transactions-${timestamp}.xlsx`
+      
+      XLSX.writeFile(workbook, filename)
+      showExportDropdown.value = false
+      toast.success(`Exported ${transactionsToExport.length} transactions to Excel successfully!`)
+    }
+
+    const exportToPDF = () => {
+      // Determine which transactions to export (filtered or all)
+      const transactionsToExport = filteredTransactions.value.length > 0 
+        ? filteredTransactions.value
+        : transactions.value
+
+      if (transactionsToExport.length === 0) {
+        toast.warning('No transactions to export')
+        showExportDropdown.value = false
+        return
+      }
+
+      const doc = new jsPDF()
+      
+      // Add title
+      const title = `Transactions Report (${transactionsToExport.length})`
+      
+      doc.setFontSize(16)
+      doc.text(title, 14, 22)
+      
+      // Add timestamp
+      doc.setFontSize(10)
+      doc.setTextColor(100, 100, 100)
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30)
+      
+      // Prepare table data
+      const tableColumn = ["ID", "Date", "User", "Type", "Amount", "Status"]
+      const tableRows = transactionsToExport.map(transaction => [
+        transaction.id,
+        new Date(transaction.created_at).toLocaleDateString(),
+        transaction.user ? `${transaction.user.first_name} ${transaction.user.lastname}` : 'N/A',
+        transaction.category,
+        formatCurrency(transaction.amount),
+        transaction.status
+      ])
+
+      // Generate PDF with auto table using the plugin function
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 40,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2
+        },
+        headStyles: {
+          fillColor: [59, 130, 246], // Blue color
+          textColor: 255
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252] // Light gray
+        }
+      })
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 10)
+      const filename = `transactions-${timestamp}.pdf`
+      
+      doc.save(filename)
+      showExportDropdown.value = false
+      toast.success(`Exported ${transactionsToExport.length} transactions to PDF successfully!`)
+    }
+    
     const flagTransaction = (transaction) => {
       // Implement flag logic
     }
@@ -203,6 +386,8 @@ export default {
 
     const filteredTransactions = computed(() => {
       let filtered = transactions.value
+      
+      // Apply search filter
       if (searchQuery.value) {
         const q = searchQuery.value.toLowerCase()
         filtered = filtered.filter(t =>
@@ -210,15 +395,20 @@ export default {
           (t.user && ((t.user.first_name + ' ' + t.user.lastname).toLowerCase().includes(q) || (t.user.email && t.user.email.toLowerCase().includes(q))) )
         )
       }
+      
+      // Apply status filter
       if (statusFilter.value) {
         filtered = filtered.filter(t => t.status === statusFilter.value)
       }
+      
+      // Apply date filters
       if (startDate.value) {
         filtered = filtered.filter(t => new Date(t.created_at) >= new Date(startDate.value))
       }
       if (endDate.value) {
         filtered = filtered.filter(t => new Date(t.created_at) <= new Date(endDate.value))
       }
+      
       return filtered
     })
 
@@ -237,10 +427,15 @@ export default {
       onDateChange,
       refresh,
       printTable,
-      exportCSV,
+      exportToExcel,
+      exportToPDF,
       flagTransaction,
       filteredTransactions,
-      formatCurrency
+      formatCurrency,
+      showExportDropdown,
+      handleSearchChange,
+      watchStatusFilter,
+      watchDateFilters
     }
   }
 }

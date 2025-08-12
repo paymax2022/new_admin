@@ -21,7 +21,45 @@
           @export="exportUsers"
           @delete="deleteSelected"
         />
-        <button class="btn btn-primary">Export</button>
+        <div class="relative">
+          <button 
+            @click="showExportDropdown = !showExportDropdown"
+            class="btn btn-primary flex items-center gap-2"
+            data-export-button
+          >
+            Export
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          
+          <!-- Export Dropdown -->
+          <div v-if="showExportDropdown" 
+            class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg z-50"
+            data-export-dropdown
+          >
+            <div class="py-1">
+              <button
+                @click="exportToExcel"
+                class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Export to Excel
+              </button>
+              <button
+                @click="exportToPDF"
+                class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                Export to PDF
+              </button>
+            </div>
+          </div>
+        </div>
         <button class="btn btn-primary" @click="showAddUserModal = true">+ Add User</button>
       </div>
     </div>
@@ -1119,7 +1157,7 @@ import userService from '@/services/userService'
 import { useToast } from 'vue-toastification'
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const toast = useToast()
 const search = ref('')
@@ -1136,6 +1174,7 @@ const showAdjustBalanceModal = ref(false)
 const showAssignRolesModal = ref(false)
 const showDeleteModal = ref(false)
 const userToDelete = ref(null)
+const showExportDropdown = ref(false)
 const assignRolesData = ref({
   selectedRoles: ['Admin', 'Finance'],
   availableRoles: [
@@ -1294,6 +1333,18 @@ const filteredUsers = computed(() => users.value)
 // Initialize data when component mounts
 onMounted(() => {
   fetchUsers()
+  
+  // Add click outside listener to close export dropdown
+  document.addEventListener('click', (e) => {
+    const exportButton = document.querySelector('[data-export-button]')
+    const exportDropdown = document.querySelector('[data-export-dropdown]')
+    
+    if (exportButton && exportDropdown) {
+      if (!exportButton.contains(e.target) && !exportDropdown.contains(e.target)) {
+        showExportDropdown.value = false
+      }
+    }
+  })
 })
 
 const currentPage = ref(1)
@@ -1640,6 +1691,111 @@ const handleUpdateUser = async () => {
     console.error('Error updating user:', error);
   }
 }
+
+const exportToExcel = () => {
+  // Determine which users to export
+  const usersToExport = selectedRows.value.length > 0 
+    ? users.value.filter(user => selectedRows.value.includes(user.id))
+    : users.value
+
+  if (usersToExport.length === 0) {
+    toast.warning('No users to export')
+    showExportDropdown.value = false
+    return
+  }
+
+  // Format data for Excel
+  const excelData = usersToExport.map(user => ({
+    'User ID': user.id,
+    'Full Name': user.name,
+    'Email': user.email,
+    'Role': user.role,
+    'Status': user.status,
+    'Registration Date': user.registration
+  }))
+
+  const worksheet = XLSX.utils.json_to_sheet(excelData)
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Users")
+  
+  // Generate filename with timestamp
+  const timestamp = new Date().toISOString().slice(0, 10)
+  const filename = selectedRows.value.length > 0 
+    ? `selected-users-${timestamp}.xlsx`
+    : `all-users-${timestamp}.xlsx`
+  
+  XLSX.writeFile(workbook, filename)
+  showExportDropdown.value = false
+  toast.success(`Exported ${usersToExport.length} users to Excel successfully!`)
+}
+
+const exportToPDF = () => {
+  // Determine which users to export
+  const usersToExport = selectedRows.value.length > 0 
+    ? users.value.filter(user => selectedRows.value.includes(user.id))
+    : users.value
+
+  if (usersToExport.length === 0) {
+    toast.warning('No users to export')
+    showExportDropdown.value = false
+    return
+  }
+
+  const doc = new jsPDF()
+  
+  // Add title
+  const title = selectedRows.value.length > 0 
+    ? `Selected Users (${usersToExport.length})`
+    : `All Users (${usersToExport.length})`
+  
+  doc.setFontSize(16)
+  doc.text(title, 14, 22)
+  
+  // Add timestamp
+  doc.setFontSize(10)
+  doc.setTextColor(100, 100, 100)
+  doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 30)
+  
+  // Prepare table data
+  const tableColumn = ["ID", "Name", "Email", "Role", "Status", "Registration"]
+  const tableRows = usersToExport.map(user => [
+    user.id,
+    user.name,
+    user.email,
+    user.role,
+    user.status,
+    user.registration
+  ])
+
+  // Generate PDF with auto table using the plugin function
+  autoTable(doc, {
+    head: [tableColumn],
+    body: tableRows,
+    startY: 40,
+    styles: {
+      fontSize: 8,
+      cellPadding: 2
+    },
+    headStyles: {
+      fillColor: [59, 130, 246], // Blue color
+      textColor: 255
+    },
+    alternateRowStyles: {
+      fillColor: [248, 250, 252] // Light gray
+    }
+  })
+  
+  // Generate filename with timestamp
+  const timestamp = new Date().toISOString().slice(0, 10)
+  const filename = selectedRows.value.length > 0 
+    ? `selected-users-${timestamp}.pdf`
+    : `all-users-${timestamp}.pdf`
+  
+  doc.save(filename)
+  showExportDropdown.value = false
+  toast.success(`Exported ${usersToExport.length} users to PDF successfully!`)
+}
+
 </script>
 
 <style scoped>

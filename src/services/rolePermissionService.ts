@@ -3,6 +3,7 @@ import api from './api';
 export default {
   createRole(data: {
     name: string;
+    description?: string;
     permissionIds: string[];
   }) {
     return api.post('/api/v1/admin/roles/create', data);
@@ -42,7 +43,21 @@ export default {
   }) {
     return api.put('/api/v1/admin/roles/update', data);
   },
-  deleteRole(roleId: string) {
-    return api.patch(`/api/v1/admin/roles/${roleId}`);
+  deleteRole(data: {
+    id: string;
+    name: string;
+    description: string;
+  }) {
+    return api.patch(`/api/v1/admin/roles/${data.id}`, {
+      id: data.id,
+      name: data.name,
+      description: data.description
+    });
+  },
+  getUsers(params?: {
+    page?: number;
+    limit?: number;
+  }) {
+    return api.get('/api/v1/admin/users', { params });
   },
 }; 

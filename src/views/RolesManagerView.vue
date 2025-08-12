@@ -45,7 +45,7 @@
     <div v-if="loadingRoles" class="text-center py-8 text-gray-500">Loading roles...</div>
     <div v-else-if="rolesError" class="text-center py-8 text-red-500">{{ rolesError }}</div>
     <div v-else>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <RoleCard
           v-for="role in rolesList"
           :key="role._id"
@@ -57,61 +57,98 @@
           @rename-role="openRenameRoleModal(role.name, role.description || '')"
           @clone-role="openCloneRoleModal(role.name, role.description || '')"
           @delete-role="openDeleteRoleModal(role.name)"
+          @view-details="openViewDetailsModal(role.name)"
+          @view-permissions="openPermissionsDetailsModal(role.permissions?.[0] || '687d034a609b3cb35daf16be')"
         />
       </div>
-    </div>
+      </div>
     </div>
 
     <!-- Users with Roles Table -->
     <div v-else>
-      <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-800">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Active</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="user in users" :key="user.id">
-              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.id }}</td>
-              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.name }}</td>
-              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.email }}</td>
-              <td class="px-4 py-3">
-                <div class="flex gap-2">
-                  <span v-for="role in user.roles" :key="role" 
-                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                  >
-                    {{ role }}
-                  </span>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.lastActive }}</td>
-              <td class="px-4 py-3 text-sm">
-                <button @click="editUserRoles(user)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                  Edit Roles
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="mb-6">
+        <input 
+          v-model="userSearchQuery" 
+          type="text" 
+          placeholder="Search users by name or email" 
+          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring focus:ring-blue-100 dark:focus:ring-blue-900 focus:border-blue-500 dark:focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        >
       </div>
 
-      <!-- Pagination -->
-      <div class="flex items-center justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
-        <div>
-          Showing 1 to 10 of {{ users.length }} entries
+      <div v-if="loadingUsers" class="text-center py-8 text-gray-500">Loading users...</div>
+      <div v-else-if="usersError" class="text-center py-8 text-red-500">{{ usersError }}</div>
+      <div v-else>
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Role</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Active</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Action</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="user in paginatedUsers" :key="user._id">
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user._id }}</td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.first_name }} {{ user.lastname }}</td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ user.email }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex gap-2">
+                    <span v-for="role in user.roles" :key="role" 
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                    >
+                      {{ role }}
+                    </span>
+                  </div>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{ formatDate(user.lastActive || user.createdAt) }}</td>
+                <td class="px-4 py-3 text-sm">
+                  <button @click="editUserRoles(user)" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                    Edit Roles
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div class="flex gap-2">
-          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">&larr;</button>
-          <button class="px-3 py-1 bg-blue-600 text-white rounded">1</button>
-          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">2</button>
-          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">3</button>
-          <button class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800">&rarr;</button>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
+          <div>
+            Showing {{ (currentUserPage - 1) * userPageSize + 1 }} to {{ Math.min(currentUserPage * userPageSize, filteredUsers.length) }} of {{ filteredUsers.length }} entries
+          </div>
+          <div class="flex gap-2">
+            <button 
+              @click="currentUserPage = Math.max(1, currentUserPage - 1)"
+              :disabled="currentUserPage === 1"
+              class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              &larr;
+            </button>
+            <button 
+              v-for="page in userPageNumbers" 
+              :key="page"
+              @click="currentUserPage = page"
+              :class="[
+                'px-3 py-1 rounded',
+                currentUserPage === page 
+                  ? 'bg-blue-600 text-white' 
+                  : 'border dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800'
+              ]"
+            >
+              {{ page }}
+            </button>
+            <button 
+              @click="currentUserPage = Math.min(userTotalPages, currentUserPage + 1)"
+              :disabled="currentUserPage === userTotalPages"
+              class="px-3 py-1 border rounded dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              &rarr;
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -146,26 +183,38 @@
                   <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-gray-100">Create New Role</DialogTitle>
                   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Add a new role with specific permissions</p>
                 </div>
-                <form @submit.prevent="handleContinueToPermissions">
+                <form @submit.prevent="handleCreateRole">
                   <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role Name</label>
-                    <input v-model="newRoleName" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" placeholder="Enter role name" />
+                    <input v-model="newRoleName" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" placeholder="Enter role name" required />
                   </div>
                   <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                     <input v-model="newRoleDescription" type="text" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100" placeholder="Enter role description" />
                   </div>
                   <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Permission Type</label>
-                    <select v-model="newRolePermissionType" class="w-full border border-gray-300 dark:border-gray-700 rounded-md px-3 py-2 text-sm dark:bg-gray-800 dark:text-gray-100">
-                      <option value="" disabled>Select permission type</option>
-                      <option value="clone">Clone Existing Role</option>
-                      <option value="custom">Custom Permissions</option>
-                    </select>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Permissions</label>
+                    <div class="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-700 rounded-md p-3 dark:bg-gray-800">
+                      <div v-for="(permissions, resource) in groupedPermissions" :key="resource" class="mb-4">
+                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ resource.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}</h4>
+                        <div class="space-y-2">
+                          <label v-for="permission in permissions" :key="permission.id" class="flex items-center">
+                            <input 
+                              type="checkbox" 
+                              :value="permission.id" 
+                              v-model="selectedPermissionsForNewRole"
+                              class="mr-2 rounded border-gray-300 dark:border-gray-600 text-blue-600"
+                            />
+                            <span class="text-sm text-gray-700 dark:text-gray-300">{{ permission.name }}</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Select the permissions you want to assign to this role</p>
                   </div>
                   <div class="flex justify-end gap-3 mt-6">
                     <button type="button" @click="showCreateRoleModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md">Cancel</button>
-                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md">Continue to Permissions</button>
+                    <button type="submit" :disabled="!newRoleName || selectedPermissionsForNewRole.length === 0" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md">Create Role</button>
                   </div>
                 </form>
               </DialogPanel>
@@ -356,17 +405,29 @@
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <ShieldCheckIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ editingRoleName }} Permissions</DialogTitle>
+                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">Assign Permissions to Role</DialogTitle>
                     </div>
                     <button @click="showPermissionsModal = false" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
                       <XMarkIcon class="h-5 w-5" />
                     </button>
                   </div>
-                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Configure access permissions for this role</p>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Select a role and assign permissions to it</p>
                 </div>
+
+                <!-- Role Selection -->
+                <div class="mb-6">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Role</label>
+                  <select v-model="selectedRoleForPermissions" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md dark:bg-gray-800 dark:text-gray-100">
+                    <option value="" disabled>Choose a role</option>
+                    <option v-for="role in rolesList" :key="role._id" :value="role._id">
+                      {{ role.name }} {{ role.scope === 'system' ? '(System)' : '' }}
+                    </option>
+                  </select>
+                </div>
+
                 <div v-if="loadingPermissions" class="text-center py-8 text-gray-500">Loading permissions...</div>
                 <div v-else-if="permissionsError" class="text-center py-8 text-red-500">{{ permissionsError }}</div>
-                <div v-else class="space-y-4">
+                <div v-else-if="selectedRoleForPermissions" class="space-y-4">
                   <div v-for="(permissions, resource) in groupedPermissions" :key="resource" class="border rounded-lg border-gray-200 dark:border-gray-700">
                     <button 
                       @click="toggleSection(resource)"
@@ -407,34 +468,20 @@
                   </div>
                 </div>
 
-                <!-- Warning Message -->
-                <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-100 dark:border-yellow-900/50">
-                  <div class="flex">
-                    <ExclamationTriangleIcon class="h-5 w-5 text-yellow-400" />
-                    <div class="ml-3">
-                      <div class="text-sm text-yellow-700 dark:text-yellow-500">
-                        <span class="font-medium">Note: </span>
-                        This is a system role and has fixed permissions.
-                        <br />
-                        System roles have predefined permissions that cannot be modified to ensure system stability. If you need to customize permissions, please create a new role.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <!-- Action Buttons -->
                 <div class="mt-6 flex justify-end space-x-3">
                   <button
                     @click="showPermissionsModal = false"
                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
                   >
-                    Close
+                    Cancel
                   </button>
                   <button
                     @click="savePermissions"
-                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md inline-flex items-center"
+                    :disabled="!selectedRoleForPermissions"
+                    class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md inline-flex items-center"
                   >
-                    <span>Save Permission</span>
+                    <span>Assign Permissions</span>
                   </button>
                 </div>
               </DialogPanel>
@@ -593,8 +640,16 @@
                 </DialogTitle>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500 dark:text-gray-400">
-                    This action cannot be undone. This will permanently delete the role and remove it from any users who have it assigned.
+                    Are you sure you want to delete the role <strong>"{{ deletingRoleName }}"</strong>?
                   </p>
+                  <div class="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
+                    <div class="flex items-center">
+                      <ExclamationTriangleIcon class="h-5 w-5 text-red-400 mr-2" />
+                      <div class="text-sm text-red-700 dark:text-red-300">
+                        <strong>Warning:</strong> This action cannot be undone. This will permanently delete the role and remove it from any users who have it assigned.
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="mt-4 flex justify-end gap-3">
@@ -607,11 +662,226 @@
                   </button>
                   <button
                     type="button"
-                    class="inline-flex justify-center items-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+                    :disabled="deletingRoleLoading"
+                    class="inline-flex justify-center items-center gap-2 rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     @click="handleDeleteRole"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    Delete Role
+                    <div v-if="deletingRoleLoading" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    {{ deletingRoleLoading ? 'Deleting...' : 'Delete Role' }}
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- Permissions Details Modal -->
+    <TransitionRoot appear :show="showPermissionsDetailsModal" as="template">
+      <Dialog as="div" @close="showPermissionsDetailsModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <ShieldCheckIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">Permission Details</DialogTitle>
+                    </div>
+                    <button @click="showPermissionsDetailsModal = false" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+                      <XMarkIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div v-if="loadingPermissionDetails" class="text-center py-8 text-gray-500">
+                  <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                  Loading permission details...
+                </div>
+                
+                <div v-else-if="selectedPermission" class="space-y-4">
+                  <div class="border rounded-lg border-gray-200 dark:border-gray-700 p-4">
+                    <div class="grid grid-cols-1 gap-3">
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Permission ID</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100 font-mono">{{ selectedPermission.id }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Action</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedPermission.action?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Resource</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedPermission.resource?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Scope</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedPermission.scope?.replace(/\b\w/g, l => l.toUpperCase()) }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedPermission.description }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Created At</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ new Date(selectedPermission.createdAt).toLocaleString() }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ new Date(selectedPermission.updatedAt).toLocaleString() }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                  <button
+                    @click="showPermissionsDetailsModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                  >
+                    Close
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
+
+    <!-- View Role Details Modal -->
+    <TransitionRoot appear :show="showViewDetailsModal" as="template">
+      <Dialog as="div" @close="showViewDetailsModal = false" class="relative z-[60]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black bg-opacity-25" />
+        </TransitionChild>
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                      <ShieldCheckIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      <DialogTitle class="text-lg font-medium text-gray-900 dark:text-gray-100">Role Details</DialogTitle>
+                    </div>
+                    <button @click="showViewDetailsModal = false" class="text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400">
+                      <XMarkIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+                
+                <div v-if="selectedRoleForDetails" class="space-y-4">
+                  <div class="border rounded-lg border-gray-200 dark:border-gray-700 p-4">
+                    <div class="grid grid-cols-1 gap-3">
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Role ID</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100 font-mono">{{ selectedRoleForDetails._id }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Role Name</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100 font-semibold">{{ selectedRoleForDetails.name }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedRoleForDetails.description || 'No description provided' }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Scope</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">
+                          <span :class="[
+                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                            selectedRoleForDetails.scope === 'system' 
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                          ]">
+                            {{ selectedRoleForDetails.scope?.replace(/\b\w/g, l => l.toUpperCase()) || 'Custom' }}
+                          </span>
+                        </p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Users Count</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedRoleForDetails.users_count || 0 }} users</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Permissions Count</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ selectedRoleForDetails.permissions?.length || 0 }} permissions</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Created At</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ new Date(selectedRoleForDetails.created_at).toLocaleString() }}</p>
+                      </div>
+                      <div>
+                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</label>
+                        <p class="text-sm text-gray-900 dark:text-gray-100">{{ new Date(selectedRoleForDetails.updated_at).toLocaleString() }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Permissions List -->
+                  <div v-if="selectedRoleForDetails.permissions_info && selectedRoleForDetails.permissions_info.length > 0" class="border rounded-lg border-gray-200 dark:border-gray-700 p-4">
+                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Assigned Permissions</h4>
+                    <div class="space-y-2">
+                      <div v-for="permission in selectedRoleForDetails.permissions_info" :key="permission._id" 
+                           class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900/30 rounded">
+                        <div>
+                          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {{ permission.action?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+                          </p>
+                          <p class="text-xs text-gray-500 dark:text-gray-400">{{ permission.description }}</p>
+                        </div>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded">
+                          {{ permission.resource?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                  <button
+                    @click="showViewDetailsModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md"
+                  >
+                    Close
                   </button>
                 </div>
               </DialogPanel>
@@ -673,7 +943,7 @@ export default {
                         active ? 'bg-blue-500 text-white' : 'text-gray-900',
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
-                      @click="$emit('view-details')"
+                      @click="() => { console.log('View details clicked for role:', role); $emit('view-details') }"
                     >
                       View Details
                     </button>
@@ -684,7 +954,7 @@ export default {
                         active ? 'bg-blue-500 text-white' : 'text-gray-900',
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
-                      @click="$emit('edit-permissions')"
+                      @click="() => { console.log('Edit permissions clicked for role:', role); $emit('edit-permissions', role) }"
                     >
                       Edit Permissions
                     </button>
@@ -693,9 +963,9 @@ export default {
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
                     <button
-                      :disabled="system"
+                      :disabled="role === 'Admin'"
                       :class="[
-                        system ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-blue-500 text-white' : 'text-gray-900'),
+                        role === 'Admin' ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-blue-500 text-white' : 'text-gray-900'),
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
                       @click="$emit('rename-role')"
@@ -719,14 +989,14 @@ export default {
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
                     <button
-                      :disabled="system"
+                      :disabled="role === 'Admin'"
                       :class="[
-                        system ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-red-500 text-white' : 'text-red-600'),
+                        role === 'Admin' ? 'opacity-50 cursor-not-allowed' : (active ? 'bg-red-500 text-white' : 'text-red-600'),
                         'group flex w-full items-center rounded-md px-2 py-2 text-sm'
                       ]"
-                      @click="$emit('delete-role')"
+                      @click="() => { console.log('Delete role clicked:', role, 'isAdmin:', role === 'Admin'); $emit('delete-role') }"
                     >
-                      Delete Role
+                      Delete Role {{ role === 'Admin' ? '(Cannot Delete Admin)' : '' }}
                     </button>
                   </MenuItem>
                 </div>
@@ -744,7 +1014,12 @@ export default {
               <UserGroupIcon class="h-4 w-4 mr-1" />
               {{ users }} users
             </div>
-            <button class="text-blue-600 hover:underline text-sm">Permissions</button>
+            <button 
+              @click="$emit('view-permissions')"
+              class="text-blue-600 hover:underline text-sm"
+            >
+              Permissions
+            </button>
           </div>
         </div>
       `
@@ -770,6 +1045,13 @@ export default {
     const showCloneRoleModal = ref(false)
     const showDeleteRoleModal = ref(false)
     const deletingRoleName = ref('')
+    const deletingRoleLoading = ref(false)
+    const showPermissionsDetailsModal = ref(false)
+    const showViewDetailsModal = ref(false)
+    const selectedPermission = ref(null)
+    const selectedRoleForDetails = ref(null)
+    const loadingPermissionDetails = ref(false)
+    const loadingRoleDetails = ref(false)
     const openSections = ref({
       userManagement: true,
       roleManagement: false,
@@ -790,15 +1072,78 @@ export default {
     const permissionsError = ref(null)
     const groupedPermissions = ref({})
 
+    // --- API users integration ---
+    const usersList = ref([])
+    const loadingUsers = ref(false)
+    const usersError = ref(null)
+    const userSearchQuery = ref('')
+    const currentUserPage = ref(1)
+    const userPageSize = ref(10)
+    const userTotalPages = ref(1)
+
+    // Computed properties for users pagination
+    const filteredUsers = computed(() => {
+      if (!userSearchQuery.value) return usersList.value
+      const query = userSearchQuery.value.toLowerCase()
+      return usersList.value.filter(user => 
+        user.first_name?.toLowerCase().includes(query) ||
+        user.lastname?.toLowerCase().includes(query) ||
+        user.email?.toLowerCase().includes(query)
+      )
+    })
+
+    const paginatedUsers = computed(() => {
+      const start = (currentUserPage.value - 1) * userPageSize.value
+      const end = start + userPageSize.value
+      return filteredUsers.value.slice(start, end)
+    })
+
+    const userPageNumbers = computed(() => {
+      const total = Math.ceil(filteredUsers.value.length / userPageSize.value)
+      userTotalPages.value = total
+      const pages = []
+      const maxPages = 5
+      let start = Math.max(1, currentUserPage.value - Math.floor(maxPages / 2))
+      let end = Math.min(total, start + maxPages - 1)
+      
+      if (end - start + 1 < maxPages) {
+        start = Math.max(1, end - maxPages + 1)
+      }
+      
+      for (let i = start; i <= end; i++) {
+        pages.push(i)
+      }
+      return pages
+    })
+
     const fetchRoles = async () => {
       loadingRoles.value = true
       try {
         const res = await rolePermissionService.getRoles({ page: 1, limit: 20 })
         rolesList.value = res.data.data || []
+        console.log('Fetched roles:', rolesList.value)
+        console.log('Roles with system status:', rolesList.value.map(role => ({
+          name: role.name,
+          scope: role.scope,
+          isSystem: role.scope === 'system'
+        })))
       } catch (e) {
         rolesError.value = e.message || 'Failed to fetch roles'
       } finally {
         loadingRoles.value = false
+      }
+    }
+
+    const fetchUsers = async () => {
+      loadingUsers.value = true
+      try {
+        const res = await rolePermissionService.getUsers({ page: 1, limit: 100 })
+        usersList.value = res.data.data || []
+        console.log('Fetched users:', usersList.value)
+      } catch (e) {
+        usersError.value = e.message || 'Failed to fetch users'
+      } finally {
+        loadingUsers.value = false
       }
     }
 
@@ -844,7 +1189,17 @@ export default {
 
     // Initialize data
     fetchRoles()
+    fetchUsers()
     fetchPermissions()
+
+    const formatDate = (dateString) => {
+      if (!dateString) return 'N/A'
+      try {
+        return new Date(dateString).toLocaleString()
+      } catch (e) {
+        return 'Invalid Date'
+      }
+    }
 
     const permissions = ref({
       userManagement: [
@@ -903,9 +1258,9 @@ export default {
     const savePermissions = async () => {
       try {
         // Get the current role being edited
-        const currentRole = rolesList.value.find(role => role.name === editingRoleName.value)
+        const currentRole = rolesList.value.find(role => role._id === selectedRoleForPermissions.value)
         if (!currentRole) {
-          console.error('Role not found:', editingRoleName.value)
+          console.error('Role not found:', selectedRoleForPermissions.value)
           return
         }
 
@@ -922,8 +1277,8 @@ export default {
         // Add permissions to role
         await addPermissionToRole(currentRole._id, enabledPermissionIds)
         
-        console.log('Permissions saved successfully for role:', editingRoleName.value)
-        showPermissionsModal.value = false
+        console.log('Permissions saved successfully for role:', currentRole.name)
+      showPermissionsModal.value = false
       } catch (error) {
         console.error('Failed to save permissions:', error)
       }
@@ -1032,18 +1387,45 @@ export default {
     const newRoleName = ref('')
     const newRoleDescription = ref('')
     const newRolePermissionType = ref('')
-    function handleContinueToPermissions() {
-      // Save new role info, then open permissions modal
-      showCreateRoleModal.value = false
-      editingRoleName.value = newRoleName.value
-      showPermissionsModal.value = true
-      // Optionally reset fields
-      // newRoleName.value = ''
-      // newRoleDescription.value = ''
-      // newRolePermissionType.value = ''
+    const selectedPermissionsForNewRole = ref([])
+
+    async function handleCreateRole() {
+      if (!newRoleName.value || selectedPermissionsForNewRole.value.length === 0) {
+        alert('Role name and at least one permission must be selected.')
+        return
+      }
+
+      try {
+        const res = await rolePermissionService.createRole({
+          name: newRoleName.value,
+          description: newRoleDescription.value,
+          permissionIds: selectedPermissionsForNewRole.value
+        })
+        console.log('Role created successfully:', res.data.data)
+        showCreateRoleModal.value = false
+        fetchRoles() // Refresh roles list
+        alert('Role created successfully!')
+      } catch (error) {
+        console.error('Failed to create role:', error)
+        alert('Failed to create role. Please try again.')
+      }
     }
+
     function openPermissionsModal(roleName) {
-      editingRoleName.value = roleName
+      console.log('openPermissionsModal called with roleName:', roleName)
+      // Reset the selected role
+      selectedRoleForPermissions.value = ''
+      // Find the role by name and set it as selected
+      const role = rolesList.value.find(r => r.name === roleName)
+      if (role) {
+        selectedRoleForPermissions.value = role._id
+        // Pre-select permissions that the role already has
+        Object.values(groupedPermissions.value).forEach(permissions => {
+          permissions.forEach(permission => {
+            permission.enabled = role.permissions && role.permissions.includes(permission.id)
+          })
+        })
+      }
       showPermissionsModal.value = true
     }
 
@@ -1072,13 +1454,79 @@ export default {
     }
 
     function openDeleteRoleModal(roleName) {
+      console.log('openDeleteRoleModal called with:', roleName)
       deletingRoleName.value = roleName
       showDeleteRoleModal.value = true
     }
-    function handleDeleteRole() {
-      // Logic to delete role
-      showDeleteRoleModal.value = false
+
+    async function openPermissionsDetailsModal(permissionId) {
+      console.log('openPermissionsDetailsModal called with permissionId:', permissionId)
+      loadingPermissionDetails.value = true
+      try {
+        const res = await rolePermissionService.getPermissionById(permissionId)
+        console.log('Permission API response:', res)
+        if (res.data?.ok && res.data?.data) {
+          selectedPermission.value = res.data.data
+          showPermissionsDetailsModal.value = true
+          console.log('Permission modal opened, data:', selectedPermission.value)
+        }
+      } catch (error) {
+        console.error('Error fetching permission details:', error)
+      } finally {
+        loadingPermissionDetails.value = false
+      }
     }
+
+    function openViewDetailsModal(roleName) {
+      console.log('openViewDetailsModal called with roleName:', roleName)
+      const role = rolesList.value.find(r => r.name === roleName)
+      if (role) {
+        selectedRoleForDetails.value = role
+        showViewDetailsModal.value = true
+        console.log('View details modal opened, role:', selectedRoleForDetails.value)
+      } else {
+        console.error('Role not found:', roleName)
+      }
+    }
+    
+    async function handleDeleteRole() {
+      deletingRoleLoading.value = true
+      try {
+        // Find the role to get its ID
+        const roleToDelete = rolesList.value.find(role => role.name === deletingRoleName.value)
+        if (!roleToDelete) {
+          console.error('Role not found:', deletingRoleName.value)
+          return
+        }
+
+        // Call the delete role API
+        await rolePermissionService.deleteRole({
+          id: roleToDelete._id,
+          name: roleToDelete.name,
+          description: roleToDelete.description || ''
+        })
+
+        // Remove the role from the local list
+        const roleIndex = rolesList.value.findIndex(role => role._id === roleToDelete._id)
+        if (roleIndex !== -1) {
+          rolesList.value.splice(roleIndex, 1)
+        }
+
+        // Close the modal
+      showDeleteRoleModal.value = false
+        deletingRoleName.value = ''
+        
+        // Show success message (you can add toast notification here if available)
+        console.log('Role deleted successfully:', deletingRoleName.value)
+      } catch (error) {
+        console.error('Failed to delete role:', error)
+        // You can add error handling here (e.g., show error toast)
+      } finally {
+        deletingRoleLoading.value = false
+      }
+    }
+
+    const selectedRoleForPermissions = ref('')
 
     return {
       activeTab,
@@ -1102,7 +1550,7 @@ export default {
       newRoleName,
       newRoleDescription,
       newRolePermissionType,
-      handleContinueToPermissions,
+      handleCreateRole,
       openPermissionsModal,
       renameRoleName,
       renameRoleDescription,
@@ -1122,7 +1570,30 @@ export default {
       loadingPermissions,
       permissionsError,
       groupedPermissions,
-      addPermissionToRole
+      addPermissionToRole,
+      deletingRoleLoading,
+      showPermissionsDetailsModal,
+      showViewDetailsModal,
+      selectedPermission,
+      selectedRoleForDetails,
+      loadingPermissionDetails,
+      loadingRoleDetails,
+      openPermissionsDetailsModal,
+      openViewDetailsModal,
+      selectedRoleForPermissions,
+      selectedPermissionsForNewRole,
+      // User-related variables
+      usersList,
+      loadingUsers,
+      usersError,
+      userSearchQuery,
+      currentUserPage,
+      userPageSize,
+      userTotalPages,
+      filteredUsers,
+      paginatedUsers,
+      userPageNumbers,
+      formatDate
     }
   }
 }
