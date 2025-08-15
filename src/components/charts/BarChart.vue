@@ -4,51 +4,104 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { Chart, registerables } from 'chart.js'
 Chart.register(...registerables)
 
-const barCanvas = ref(null)
+interface Props {
+  data: any
+  options?: any
+}
+
+const props = defineProps<Props>()
+const barCanvas = ref<HTMLCanvasElement | null>(null)
+let chart: Chart | null = null
+
+const createChart = () => {
+  if (!barCanvas.value || !props.data) return
+  
+  try {
+    // Destroy existing chart if it exists
+    if (chart) {
+      chart.destroy()
+      chart = null
+    }
+    
+    chart = new Chart(barCanvas.value, {
+      type: 'bar',
+      data: props.data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        ...props.options
+      }
+    })
+  } catch (error) {
+    console.error('Error creating bar chart:', error)
+  }
+}
+
+const destroyChart = () => {
+  if (chart) {
+    try {
+      chart.destroy()
+      chart = null
+    } catch (error) {
+      console.error('Error destroying chart:', error)
+    }
+  }
+}
 
 onMounted(() => {
-  new Chart(barCanvas.value, {
-    type: 'bar',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-      datasets: [
-        {
-          label: 'Credits',
-          data: [3000, 2500, 4000, 3200, 2800, 5000],
-          backgroundColor: 'rgba(34, 197, 94, 0.7)'
-        },
-        {
-          label: 'Debits',
-          data: [1200, 1500, 1800, 1100, 1400, 2000],
-          backgroundColor: 'rgba(239, 68, 68, 0.7)'
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top'
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
+  nextTick(() => {
+    createChart()
   })
 })
+
+onBeforeUnmount(() => {
+  destroyChart()
+})
+
+watch(() => props.data, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
+
+watch(() => props.options, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
 </script>
 
 <style scoped>
 div {
-  height: auto;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+canvas {
+  height: 100% !important;
+  width: 100% !important;
 }
 </style>
+

@@ -81,10 +81,51 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/CommissionEarningsView.vue'),
     },
     {
+        path: '/commission-management',
+        name: 'commission-management',
+        component: () => import('@/views/CommissionManagementView.vue'),
+    },
+    {
+        path: '/school-dashboard',
+        name: 'school-dashboard',
+        component: () => import('@/views/SchoolDashboardView.vue'),
+    },
+    {
+        path: '/school-management',
+        name: 'school-management',
+        component: () => import('@/views/SchoolManagementView.vue'),
+    },
+
+    {
+        path: '/revenue-monitoring',
+        name: 'revenue-monitoring',
+        component: () => import('@/views/RevenueMonitoringView.vue'),
+    },
+
+    {
+        path: '/transaction',
+        name: 'transaction',
+        component: () => import('@/views/TransactionView.vue'),
+    },
+
+    {
+        path: '/support-tickets',
+        name: 'support-tickets',
+        component: () => import('@/views/SupportTicketsView.vue'),
+    },
+
+    {
+        path: '/dispute-resolution',
+        name: 'dispute-resolution',
+        component: () => import('@/views/DisputeResolutionView.vue'),
+    },
+
+    {
         path: '/payouts-management',
         name: 'payouts-management',
         component: () => import('@/views/PayoutsManagementView.vue'),
     },
+    
     {
         path: '/referral-network',
         name: 'referral-network',
@@ -109,6 +150,11 @@ const routes: RouteRecordRaw[] = [
         path: '/system-settings',
         name: 'system-settings',
         component: () => import('@/views/SystemSettingsView.vue'),
+    },
+    {
+        path: '/school-settings',
+        name: 'school-settings',
+        component: () => import('@/views/SchoolSettingsView.vue'),
     },
     {
         path: '/backup-restore',

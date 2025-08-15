@@ -76,17 +76,23 @@
     <div class="grid dark:bg-gray-800 grid-cols-1 lg:grid-cols-2 gap-6">
       <div class="bg-white rounded dark:bg-gray-800 shadow p-4">
         <h2 class="text-lg font-semibold mb-4">User Growth</h2>
-        <LineChart />
+        <div class="h-64 w-full">
+          <LineChart :data="userGrowthData" />
+        </div>
       </div>
       <div class="bg-white rounded dark:bg-gray-800 shadow p-4">
         <h2 class="text-lg font-semibold mb-4">Wallet Distribution</h2>
-        <PieChart />
+        <div class="h-64 w-full">
+          <PieChart :data="walletDistributionData" />
+        </div>
       </div>
     </div>
 
     <div class="bg-white rounded shadow p-4 dark:bg-gray-800">
       <h2 class="text-lg font-semibold mb-4">Financial Activity</h2>
-      <BarChart />
+      <div class="h-64 w-full">
+        <BarChart :data="financialActivityData" />
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 dark:bg-gray-800">
@@ -290,6 +296,121 @@ const isLoadingTransactions = ref(true)
 // Recent transactions
 const recentTransactions = ref([])
 
+// Sample data for charts
+const userGrowthData = ref({
+  labels: [],
+  datasets: [
+    {
+      label: 'User Registrations',
+      data: [],
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)',
+      tension: 0.4,
+      fill: false
+    }
+  ]
+})
+
+const walletDistributionData = ref({
+  labels: [],
+  datasets: [
+    {
+      label: 'Wallets by Currency',
+      data: [],
+      backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6b7280', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'],
+      borderWidth: 2,
+      borderColor: '#ffffff'
+    }
+  ]
+})
+
+const financialActivityData = ref({
+  labels: [],
+  datasets: [
+    {
+      label: 'Credit',
+      data: [],
+      backgroundColor: '#10b981',
+      borderColor: '#059669',
+      borderWidth: 2
+    },
+    {
+      label: 'Debit',
+      data: [],
+      backgroundColor: '#ef4444',
+      borderColor: '#dc2626',
+      borderWidth: 2
+    },
+    {
+      label: 'Commission',
+      data: [],
+      backgroundColor: '#8b5cf6',
+      borderColor: '#7c3aed',
+      borderWidth: 2
+    }
+  ]
+})
+
+// Debug chart data
+console.log('Chart data:', {
+  userGrowth: userGrowthData.value,
+  walletDistribution: walletDistributionData.value,
+  financialActivity: financialActivityData.value
+})
+
+// Fetch user registration data for the chart
+const fetchUserRegistrations = async () => {
+  try {
+    // Use the same service pattern as other API calls
+    const response = await userService.getUserRegistrations({ year: 2025, status: 'ACTIVE' })
+    
+    if (response.data && response.data.ok && response.data.data) {
+      // Sort data by month order
+      const monthOrder = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ]
+      
+      const sortedData = monthOrder.map(month => {
+        const monthData = response.data.data.find(item => item.month === month)
+        return monthData ? monthData.count : 0
+      })
+      
+      userGrowthData.value = {
+        labels: monthOrder,
+        datasets: [
+          {
+            label: 'User Registrations',
+            data: sortedData,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: false
+          }
+        ]
+      }
+      
+      console.log('User registration data updated:', userGrowthData.value)
+    }
+  } catch (error) {
+    console.error('Error fetching user registrations:', error)
+    // Fallback to sample data if API fails
+    userGrowthData.value = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      datasets: [
+        {
+          label: 'User Registrations',
+          data: [2, 23, 7, 5, 0, 2, 8, 1, 0, 0, 0, 0],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4,
+          fill: false
+        }
+      ]
+    }
+  }
+}
+
 // Fetch transaction totals
 const fetchTransactionTotals = async () => {
   try {
@@ -384,11 +505,150 @@ const fetchRecentTransactions = async () => {
   }
 }
 
+// Fetch wallet currency distribution data for the chart
+const fetchWalletCurrencyDistribution = async () => {
+  try {
+    // Use the same service pattern as other API calls
+    const response = await walletService.getWalletCountByCurrency()
+    
+    if (response.data && response.data.ok && response.data.data) {
+      const labels = response.data.data.map(item => item.currency)
+      const data = response.data.data.map(item => item.count)
+      
+      walletDistributionData.value = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Wallets by Currency',
+            data: data,
+            backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6b7280', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }
+        ]
+      }
+      
+      console.log('Wallet currency distribution data updated:', walletDistributionData.value)
+    }
+  } catch (error) {
+    console.error('Error fetching wallet currency distribution:', error)
+    // Fallback to sample data if API fails
+    walletDistributionData.value = {
+      labels: ['NGN'],
+      datasets: [
+        {
+          label: 'Wallets by Currency',
+          data: [21],
+          backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6b7280', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'],
+          borderWidth: 2,
+          borderColor: '#ffffff'
+        }
+      ]
+    }
+  }
+}
+
+// Fetch transaction entries data for the financial activity chart
+const fetchTransactionEntries = async () => {
+  try {
+    // Use the same service pattern as other API calls
+    const response = await transactionService.getTransactionEntries({ 
+      year: 2025, 
+      currency: 'NGN', 
+      status: 'SUCCESSFUL,FAILED,PENDING' 
+    })
+    
+    if (response.data && response.data.ok && response.data.data) {
+      // Sort data by month order
+      const monthOrder = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ]
+      
+      const creditData = monthOrder.map(month => {
+        const monthData = response.data.data.find(item => item.month === month)
+        return monthData ? monthData.credit : 0
+      })
+      
+      const debitData = monthOrder.map(month => {
+        const monthData = response.data.data.find(item => item.month === month)
+        return monthData ? monthData.debit : 0
+      })
+      
+      const commissionData = monthOrder.map(month => {
+        const monthData = response.data.data.find(item => item.month === month)
+        return monthData ? monthData.commission : 0
+      })
+      
+      financialActivityData.value = {
+        labels: monthOrder,
+        datasets: [
+          {
+            label: 'Credit',
+            data: creditData,
+            backgroundColor: '#10b981',
+            borderColor: '#059669',
+            borderWidth: 2
+          },
+          {
+            label: 'Debit',
+            data: debitData,
+            backgroundColor: '#ef4444',
+            borderColor: '#dc2626',
+            borderWidth: 2
+          },
+          {
+            label: 'Commission',
+            data: commissionData,
+            backgroundColor: '#8b5cf6',
+            borderColor: '#7c3aed',
+            borderWidth: 2
+          }
+        ]
+      }
+      
+      console.log('Transaction entries data updated:', financialActivityData.value)
+    }
+  } catch (error) {
+    console.error('Error fetching transaction entries:', error)
+    // Fallback to sample data if API fails
+    financialActivityData.value = {
+      labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+      datasets: [
+        {
+          label: 'Credit',
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: '#10b981',
+          borderColor: '#059669',
+          borderWidth: 2
+        },
+        {
+          label: 'Debit',
+          data: [0, 0, 0, 0, 0, 100, 1500, 0, 0, 0, 0, 0],
+          backgroundColor: '#ef4444',
+          borderColor: '#dc2626',
+          borderWidth: 2
+        },
+        {
+          label: 'Commission',
+          data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: '#8b5cf6',
+          borderColor: '#7c3aed',
+          borderWidth: 2
+        }
+      ]
+    }
+  }
+}
+
 onMounted(() => {
   fetchTransactionTotals()
   fetchUsers()
   fetchWalletData()
   fetchRecentTransactions()
+  fetchUserRegistrations() // Call the new function here
+  fetchWalletCurrencyDistribution() // Call the new function here
+  fetchTransactionEntries() // Call the new function here
 })
 </script>
 

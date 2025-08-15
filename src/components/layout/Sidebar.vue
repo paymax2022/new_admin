@@ -54,6 +54,7 @@
                         <UserManagementNavigation />
                         <RoleManagementNavigation />
                         <FinancialManagementNavigation />
+                        <SchoolNavigation />
                         <ReferralNavigation />
                         <DisputeNavigation />
                         <ReportsNavigation />
@@ -91,6 +92,7 @@ import IconMinus from '@/components/icon/icon-minus.vue';
 import UserManagementNavigation from '../modules/UserManagementNavigation.vue';
 import RoleManagementNavigation from '../modules/RoleManagementNavigation.vue';
 import FinancialManagementNavigation from '../modules/FinancialManagementNavigation.vue';
+import SchoolNavigation from '../modules/SchoolNavigation.vue';
 import ReferralNavigation from '../modules/ReferralNavigation.vue';
 import DisputeNavigation from '../modules/DisputeNavigation.vue';
 import ReportsNavigation from '../modules/ReportsNavigation.vue';

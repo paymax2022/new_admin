@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
+import { safeDecodeUser } from '@/utils/dataTransformers';
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref(localStorage.getItem('token') || '');
@@ -17,9 +18,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function setUser(newUser) {
-    user.value = newUser;
-    if (newUser) {
-      localStorage.setItem('user', JSON.stringify(newUser));
+    // Safely decode user data to handle boolean field issues
+    const decodedUser = safeDecodeUser(newUser);
+    user.value = decodedUser;
+    if (decodedUser) {
+      localStorage.setItem('user', JSON.stringify(decodedUser));
     } else {
       localStorage.removeItem('user');
     }

@@ -1,91 +1,115 @@
 <template>
   <div>
-    <canvas ref="lineCanvas" height="250"></canvas>
+    <canvas ref="lineCanvas"></canvas>
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import userService from '@/services/userService'
 Chart.register(...registerables)
 
-const lineCanvas = ref(null)
-const chartInstance = ref(null)
-const monthLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-
-// Get current year
-const currentYear = new Date().getFullYear().toString()
-
-// Fetch user registration data
-const fetchUserGrowthData = async () => {
-  try {
-    // Call with ACTIVE status as it's required by the API
-    let response = await userService.getUserRegistrations({ year: currentYear, status: 'ACTIVE' })
-    let userData = [120, 200, 300, 400, 500, 650, 700, 750, 800, 850, 900, 950] // Default mock data
-    
-    if (response.data && response.data.ok) {
-      // Process the data - expecting monthly registration counts
-      const monthlyData = response.data.data || []
-      
-      // Reset data array
-      userData = Array(12).fill(0)
-      
-      // Fill in the data from API response
-      monthlyData.forEach(item => {
-        // Assuming the API returns data with month index (0-11)
-        if (item.month >= 0 && item.month < 12) {
-          userData[item.month] = item.count
-        }
-      })
-    }
-    
-    createChart(userData)
-  } catch (error) {
-    console.error('Error fetching user growth data:', error)
-    // Use mock data on error
-    createChart([120, 200, 300, 400, 500, 650, 700, 750, 800, 850, 900, 950])
-  }
+interface Props {
+  data: any
+  options?: any
 }
 
-// Create chart with data
-const createChart = (userData) => {
-  if (lineCanvas.value) {
-    chartInstance.value = new Chart(lineCanvas.value, {
+const props = defineProps<Props>()
+const lineCanvas = ref<HTMLCanvasElement | null>(null)
+let chart: Chart | null = null
+
+const createChart = () => {
+  if (!lineCanvas.value || !props.data) {
+    console.log('LineChart: Missing canvas or data', { canvas: !!lineCanvas.value, data: !!props.data })
+    return
+  }
+  
+  try {
+    console.log('LineChart: Creating chart with data:', props.data)
+    
+    // Destroy existing chart if it exists
+    if (chart) {
+      chart.destroy()
+      chart = null
+    }
+    
+    chart = new Chart(lineCanvas.value, {
       type: 'line',
-      data: {
-        labels: monthLabels,
-        datasets: [
-          {
-            label: 'User Growth',
-            data: userData,
-            borderColor: 'rgba(59, 130, 246, 1)',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true,
-          }
-        ]
-      },
+      data: props.data,
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false
+            position: 'top'
           }
-        }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        ...props.options
       }
     })
+    
+    console.log('LineChart: Chart created successfully')
+  } catch (error) {
+    console.error('Error creating line chart:', error)
+  }
+}
+
+const destroyChart = () => {
+  if (chart) {
+    try {
+      chart.destroy()
+      chart = null
+    } catch (error) {
+      console.error('Error destroying chart:', error)
+    }
   }
 }
 
 onMounted(() => {
-  fetchUserGrowthData()
+  console.log('LineChart: Component mounted, data:', props.data)
+  nextTick(() => {
+    console.log('LineChart: Next tick, creating chart')
+    createChart()
+  })
 })
+
+onBeforeUnmount(() => {
+  destroyChart()
+})
+
+watch(() => props.data, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
+
+watch(() => props.options, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
 </script>
 
 <style scoped>
 div {
-  height: auto;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+canvas {
+  height: 100% !important;
+  width: 100% !important;
 }
 </style>

@@ -526,7 +526,7 @@
                           <button
                             v-for="tab in ['Activities', 'Transactions', 'Referrals']"
                             :key="tab"
-                            @click="activeTab = tab"
+                            @click="handleTabChange(tab)"
                             :class="[
                               activeTab === tab
                                 ? 'border-blue-500 text-blue-600 dark:text-blue-500'
@@ -634,71 +634,140 @@
                           <p class="text-sm text-gray-500 dark:text-gray-400">Users referred and referral earnings</p>
                         </div>
 
-                        <!-- Stats Cards -->
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                          <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Referrals</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white">5</p>
-                          </div>
-                          <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Earnings from Referrals</p>
-                            <p class="text-2xl font-semibold text-green-500">$120.45</p>
-                          </div>
+                        <!-- Loading State -->
+                        <div v-if="loadingReferrals" class="text-center py-8 text-gray-500">
+                          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                          Loading referral data...
                         </div>
 
-                        <!-- Referral Link -->
-                        <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4 mb-6">
-                          <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Referral Link</p>
-                          <div class="flex items-center gap-2">
-                            <input
-                              type="text"
-                              readonly
-                              value="https://example.com/ref/U1001"
-                              class="flex-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2"
-                            />
-                            <button
-                              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-                              @click="copyReferralLink"
-                            >
-                              Copy
-                            </button>
-                          </div>
+                        <!-- Error State -->
+                        <div v-else-if="referralError" class="text-center py-8 text-red-500">
+                          {{ referralError }}
                         </div>
 
-                        <!-- Referred Users Table -->
-                        <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg overflow-hidden">
-                          <p class="text-sm font-medium text-gray-900 dark:text-white p-4 border-b border-gray-100 dark:border-gray-700">
-                            Referred Users
-                          </p>
-                          <div class="overflow-x-auto">
-                            <table class="w-full">
-                              <thead>
-                                <tr class="bg-gray-50 dark:bg-gray-900">
-                                  <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">User</th>
-                                  <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Date</th>
-                                  <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Status</th>
-                                  <th class="text-right text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Commission</th>
-                                </tr>
-                              </thead>
-                              <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                                <tr v-for="(referral, index) in referredUsers" :key="index">
-                                  <td class="px-4 py-3">
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ referral.name }}</span>
-                                  </td>
-                                  <td class="px-4 py-3">
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ referral.date }}</span>
-                                  </td>
-                                  <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
-                                      {{ referral.status }}
-                                    </span>
-                                  </td>
-                                  <td class="px-4 py-3 text-right">
-                                    <span class="text-sm font-medium text-green-500">${{ referral.commission }}</span>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
+                        <!-- Referral Data -->
+                        <div v-else-if="referralData">
+                          <!-- Stats Cards -->
+                          <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
+                              <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Referrals</p>
+                              <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ referralData.total_referrals || 0 }}</p>
+                            </div>
+                            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4">
+                              <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Earnings from Referrals</p>
+                              <p class="text-2xl font-semibold text-green-500">₦{{ formatCurrency(referralData.total_commission || 0) }}</p>
+                            </div>
+                          </div>
+
+                          <!-- Referral Link -->
+                          <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg p-4 mb-6">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white mb-2">Referral Code</p>
+                            <div class="flex items-center gap-2">
+                              <input
+                                type="text"
+                                readonly
+                                :value="referralData.referral_code || 'No referral code available'"
+                                class="flex-1 text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-3 py-2"
+                              />
+                              <button
+                                v-if="referralData.referral_code"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                                @click="copyReferralCode"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Referred Users Table -->
+                          <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg overflow-hidden">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white p-4 border-b border-gray-100 dark:border-gray-700">
+                              Referred Users ({{ referralData.referrals?.length || 0 }})
+                            </p>
+                            
+                            <!-- Empty State -->
+                            <div v-if="!referralData.referrals || referralData.referrals.length === 0" class="text-center py-8 text-gray-500">
+                              <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                              </svg>
+                              <p class="text-sm">No referrals yet</p>
+                              <p class="text-xs text-gray-400">This user hasn't referred anyone yet</p>
+                            </div>
+
+                            <!-- Referrals Table -->
+                            <div v-else class="overflow-x-auto">
+                              <table class="w-full">
+                                <thead>
+                                  <tr class="bg-gray-50 dark:bg-gray-900">
+                                    <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">User</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Date</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Status</th>
+                                    <th class="text-right text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Commission</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                                  <tr v-for="(referral, index) in referralData.referrals" :key="index">
+                                    <td class="px-4 py-3">
+                                      <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ referral.name || referral.email || `User ${index + 1}` }}
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                      <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ referral.createdAt ? new Date(referral.createdAt).toLocaleDateString() : 'N/A' }}
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-600 text-white">
+                                        {{ referral.status || 'Active' }}
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                      <span class="text-sm font-medium text-green-500">
+                                        ₦{{ formatCurrency(referral.commission || 0) }}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+
+                          <!-- Commissions Table -->
+                          <div v-if="referralData.commissions && referralData.commissions.length > 0" class="mt-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg overflow-hidden">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white p-4 border-b border-gray-100 dark:border-gray-700">
+                              Commission History ({{ referralData.commissions.length }})
+                            </p>
+                            <div class="overflow-x-auto">
+                              <table class="w-full">
+                                <thead>
+                                  <tr class="bg-gray-50 dark:bg-gray-900">
+                                    <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Date</th>
+                                    <th class="text-left text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Description</th>
+                                    <th class="text-right text-xs font-medium text-gray-500 dark:text-gray-400 px-4 py-3">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                                  <tr v-for="(commission, index) in referralData.commissions" :key="index">
+                                    <td class="px-4 py-3">
+                                      <span class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ commission.createdAt ? new Date(commission.createdAt).toLocaleDateString() : 'N/A' }}
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3">
+                                      <span class="text-sm text-gray-900 dark:text-white">
+                                        {{ commission.description || 'Referral commission' }}
+                                      </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right">
+                                      <span class="text-sm font-medium text-green-500">
+                                        ₦{{ formatCurrency(commission.amount || 0) }}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1195,7 +1264,7 @@ const newUser = ref({
 })
 
 const statuses = ['All Status', 'Active', 'Inactive', 'Suspended']
-const roles = ['All Roles', 'Admin', 'Agent', 'Customer']
+const roles = ['All Roles', 'Admin', 'User' ]
 
 // API data and loading states
 const users = ref([])
@@ -1566,9 +1635,26 @@ const referredUsers = [
   }
 ]
 
+const copyReferralCode = () => {
+  if (referralData.value?.referral_code) {
+    navigator.clipboard.writeText(referralData.value.referral_code)
+    toast.success('Referral code copied to clipboard!')
+  }
+}
+
 const copyReferralLink = () => {
   navigator.clipboard.writeText('https://example.com/ref/U1001')
   // You might want to add a toast notification here
+}
+
+// Format currency for Nigerian Naira
+const formatCurrency = (amount) => {
+  if (amount === null || amount === undefined) return '0.00'
+  return new Intl.NumberFormat('en-NG', {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount)
 }
 
 const showUserDetails = async (user) => {
@@ -1794,6 +1880,50 @@ const exportToPDF = () => {
   doc.save(filename)
   showExportDropdown.value = false
   toast.success(`Exported ${usersToExport.length} users to PDF successfully!`)
+}
+
+// Referral data
+const referralData = ref(null)
+const loadingReferrals = ref(false)
+const referralError = ref(null)
+
+// Fetch referral data for a user
+const fetchReferralData = async (userId) => {
+  if (!userId) return
+  
+  loadingReferrals.value = true
+  referralError.value = null
+  
+  try {
+    const [referralsResponse, summaryResponse] = await Promise.all([
+      userService.getUserReferrals(userId),
+      userService.getUserReferralSummary(userId)
+    ])
+    
+    if (referralsResponse.data?.ok && summaryResponse.data?.ok) {
+      // Merge the data from both endpoints
+      referralData.value = {
+        ...summaryResponse.data.data,
+        referrals: referralsResponse.data.data || []
+      }
+      console.log('Referral data loaded:', referralData.value)
+    } else {
+      throw new Error('Failed to fetch referral data')
+    }
+  } catch (error) {
+    console.error('Error fetching referral data:', error)
+    referralError.value = error.message || 'Failed to load referral data'
+  } finally {
+    loadingReferrals.value = false
+  }
+}
+
+// Handle tab change to fetch referral data when referrals tab is clicked
+const handleTabChange = (tabName) => {
+  activeTab.value = tabName
+  if (tabName === 'Referrals' && selectedUser.value?.id) {
+    fetchReferralData(selectedUser.value.id)
+  }
 }
 
 </script>

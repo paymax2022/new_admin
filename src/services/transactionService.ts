@@ -17,4 +17,11 @@ export default {
   getTransactionTotal() {
     return api.get('/api/v1/admin/transactions/total');
   },
+  getTransactionEntries(params?: {
+    year?: string;
+    currency?: string;
+    status?: string;
+  }) {
+    return api.get('/api/v1/admin/transactions/entries', { params });
+  },
 };

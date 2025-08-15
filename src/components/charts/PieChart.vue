@@ -4,89 +4,98 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, watch, nextTick, onBeforeUnmount } from 'vue'
 import { Chart, registerables } from 'chart.js'
-import walletService from '@/services/walletService'
 Chart.register(...registerables)
 
-const pieCanvas = ref(null)
-const chartInstance = ref(null)
-const isLoading = ref(true)
-const walletData = ref([])
+interface Props {
+  data: any
+  options?: any
+}
 
-// Fetch wallet distribution data
-const fetchWalletDistribution = async () => {
+const props = defineProps<Props>()
+const pieCanvas = ref<HTMLCanvasElement | null>(null)
+let chart: Chart | null = null
+
+const createChart = () => {
+  if (!pieCanvas.value || !props.data) return
+  
   try {
-    isLoading.value = true
-    const response = await walletService.getWalletCountByCurrency()
-    
-    if (response.data && response.data.ok) {
-      walletData.value = response.data.data || []
-    } else {
-      // Use mock data if API doesn't return expected format
-      walletData.value = [
-        { currency: 'USD', count: 300 },
-        { currency: 'EUR', count: 200 },
-        { currency: 'GBP', count: 150 },
-        { currency: 'JPY', count: 100 }
-      ]
+    // Destroy existing chart if it exists
+    if (chart) {
+      chart.destroy()
+      chart = null
     }
+    
+    chart = new Chart(pieCanvas.value, {
+      type: 'pie',
+      data: props.data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        },
+        ...props.options
+      }
+    })
   } catch (error) {
-    console.error('Error fetching wallet distribution data:', error)
-    // Use mock data on error
-    walletData.value = [
-      { currency: 'USD', count: 300 },
-      { currency: 'EUR', count: 200 },
-      { currency: 'GBP', count: 150 },
-      { currency: 'JPY', count: 100 }
-    ]
-  } finally {
-    isLoading.value = false
-    createChart()
+    console.error('Error creating pie chart:', error)
   }
 }
 
-// Create chart with data
-const createChart = () => {
-  if (pieCanvas.value) {
-    const labels = walletData.value.map(item => item.currency)
-    const data = walletData.value.map(item => item.count)
-    
-    chartInstance.value = new Chart(pieCanvas.value, {
-      type: 'pie',
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: 'Wallet Distribution',
-            data: data,
-            backgroundColor: [
-              'rgba(59, 130, 246, 0.6)',
-              'rgba(34, 197, 94, 0.6)',
-              'rgba(234, 88, 12, 0.6)',
-              'rgba(139, 92, 246, 0.6)',
-              'rgba(236, 72, 153, 0.6)',
-              'rgba(245, 158, 11, 0.6)'
-            ]
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    })
+const destroyChart = () => {
+  if (chart) {
+    try {
+      chart.destroy()
+      chart = null
+    } catch (error) {
+      console.error('Error destroying chart:', error)
+    }
   }
 }
 
 onMounted(() => {
-  fetchWalletDistribution()
+  nextTick(() => {
+    createChart()
+  })
 })
+
+onBeforeUnmount(() => {
+  destroyChart()
+})
+
+watch(() => props.data, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
+
+watch(() => props.options, () => {
+  if (props.data) {
+    destroyChart()
+    nextTick(() => {
+      createChart()
+    })
+  }
+}, { deep: true })
 </script>
 
 <style scoped>
 div {
-  height: auto;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+canvas {
+  height: 100% !important;
+  width: 100% !important;
 }
 </style>
