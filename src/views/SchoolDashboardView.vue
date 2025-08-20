@@ -106,7 +106,7 @@
         <div class="flex items-center justify-between mb-4">
           <div>
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">School Growth - Monthly new school registrations</h3>
-            </div>
+          </div>
         </div>
         <div class="h-64">
           <BarChart
@@ -125,7 +125,7 @@
         <div class="flex items-center justify-between mb-4">
           <div>
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Monthly Revenue - Platform revenue from all sources</h3>
-            </div>
+          </div>
         </div>
         <div class="h-64">
             <BarChart
@@ -147,7 +147,7 @@
         <div class="flex items-center justify-between mb-4">
           <div>
               <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Revenue Sources - Breakdown of user activity status</h3>
-            </div>
+          </div>
         </div>
         <div class="h-64">
           <PieChart

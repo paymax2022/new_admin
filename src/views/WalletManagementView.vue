@@ -230,12 +230,12 @@
           Reconcile Wallets
         </button>
         <!-- Test button for debugging -->
-        <button
+        <!-- <button
           class="px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 font-medium"
           @click="() => { selectedWalletForCredit = wallets[0]; showCreditFundsModal = true; }"
         >
           Test Credit Modal
-        </button>
+        </button> -->
       </div>
     </div>
 
@@ -294,7 +294,7 @@
                   {{ wallet.active ? 'Active' : 'Frozen' }}
                 </span>
               </td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.tier?.name || '-' }}</td>
+              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.tier?.name || 'No Tier' }}</td>
               <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ new Date(wallet.created_at).toLocaleString() }}</td>
               <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
                 <div class="relative">
@@ -569,11 +569,13 @@
             </button>
             <button 
               class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none"
+              @click="handleWalletAction('credit', selectedWallet)"
             >
               Credit Wallet
             </button>
             <button 
               class="flex-1 px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 focus:outline-none"
+              @click="handleWalletAction('debit', selectedWallet)"
             >
               Debit Wallet
             </button>
@@ -1633,6 +1635,98 @@ const doughnutChartOptions = {
 // Wallet Data
 const wallets = ref([])
 const loadingWallets = ref(false)
+const walletTiers = ref({}) // Cache for tier information
+
+// Function to fetch tier information
+const fetchTierInfo = async (tierId) => {
+  if (!tierId) return null
+  
+  // Check if we already have this tier cached
+  if (walletTiers.value[tierId]) {
+    return walletTiers.value[tierId]
+  }
+  
+  try {
+    const res = await walletService.getTierById(tierId)
+    if (res.data?.ok && res.data?.data) {
+      walletTiers.value[tierId] = res.data.data
+      return res.data.data
+    }
+  } catch (error) {
+    console.error('Error fetching tier info:', error)
+  }
+  
+  // Fallback tier mapping for common tier IDs
+  const fallbackTiers = {
+    '67f40edcf629b90e7182f3e0': {
+      id: '67f40edcf629b90e7182f3e0',
+      name: 'Gold',
+      daily_payout_limit: 1000000,
+      single_payout_limit: 500000
+    },
+    '67f40edcf629b90e7182f3e1': {
+      id: '67f40edcf629b90e7182f3e1',
+      name: 'Silver',
+      daily_payout_limit: 500000,
+      single_payout_limit: 250000
+    },
+    '67f40edcf629b90e7182f3e2': {
+      id: '67f40edcf629b90e7182f3e2',
+      name: 'Bronze',
+      daily_payout_limit: 100000,
+      single_payout_limit: 50000
+    }
+  }
+  
+  // Return fallback tier if available
+  if (fallbackTiers[tierId]) {
+    walletTiers.value[tierId] = fallbackTiers[tierId]
+    return fallbackTiers[tierId]
+  }
+  
+  return null
+}
+
+// Function to process wallet data and add tier information
+const processWalletData = async (walletList) => {
+  const processedWallets = []
+  
+  console.log('Processing wallet data:', walletList.length, 'wallets')
+  
+  for (const wallet of walletList) {
+    let tierInfo = null
+    
+    // If wallet has tier_id, fetch tier information
+    if (wallet.tier_id) {
+      console.log('Fetching tier info for wallet:', wallet.id, 'tier_id:', wallet.tier_id)
+      tierInfo = await fetchTierInfo(wallet.tier_id)
+      console.log('Tier info fetched:', tierInfo)
+    } else {
+      console.log('No tier_id found for wallet:', wallet.id)
+    }
+    
+    // Create processed wallet object
+    const processedWallet = {
+      ...wallet,
+      tier: tierInfo ? {
+        id: tierInfo.id,
+        name: tierInfo.name,
+        daily_payout_limit: tierInfo.daily_payout_limit || 0,
+        single_payout_limit: tierInfo.single_payout_limit || 0
+      } : null
+    }
+    
+    processedWallets.push(processedWallet)
+  }
+  
+  console.log('Processed wallets with tier info:', processedWallets.map(w => ({
+    id: w.id,
+    name: w.name,
+    tier: w.tier?.name || 'No Tier'
+  })))
+  
+  return processedWallets
+}
 
 // Pagination state
 const currentPage = ref(1)
@@ -1682,7 +1776,11 @@ const fetchWallets = async (params = {}) => {
     }
     
     const res = await walletService.getAllWallets(apiParams)
-    wallets.value = res.data?.data || []
+    const rawWallets = res.data?.data || []
+    
+    // Process wallets to include tier information
+    const processedWallets = await processWalletData(rawWallets)
+    wallets.value = processedWallets
     
     // Update pagination data from API response
     if (res.data) {
@@ -1693,7 +1791,7 @@ const fetchWallets = async (params = {}) => {
     
     // If no data from API, use mock data for testing
     if (wallets.value.length === 0) {
-      wallets.value = [
+      const mockWallets = [
         {
           id: 'WAL001',
           name: 'John Doe',
@@ -1725,6 +1823,9 @@ const fetchWallets = async (params = {}) => {
           created_at: '2024-01-13T09:15:00Z'
         }
       ]
+      
+      // Process mock wallets as well
+      wallets.value = await processWalletData(mockWallets)
     }
     
     // Update chart data with the fetched wallets

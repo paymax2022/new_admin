@@ -3,12 +3,22 @@ import api from './api';
 export default {
   getTransactions(params?: {
     page?: number;
-    limit?: number;
+    rows_per_page?: number;
+    start_date?: string;
+    end_date?: string;
+    q?: string;
+    status?: string;
   }) {
-    // Only include 'page' and 'limit' in the query params
+    // Clean and map parameters to match API expectations
     const cleanParams: any = {};
     if (params?.page !== undefined) cleanParams.page = params.page;
-    if (params?.limit !== undefined) cleanParams.limit = params.limit;
+    if (params?.rows_per_page !== undefined) cleanParams.rows_per_page = params.rows_per_page;
+    if (params?.start_date !== undefined) cleanParams.start_date = params.start_date;
+    if (params?.end_date !== undefined) cleanParams.end_date = params.end_date;
+    if (params?.q !== undefined) cleanParams.q = params.q;
+    if (params?.status !== undefined) cleanParams.status = params.status;
+    
+    console.log('Transaction service params:', cleanParams);
     return api.get('/api/v1/admin/transactions', { params: cleanParams });
   },
   getTransactionById(id: string) {
@@ -24,4 +34,71 @@ export default {
   }) {
     return api.get('/api/v1/admin/transactions/entries', { params });
   },
+  
+  // Method to get sample transactions for testing
+  getSampleTransactions() {
+    return Promise.resolve({
+      data: {
+        data: [
+          {
+            id: 'TXN001',
+            created_at: new Date().toISOString(),
+            user: { first_name: 'John', lastname: 'Doe', email: 'john@example.com' },
+            category: 'Bills Payment',
+            amount: 5000,
+            status: 'SUCCESSFUL',
+            receiver: 'Electricity Company',
+            service_type: 'Utility',
+            payment_method: 'Card',
+            network: 'Visa',
+            provider: 'Flutterwave',
+            providerPackage: 'Standard',
+            phoneNumber: '+2348012345678',
+            paymentReference: 'REF001',
+            entry: 'CREDIT',
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: 'TXN002',
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+            user: { first_name: 'Jane', lastname: 'Smith', email: 'jane@example.com' },
+            category: 'Transfer',
+            amount: 10000,
+            status: 'PENDING',
+            receiver: 'Bank Account',
+            service_type: 'Bank Transfer',
+            payment_method: 'Bank',
+            network: 'NIBSS',
+            provider: 'Paystack',
+            providerPackage: 'Premium',
+            phoneNumber: '+2348098765432',
+            paymentReference: 'REF002',
+            entry: 'DEBIT',
+            updated_at: new Date(Date.now() - 86400000).toISOString()
+          },
+          {
+            id: 'TXN003',
+            created_at: new Date(Date.now() - 172800000).toISOString(),
+            user: { first_name: 'Mike', lastname: 'Johnson', email: 'mike@example.com' },
+            category: 'Airtime',
+            amount: 1000,
+            status: 'SUCCESSFUL',
+            receiver: 'MTN',
+            service_type: 'Airtime',
+            payment_method: 'Wallet',
+            network: 'MTN',
+            provider: 'Interswitch',
+            providerPackage: 'Basic',
+            phoneNumber: '+2348034567890',
+            paymentReference: 'REF003',
+            entry: 'DEBIT',
+            updated_at: new Date(Date.now() - 172800000).toISOString()
+          }
+        ],
+        page: 1,
+        rows_per_page: 10,
+        total_count: 3
+      }
+    });
+  }
 };

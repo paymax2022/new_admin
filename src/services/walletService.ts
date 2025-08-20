@@ -83,4 +83,18 @@ export default {
   getRecentWallets() {
     return api.get('/api/v1/admin/wallets/recent');
   },
+
+  /**
+   * Get wallet tiers
+   */
+  getWalletTiers() {
+    return api.get('/api/v1/admin/wallets/tiers');
+  },
+
+  /**
+   * Get tier by ID
+   */
+  getTierById(tierId: string) {
+    return api.get(`/api/v1/admin/wallets/tiers/${tierId}`);
+  },
 };
