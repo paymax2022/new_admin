@@ -9,7 +9,28 @@ const votingRoutes = [
                 component: () => import('../../views/Voting/VotingHome.vue'),
             },
             {
+                path: 'dashboard',
+                name: 'voting-dashboard',
+                component: () => import('../../views/Voting/VotingDashboardView.vue'),
+            },
+            {
+                path: 'contestants',
+                name: 'voting-contestants',
+                component: () => import('../../views/Voting/VotingContestantsView.vue'),
+            },
+            {
+                path: 'results',
+                name: 'voting-results',
+                component: () => import('../../views/Voting/VotingResultsView.vue'),
+            },
+            {
+                path: 'settings',
+                name: 'voting-settings',
+                component: () => import('../../views/Voting/VotingSettingsView.vue'),
+            },
+            {
                 path: 'contests',
+                name: 'voting-contests',
                 // component:
                 children: [
                     {

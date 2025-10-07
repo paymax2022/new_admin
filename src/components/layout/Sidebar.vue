@@ -60,6 +60,7 @@
                         <ReportsNavigation />
                         <!-- <GroupsNavigation /> -->
                         <GroupNavigation />
+                        <VotingManagementNavigation />
                         <SystemNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
@@ -98,6 +99,7 @@ import DisputeNavigation from '../modules/DisputeNavigation.vue';
 import ReportsNavigation from '../modules/ReportsNavigation.vue';
 // import GroupsNavigation from '../modules/GroupsNavigation.vue';
 import GroupNavigation from '../modules/GroupNavigation.vue';
+import VotingManagementNavigation from '../modules/VotingManagementNavigation.vue';
 import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
