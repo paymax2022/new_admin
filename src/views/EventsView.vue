@@ -35,14 +35,26 @@
     <div v-if="activeTab === 'Event List'">
       <div class="text-xs text-gray-400 mb-2">Event List</div>
       <input type="text" class="w-full border rounded px-3 py-2 text-sm mb-4" placeholder="Search events..." v-model="search" />
-      <div class="overflow-x-auto">
+      
+      <!-- Loading State -->
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else-if="filteredEvents.length === 0" class="text-center py-8 text-gray-500">
+        <div class="text-lg mb-2">No events found</div>
+        <div class="text-sm">Events will appear here once they are created</div>
+      </div>
+      
+      <!-- Events Table -->
+      <div v-else class="overflow-x-auto">
         <table class="min-w-full text-sm">
           <thead>
             <tr class="text-left text-xs text-gray-500 border-b">
               <th class="py-2 pr-4">Event</th>
               <th class="py-2 pr-4">Date & Time</th>
               <th class="py-2 pr-4">Location</th>
-              <th class="py-2 pr-4">Type</th>
               <th class="py-2 pr-4">Status</th>
               <th class="py-2 pr-4">Attendance</th>
               <th class="py-2 pr-4">Actions</th>
@@ -51,24 +63,23 @@
           <tbody>
             <tr v-for="event in filteredEvents" :key="event.id" class="border-b hover:bg-gray-50">
               <td class="py-2 pr-4">
-                <div class="font-medium">{{ event.name }}</div>
+                <div class="font-medium">{{ event.title }}</div>
                 <div class="text-xs text-gray-400">#{{ event.id }}</div>
               </td>
               <td class="py-2 pr-4">
-                <div>{{ event.date }}</div>
-                <div class="text-xs text-gray-400">{{ event.time }}</div>
+                <div>{{ formatEventDate(event.start_date) }}</div>
+                <div class="text-xs text-gray-400">{{ formatEventTime(event.start_date) }}</div>
               </td>
               <td class="py-2 pr-4">{{ event.location }}</td>
-              <td class="py-2 pr-4">{{ event.type }}</td>
               <td class="py-2 pr-4">
-                <span v-if="event.status === 'Upcoming'" class="text-blue-600 font-semibold cursor-pointer">Upcoming</span>
-                <span v-else-if="event.status === 'Open'" class="text-green-600 font-semibold cursor-pointer">Open</span>
-                <span v-else-if="event.status === 'Completed'" class="text-gray-600 font-semibold cursor-pointer">Completed</span>
-                <span v-else-if="event.status === 'Draft'" class="text-yellow-600 font-semibold cursor-pointer">Draft</span>
+                <span v-if="getEventStatus(event) === 'Upcoming'" class="text-blue-600 font-semibold cursor-pointer">Upcoming</span>
+                <span v-else-if="getEventStatus(event) === 'Open'" class="text-green-600 font-semibold cursor-pointer">Open</span>
+                <span v-else-if="getEventStatus(event) === 'Completed'" class="text-gray-600 font-semibold cursor-pointer">Completed</span>
+                <span v-else class="text-yellow-600 font-semibold cursor-pointer">{{ getEventStatus(event) }}</span>
               </td>
               <td class="py-2 pr-4">
-                <div>{{ event.attended }}/{{ event.capacity }} attended</div>
-                <div class="text-xs text-gray-400">{{ event.rsvps }} RSVPs</div>
+                <div>{{ event.attendee_count }} attendees</div>
+                <div class="text-xs text-gray-400">{{ event.status }}</div>
               </td>
               <td class="py-2 pr-4 flex gap-2">
                 <button class="text-gray-500 hover:text-black" title="View" @click="openEventDetailsModal(event)"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
@@ -562,7 +573,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Bar, Pie, Line } from 'vue-chartjs';
 import {
   Chart as ChartJS,
@@ -576,18 +587,92 @@ import {
   LineElement,
   ArcElement
 } from 'chart.js';
+import { groupService, type Event } from '@/services/groupService';
+
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, PointElement, LineElement, ArcElement);
+
 const activeTab = ref('Event List');
 const search = ref('');
-const events = ref([
-  { id: 1, name: 'Annual General Meeting', date: '2024-01-15', time: '14:00', location: 'Conference Hall', type: 'Meeting', status: 'Upcoming', attended: 45, capacity: 100, rsvps: 67 },
-  { id: 2, name: 'Community Workshop', date: '2024-01-20', time: '10:00', location: 'Training Room', type: 'Workshop', status: 'Open', attended: 23, capacity: 50, rsvps: 28 },
-  { id: 3, name: 'Networking Event', date: '2024-01-10', time: '18:00', location: 'Main Lobby', type: 'Social', status: 'Completed', attended: 89, capacity: 150, rsvps: 112 },
-  { id: 4, name: 'Board Meeting', date: '2024-01-25', time: '09:00', location: 'Boardroom', type: 'Meeting', status: 'Draft', attended: 89, capacity: 150, rsvps: 112 },
-]);
+const loading = ref(false);
+const events = ref<Event[]>([]);
+const groupId = ref('688fe39b490ffdecf26c8aed'); // Using first group ID from your API response
+// Helper function to format date for display
+const formatEventDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString();
+};
+
+// Helper function to format time for display
+const formatEventTime = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+// Helper function to get event status
+const getEventStatus = (event: Event) => {
+  const now = new Date();
+  const startDate = new Date(event.start_date);
+  const endDate = new Date(event.end_date);
+  
+  if (now < startDate) return 'Upcoming';
+  if (now >= startDate && now <= endDate) return 'Open';
+  if (now > endDate) return 'Completed';
+  return 'Scheduled';
+};
+
+// Load events from API
+const loadEvents = async () => {
+  try {
+    loading.value = true;
+    console.log('Loading events...');
+    
+    const response = await groupService.listEvents(groupId.value, { limit: 100 });
+    
+    if (response.ok && response.data && response.data.data) {
+      events.value = response.data.data;
+      console.log('Events loaded:', events.value.length, 'events');
+    } else {
+      console.warn('No events data received');
+      events.value = [];
+    }
+  } catch (error) {
+    console.error('Error loading events:', error);
+    events.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Create event using API
+const createEvent = async () => {
+  try {
+    const eventData = {
+      title: newEvent.value.title,
+      description: newEvent.value.description,
+      start_date: `${newEvent.value.date}T${newEvent.value.startTime}:00.000Z`,
+      end_date: `${newEvent.value.date}T${newEvent.value.endTime}:00.000Z`,
+      location: newEvent.value.location,
+      is_online: false
+    };
+    
+    const response = await groupService.createEvent(groupId.value, eventData);
+    
+    if (response.ok) {
+      console.log('Event created successfully');
+      await loadEvents(); // Reload events
+      closeCreateEventModal();
+    } else {
+      console.error('Failed to create event');
+    }
+  } catch (error) {
+    console.error('Error creating event:', error);
+  }
+};
+
 const filteredEvents = computed(() => {
+  if (loading.value) return [];
   if (!search.value) return events.value;
-  return events.value.filter(e => e.name.toLowerCase().includes(search.value.toLowerCase()));
+  return events.value.filter(e => e.title.toLowerCase().includes(search.value.toLowerCase()));
 });
 const showCreateEventModal = ref(false);
 const newEvent = ref({
@@ -707,10 +792,7 @@ function openCreateEventModal() {
 function closeCreateEventModal() {
   showCreateEventModal.value = false;
 }
-function createEvent() {
-  // For demo: just close modal. You can add logic to push to events array if needed.
-  closeCreateEventModal();
-}
+// createEvent function is already defined above with API integration
 function openEventDetailsModal(event: any) {
   selectedEvent.value = event;
   showEventDetailsModal.value = true;
@@ -785,4 +867,9 @@ function clearManualAttendee() {
   manualSelectedAttendee.value = null;
   manualCheckInSearch.value = '';
 }
+
+// Load data on component mount
+onMounted(() => {
+  loadEvents();
+});
 </script> 

@@ -14,11 +14,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
       <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
         <div class="flex items-center gap-2 mb-1 text-green-500"><BanknotesIcon class="w-5 h-5" /> Monthly Revenue</div>
-        <div class="text-2xl font-bold text-green-600">$142,350</div>
+        <div class="text-2xl font-bold text-green-600">₦142,350</div>
       </div>
       <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
         <div class="flex items-center gap-2 mb-1 text-blue-500"><ChartBarIcon class="w-5 h-5" /> Annual Revenue</div>
-        <div class="text-2xl font-bold text-blue-600">$1,708,200</div>
+        <div class="text-2xl font-bold text-blue-600">₦1,708,200</div>
       </div>
       <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
         <div class="flex items-center gap-2 mb-1 text-red-500"><ArrowTrendingDownIcon class="w-5 h-5" /> Churn Rate</div>
@@ -34,7 +34,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
           <div class="text-xs text-gray-500 mb-1">Monthly</div>
-          <div class="text-xl font-bold text-gray-800">$24,650</div>
+          <div class="text-xl font-bold text-gray-800">₦24,650</div>
           <div class="text-xs text-gray-400">847 subscribers</div>
           <div class="w-full h-1 bg-gray-200 rounded mt-2 mb-1">
             <div class="h-1 bg-blue-500 rounded" style="width: 60%"></div>
@@ -42,7 +42,7 @@
         </div>
         <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
           <div class="text-xs text-gray-500 mb-1">Quarterly</div>
-          <div class="text-xl font-bold text-blue-700">$18,900</div>
+          <div class="text-xl font-bold text-blue-700">₦18,900</div>
           <div class="text-xs text-gray-400">324 subscribers</div>
           <div class="w-full h-1 bg-gray-200 rounded mt-2 mb-1">
             <div class="h-1 bg-blue-500 rounded" style="width: 40%"></div>
@@ -50,7 +50,7 @@
         </div>
         <div class="rounded-lg bg-white border p-4 flex flex-col items-start">
           <div class="text-xs text-gray-500 mb-1">Annual</div>
-          <div class="text-xl font-bold text-blue-700">$48,200</div>
+          <div class="text-xl font-bold text-blue-700">₦48,200</div>
           <div class="text-xs text-gray-400">129 subscribers</div>
           <div class="w-full h-1 bg-gray-200 rounded mt-2 mb-1">
             <div class="h-1 bg-blue-500 rounded" style="width: 20%"></div>

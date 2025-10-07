@@ -14,7 +14,7 @@
       </div>
       <div class="rounded-lg bg-white border p-4 text-center">
         <div class="text-xs text-yellow-700 mb-1">Total Revenue</div>
-        <div class="text-2xl font-bold text-yellow-600">$1,847</div>
+        <div class="text-2xl font-bold text-yellow-600">₦1,847</div>
       </div>
       <div class="rounded-lg bg-white border p-4 text-center">
         <div class="text-xs text-blue-700 mb-1">Retry Attempts</div>
@@ -38,7 +38,7 @@
           <tbody>
             <tr>
               <td class="py-2 px-4 font-bold">Bob Johnson</td>
-              <td class="py-2 px-4">$89.00</td>
+              <td class="py-2 px-4">₦89.00</td>
               <td class="py-2 px-4">Visa ****9012</td>
               <td class="py-2 px-4 text-red-500">Insufficient funds</td>
               <td class="py-2 px-4">2024-03-01</td>
@@ -46,7 +46,7 @@
             </tr>
             <tr>
               <td class="py-2 px-4 font-bold">Alice Brown</td>
-              <td class="py-2 px-4">$39.00</td>
+              <td class="py-2 px-4">₦39.00</td>
               <td class="py-2 px-4">Master ****3436</td>
               <td class="py-2 px-4 text-red-500">Expired card</td>
               <td class="py-2 px-4">2024-02-28</td>
@@ -54,7 +54,7 @@
             </tr>
             <tr>
               <td class="py-2 px-4 font-bold">Mike Wilson</td>
-              <td class="py-2 px-4">$189.00</td>
+              <td class="py-2 px-4">₦189.00</td>
               <td class="py-2 px-4">Visa ****7890</td>
               <td class="py-2 px-4 text-red-500">Card declined</td>
               <td class="py-2 px-4">2024-02-25</td>

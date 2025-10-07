@@ -614,7 +614,7 @@
                                 'text-sm font-medium',
                                 transaction.type === 'deposit' ? 'text-green-600' : 'text-red-600'
                               ]">
-                                {{ transaction.type === 'deposit' ? '+' : '-' }}${{ transaction.amount }}
+                                {{ transaction.type === 'deposit' ? '+' : '-' }}₦{{ transaction.amount }}
                               </p>
                               <span :class="[
                                 'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
@@ -955,7 +955,7 @@
                       Current Balance
                     </label>
                     <div class="text-2xl font-semibold text-gray-900 dark:text-white">
-                      ${{ adjustBalanceData.currentBalance.toFixed(2) }}
+                      ₦{{ adjustBalanceData.currentBalance.toFixed(2) }}
                     </div>
                   </div>
 
@@ -977,7 +977,7 @@
                   <!-- Amount -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Amount ($)
+                      Amount (₦)
                     </label>
                     <input
                       type="number"

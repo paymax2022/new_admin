@@ -1,8 +1,11 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <GroupNavigationTabs />
+
     <div>
-      <h1 class="text-2xl font-semibold mb-1">Member Management</h1>
-      <p class="text-gray-500 dark:text-gray-400 text-sm">Monitor your organization's key metrics and performance</p>
+      <h1 class="text-2xl font-semibold mb-1">Activity Logs</h1>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">Monitor system activities and audit trail</p>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
       <div class="rounded-lg bg-blue-50 p-4 text-center">
@@ -83,5 +86,6 @@
 </template>
 
 <script setup lang="ts">
+import GroupNavigationTabs from '@/components/GroupNavigationTabs.vue';
 // No additional logic for static demo
 </script> 

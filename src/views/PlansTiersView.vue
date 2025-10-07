@@ -12,7 +12,7 @@
           <span class="text-blue-700 font-semibold text-lg">{{ plan.name }}</span>
           <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">{{ plan.memberCount ? plan.memberCount : (plan.name === 'Basic' ? 234 : plan.name === 'Premium' ? 158 : 45) }} members</span>
         </div>
-        <div class="text-xl font-bold text-blue-700 mb-1">${{ plan.price }}<span class="text-base font-normal">/month</span></div>
+        <div class="text-xl font-bold text-blue-700 mb-1">₦{{ plan.price }}<span class="text-base font-normal">/month</span></div>
         <ul class="mb-6 mt-2 space-y-2">
           <li v-for="(feature, i) in plan.features" :key="i" class="flex items-center gap-2 text-sm"><CheckCircleIcon class="w-4 h-4 text-cyan-500" /> {{ feature }}</li>
         </ul>
@@ -35,7 +35,7 @@
           <div class="flex gap-2 mb-4">
             <div class="flex-1">
               <label class="block text-sm font-medium mb-1">Price</label>
-              <input v-model="newPlan.price" type="number" class="w-full border rounded px-3 py-2" placeholder="$99" required />
+              <input v-model="newPlan.price" type="number" class="w-full border rounded px-3 py-2" placeholder="₦99" required />
             </div>
             <div class="flex-1">
               <label class="block text-sm font-medium mb-1">Billing Circle</label>

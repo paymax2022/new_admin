@@ -9,7 +9,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-4">
       <div class="rounded-lg bg-green-50 p-4 text-center">
         <div class="text-xs text-green-700 mb-1">Monthly revenue</div>
-        <div class="text-2xl font-bold text-green-700">$142,350</div>
+        <div class="text-2xl font-bold text-green-700">₦142,350</div>
       </div>
       <div class="rounded-lg bg-blue-50 p-4 text-center">
         <div class="text-xs text-blue-700 mb-1">Successful Payments</div>
@@ -51,7 +51,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">TXN-001</td>
               <td class="py-2 px-4">John Doe</td>
-              <td class="py-2 px-4">$89.00</td>
+              <td class="py-2 px-4">₦89.00</td>
               <td class="py-2 px-4">Visa ****1234</td>
               <td class="py-2 px-4">2024-03-15</td>
               <td class="py-2 px-4"><span class="text-green-600">Successful</span></td>
@@ -59,7 +59,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">TXN-002</td>
               <td class="py-2 px-4">Jane Smith</td>
-              <td class="py-2 px-4">$29.00</td>
+              <td class="py-2 px-4">₦29.00</td>
               <td class="py-2 px-4">Master ****5678</td>
               <td class="py-2 px-4">2024-03-14</td>
               <td class="py-2 px-4"><span class="text-green-600">Successful</span></td>
@@ -67,7 +67,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">TXN-003</td>
               <td class="py-2 px-4">Bob Johnson</td>
-              <td class="py-2 px-4">$89.00</td>
+              <td class="py-2 px-4">₦89.00</td>
               <td class="py-2 px-4">Visa ****9012</td>
               <td class="py-2 px-4">2024-03-01</td>
               <td class="py-2 px-4"><span class="text-red-500">Failed</span></td>
@@ -75,7 +75,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">TXN-004</td>
               <td class="py-2 px-4">Sarah Wilson</td>
-              <td class="py-2 px-4">$15.00</td>
+              <td class="py-2 px-4">₦15.00</td>
               <td class="py-2 px-4">PayPal</td>
               <td class="py-2 px-4">2024-02-28</td>
               <td class="py-2 px-4"><span class="text-yellow-500">Pending</span></td>
@@ -103,7 +103,7 @@
           </div>
           <div class="rounded-lg bg-white border p-4 text-center">
             <div class="text-xs text-yellow-700 mb-1">Total Revenue</div>
-            <div class="text-2xl font-bold text-yellow-600">$1,847</div>
+            <div class="text-2xl font-bold text-yellow-600">₦1,847</div>
           </div>
           <div class="rounded-lg bg-white border p-4 text-center">
             <div class="text-xs text-blue-700 mb-1">Retry Attempts</div>
@@ -127,7 +127,7 @@
               <tbody>
                 <tr>
                   <td class="py-2 px-4 font-bold">Bob Johnson</td>
-                  <td class="py-2 px-4">$89.00</td>
+                  <td class="py-2 px-4">₦89.00</td>
                   <td class="py-2 px-4">Visa ****9012</td>
                   <td class="py-2 px-4 text-red-500">Insufficient funds</td>
                   <td class="py-2 px-4">2024-03-01</td>
@@ -135,7 +135,7 @@
                 </tr>
                 <tr>
                   <td class="py-2 px-4 font-bold">Alice Brown</td>
-                  <td class="py-2 px-4">$39.00</td>
+                  <td class="py-2 px-4">₦39.00</td>
                   <td class="py-2 px-4">Master ****3436</td>
                   <td class="py-2 px-4 text-red-500">Expired card</td>
                   <td class="py-2 px-4">2024-02-28</td>
@@ -143,7 +143,7 @@
                 </tr>
                 <tr>
                   <td class="py-2 px-4 font-bold">Mike Wilson</td>
-                  <td class="py-2 px-4">$189.00</td>
+                  <td class="py-2 px-4">₦189.00</td>
                   <td class="py-2 px-4">Visa ****7890</td>
                   <td class="py-2 px-4 text-red-500">Card declined</td>
                   <td class="py-2 px-4">2024-02-25</td>

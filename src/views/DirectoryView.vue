@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <GroupNavigationTabs />
+
     <!-- Header -->
     <div>
       <h1 class="text-2xl font-semibold mb-1">Member Management</h1>
@@ -33,7 +36,7 @@
             <span class="text-blue-700 font-semibold text-lg">Premium</span>
             <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">1,247 members</span>
           </div>
-          <div class="text-2xl font-bold text-blue-700 mb-1">$89<span class="text-base font-normal">/month</span></div>
+          <div class="text-2xl font-bold text-blue-700 mb-1">₦89<span class="text-base font-normal">/month</span></div>
           <ul class="mb-6 mt-2 space-y-2">
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> All Groups Access</li>
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> Exclusive Resources</li>
@@ -49,7 +52,7 @@
             <span class="text-blue-700 font-semibold text-lg">Basic</span>
             <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">892 members</span>
           </div>
-          <div class="text-2xl font-bold text-blue-700 mb-1">$29<span class="text-base font-normal">/month</span></div>
+          <div class="text-2xl font-bold text-blue-700 mb-1">₦29<span class="text-base font-normal">/month</span></div>
           <ul class="mb-6 mt-2 space-y-2">
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> Basic Groups</li>
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> Standard Resources</li>
@@ -64,7 +67,7 @@
             <span class="text-blue-700 font-semibold text-lg">Student</span>
             <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">708 members</span>
           </div>
-          <div class="text-2xl font-bold text-blue-700 mb-1">$15<span class="text-base font-normal">/month</span></div>
+          <div class="text-2xl font-bold text-blue-700 mb-1">₦15<span class="text-base font-normal">/month</span></div>
           <ul class="mb-6 mt-2 space-y-2">
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> Student Groups</li>
             <li class="flex items-center gap-2 text-sm"><span class="text-green-600">✔</span> Educational Resources</li>
@@ -127,7 +130,7 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-1">Price</label>
-              <input v-model="newType.price" type="text" class="w-full border rounded px-3 py-2" placeholder="e.g. $29/month" required />
+              <input v-model="newType.price" type="text" class="w-full border rounded px-3 py-2" placeholder="e.g. ₦29/month" required />
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium mb-1">Description</label>
@@ -356,6 +359,7 @@ import { PencilIcon, EyeIcon } from '@heroicons/vue/24/outline';
 import EditMemberModal from '@/components/EditMemberModal.vue';
 import MemberSettingsModal from '@/components/MemberSettingsModal.vue';
 import DeleteMemberModal from '@/components/DeleteMemberModal.vue';
+import GroupNavigationTabs from '@/components/GroupNavigationTabs.vue';
 import { useRouter } from 'vue-router';
 
 // Define the member type
@@ -387,13 +391,13 @@ const newType = ref({ name: '', price: '', description: '', features: [] as stri
 const featureInput = ref('');
 const membershipTypes = [
   {
-    name: 'Premium', price: '$89/month', memberCount: 1247, description: 'Premium membership with 3 features', features: ['All Groups Access', 'Exclusive Resources', 'Priority Support']
+    name: 'Premium', price: '₦89/month', memberCount: 1247, description: 'Premium membership with 3 features', features: ['All Groups Access', 'Exclusive Resources', 'Priority Support']
   },
   {
-    name: 'Basic', price: '$29/month', memberCount: 892, description: 'Basic membership with 2 features', features: ['Basic Groups', 'Standard Resources']
+    name: 'Basic', price: '₦29/month', memberCount: 892, description: 'Basic membership with 2 features', features: ['Basic Groups', 'Standard Resources']
   },
   {
-    name: 'Student', price: '$15/month', memberCount: 708, description: 'Student membership with 2 features', features: ['Student Groups', 'Educational Resources']
+    name: 'Student', price: '₦15/month', memberCount: 708, description: 'Student membership with 2 features', features: ['Student Groups', 'Educational Resources']
   }
 ];
 const showEditTypeModal = ref(false);

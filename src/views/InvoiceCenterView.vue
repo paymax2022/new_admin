@@ -38,7 +38,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">INV-001</td>
               <td class="py-2 px-4">John Doe</td>
-              <td class="py-2 px-4">$89.00</td>
+              <td class="py-2 px-4">₦89.00</td>
               <td class="py-2 px-4">2024-03-15</td>
               <td class="py-2 px-4"><span class="text-green-600">Paid</span></td>
               <td class="py-2 px-4 flex gap-2">
@@ -49,7 +49,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">INV-002</td>
               <td class="py-2 px-4">Jane Smith</td>
-              <td class="py-2 px-4">$39.00</td>
+              <td class="py-2 px-4">₦39.00</td>
               <td class="py-2 px-4">2024-03-14</td>
               <td class="py-2 px-4"><span class="text-green-600">Paid</span></td>
               <td class="py-2 px-4 flex gap-2">
@@ -60,7 +60,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">INV-003</td>
               <td class="py-2 px-4">Bob Johnson</td>
-              <td class="py-2 px-4">$89.00</td>
+              <td class="py-2 px-4">₦89.00</td>
               <td class="py-2 px-4">2024-03-01</td>
               <td class="py-2 px-4"><span class="text-red-500">Overdue</span></td>
               <td class="py-2 px-4 flex gap-2">
@@ -71,7 +71,7 @@
             <tr>
               <td class="py-2 px-4 font-bold">INV-004</td>
               <td class="py-2 px-4">Sarah Wilson</td>
-              <td class="py-2 px-4">$15.00</td>
+              <td class="py-2 px-4">₦15.00</td>
               <td class="py-2 px-4">2024-02-28</td>
               <td class="py-2 px-4"><span class="text-yellow-500">Pending</span></td>
               <td class="py-2 px-4 flex gap-2">
@@ -163,23 +163,23 @@
               <tr>
                 <td class="py-2 px-4">Premium Membership - March 2024</td>
                 <td class="py-2 px-4">1</td>
-                <td class="py-2 px-4">$89.00</td>
-                <td class="py-2 px-4">$89.00</td>
+                <td class="py-2 px-4">₦89.00</td>
+                <td class="py-2 px-4">₦89.00</td>
               </tr>
             </tbody>
           </table>
           <div class="flex flex-col items-end text-sm">
             <div class="flex gap-8">
               <div class="text-gray-500">Subtotal:</div>
-              <div>$89.00</div>
+              <div>₦89.00</div>
             </div>
             <div class="flex gap-8">
               <div class="text-gray-500">Tax (10%):</div>
-              <div>$8.90</div>
+              <div>₦8.90</div>
             </div>
             <div class="flex gap-8 font-bold">
               <div>Total:</div>
-              <div>$97.90</div>
+              <div>₦97.90</div>
             </div>
           </div>
         </div>
