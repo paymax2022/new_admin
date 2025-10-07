@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <SubscriptionNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Invoice Center</h1>
       <div class="flex gap-2">
@@ -196,6 +199,7 @@
 <script setup lang="ts">
 import { ArrowDownTrayIcon, DocumentPlusIcon, EyeIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
+import SubscriptionNavigationTabs from '@/components/SubscriptionNavigationTabs.vue';
 const showInvoiceModal = ref(false);
 const invoice = ref({ member: '', type: '', amount: '', dueDate: '', description: '' });
 const showInvoiceDetailsModal = ref(false);

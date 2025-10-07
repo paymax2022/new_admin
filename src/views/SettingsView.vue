@@ -1,5 +1,8 @@
 <template>
   <div class="p-6">
+    <!-- Navigation Tabs -->
+    <SettingsNavigationTabs />
+
     <h1 class="text-2xl font-semibold mb-1">Settings</h1>
     <div class="text-sm text-gray-500 mb-6">Manage your organization settings and admin accounts</div>
     <div class="flex gap-6 mb-6 border-b">
@@ -455,6 +458,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import SettingsNavigationTabs from '@/components/SettingsNavigationTabs.vue';
 const tabs = ['Organization', 'Admin Users', 'Notifications', 'Audit logs'];
 const activeTab = ref('Organization');
 const orgProfile = ref({

@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <SubscriptionNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Failed Payments</h1>
       <div class="flex gap-2">
@@ -179,6 +182,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import SubscriptionNavigationTabs from '@/components/SubscriptionNavigationTabs.vue';
 const showRemindersModal = ref(false);
 const reminder = ref({ plan: '', recipients: '', message: '', includeLinks: false, sendImmediately: false });
 function handleSendReminders() {

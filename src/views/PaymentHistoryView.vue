@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <SubscriptionNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Payment History</h1>
       <button class="border rounded px-4 py-2 flex items-center gap-2 text-sm font-medium">
@@ -162,6 +165,7 @@
 import { ArrowDownTrayIcon } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import SubscriptionNavigationTabs from '@/components/SubscriptionNavigationTabs.vue';
 
 const router = useRouter();
 const showFailedPaymentsModal = ref(false);

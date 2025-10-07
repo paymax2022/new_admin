@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <SubscriptionNavigationTabs />
+
     <h1 class="text-2xl font-semibold mb-4">Subscription Settings</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <div class="bg-white border rounded-lg p-6 flex flex-col gap-4">
@@ -116,6 +119,7 @@
 <script setup lang="ts">
 import { CheckCircleIcon, Cog6ToothIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
+import SubscriptionNavigationTabs from '@/components/SubscriptionNavigationTabs.vue';
 const showPaymentModal = ref(false);
 const paymentTabs = ['Stripe', 'PayPal', 'Square', 'Digital wallet'];
 const activeTab = ref('Stripe');

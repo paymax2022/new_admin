@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <SubscriptionNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Plans & Tiers</h1>
       <button class="bg-black text-white rounded px-4 py-2 flex items-center gap-2 text-sm font-medium" @click="showCreatePlanModal = true">
@@ -139,6 +142,7 @@
 <script setup lang="ts">
 import { CheckCircleIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
+import SubscriptionNavigationTabs from '@/components/SubscriptionNavigationTabs.vue';
 const showCreatePlanModal = ref(false);
 const newPlan = ref({ name: '', price: '', billing: '', description: '', features: [] as string[], active: false });
 const featureInput = ref('');

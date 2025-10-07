@@ -1,5 +1,8 @@
 <template>
   <div class="p-6">
+    <!-- Navigation Tabs -->
+    <AnalyticsNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Reports & Analytics</h1>
       <div class="flex gap-2">
@@ -191,6 +194,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Line, Bar, Pie } from 'vue-chartjs';
+import AnalyticsNavigationTabs from '@/components/AnalyticsNavigationTabs.vue';
 const tabs = ['Overview', 'Membership', 'Engagement', 'Revenue', 'Content'];
 const activeTab = ref('Overview');
 const membershipGrowthData = {

@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <GroupManagementNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <div>
         <h1 class="text-2xl font-semibold">Group Management</h1>
@@ -94,6 +97,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue';
 import CreateGroupModal from '@/components/CreateGroupModal.vue';
 import EditGroupModal from '@/components/EditGroupModal.vue';
 import DeleteGroupConfirmModal from '@/components/DeleteGroupConfirmModal.vue';
+import GroupManagementNavigationTabs from '@/components/GroupManagementNavigationTabs.vue';
 
 const tabs = ['All Groups', 'Active', 'Inactive'];
 const activeTab = ref('All Groups');

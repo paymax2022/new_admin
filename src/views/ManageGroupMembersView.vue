@@ -1,5 +1,8 @@
 <template>
   <div class="p-6 space-y-6">
+    <!-- Navigation Tabs -->
+    <GroupManagementNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <div>
         <h1 class="text-2xl font-semibold">Group Management</h1>
@@ -120,6 +123,7 @@ import ChangeRoleModal from '@/components/ChangeRoleModal.vue';
 import RemoveMemberModal from '@/components/RemoveMemberModal.vue';
 import ExportMembersModal from '@/components/ExportMembersModal.vue';
 import AddMemberModal from '@/components/AddMemberModal.vue';
+import GroupManagementNavigationTabs from '@/components/GroupManagementNavigationTabs.vue';
 
 const members = [
   { name: 'Alex Johnson', email: 'alex.johnson@email.com', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', role: 'Admin', joined: '2023-05-12', status: 'Active' },

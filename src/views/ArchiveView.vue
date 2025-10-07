@@ -1,7 +1,10 @@
 <template>
   <div class="p-6">
+    <!-- Navigation Tabs -->
+    <MeetingsNavigationTabs />
+
     <div class="flex justify-between items-center mb-2">
-      <h1 class="text-2xl font-semibold">Meeting Management</h1>
+      <h1 class="text-2xl font-semibold">Archive</h1>
       <button class="bg-black text-white rounded px-4 py-2 flex items-center gap-2 text-sm font-medium">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
         Schedule Meeting
@@ -201,6 +204,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import MeetingsNavigationTabs from '@/components/MeetingsNavigationTabs.vue';
 
 type Meeting = {
   title: string;

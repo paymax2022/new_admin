@@ -1,7 +1,11 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen pt-24">
-    <h1 class="text-2xl font-semibold mb-2">Help & Support</h1>
-    <div class="text-sm text-gray-500 mb-8">Get assistance with ConnectGroup administration</div>
+  <div class="p-6">
+    <!-- Navigation Tabs -->
+    <SettingsNavigationTabs />
+
+    <div class="flex flex-col items-center justify-center min-h-screen pt-24">
+      <h1 class="text-2xl font-semibold mb-2">Help & Support</h1>
+      <div class="text-sm text-gray-500 mb-8">Get assistance with ConnectGroup administration</div>
     <button class="flex flex-col items-center border border-blue-200 bg-white px-6 py-4 rounded-xl shadow hover:shadow-md transition mb-2" @click="showTicketModal = true">
       <span class="flex items-center gap-2 text-blue-600 font-semibold text-base">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 16v-1m0-4a1 1 0 10-2 0c0 1 2 1 2 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -81,11 +85,13 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import SettingsNavigationTabs from '@/components/SettingsNavigationTabs.vue';
 const showTicketModal = ref(false);
 const ticketForm = ref({
   name: '',

@@ -1,5 +1,8 @@
 <template>
   <div class="p-6">
+    <!-- Navigation Tabs -->
+    <AnalyticsNavigationTabs />
+
     <div class="flex justify-between items-center mb-4">
       <h1 class="text-2xl font-semibold">Gamification Management</h1>
       <div class="flex gap-2">
@@ -957,6 +960,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import AnalyticsNavigationTabs from '@/components/AnalyticsNavigationTabs.vue';
 const tabs = ['Overview', 'Badges', 'Leader boards', 'Member Progress', 'Member Progress (Analytics)'];
 const activeTab = ref('Overview');
 const showRulesModal = ref(false);

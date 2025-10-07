@@ -1,5 +1,8 @@
 <template>
   <div class="p-6">
+    <!-- Navigation Tabs -->
+    <MeetingsNavigationTabs />
+
     <div class="flex justify-between items-center mb-2">
       <h1 class="text-2xl font-semibold">Meeting Management</h1>
       <div class="flex gap-2">
@@ -458,6 +461,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import MeetingsNavigationTabs from '@/components/MeetingsNavigationTabs.vue';
 
 const meetings = [
   { id: 1, title: 'Board Meeting - Q1 Review', timeAgo: '2 hours', date: '2024-03-15', time: '10:00 AM', attendees: 'TCHEHFY+2', status: 'Completed', actions: '3/5 completed', progress: '60%' },
