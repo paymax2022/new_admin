@@ -5,39 +5,54 @@ import { useAuthStore } from '@/stores/auth';
 const BASE_URL = 'https://all-in-one-w69p.onrender.com';
 
 const api = axios.create({
-  baseURL: BASE_URL,
-  // withCredentials: true, // for cookie-based auth
+    baseURL: BASE_URL,
+    // withCredentials: true, // for cookie-based auth
 });
 
 // Attach token to every request if available
 api.interceptors.request.use(
-  (config) => {
-    // Try Pinia store first, fallback to localStorage
-    let token = '';
-    try {
-      const authStore = useAuthStore();
-      token = authStore.token;
-    } catch (e) {
-      token = localStorage.getItem('token') || '';
-    }
-    if (token) {
-      config.headers = config.headers || {};
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
+    (config) => {
+        // Try Pinia store first, fallback to localStorage
+        let token = '';
+        try {
+            const authStore = useAuthStore();
+            token = authStore.token;
+        } catch (e) {
+            token = localStorage.getItem('token') || '';
+        }
+        if (token) {
+            config.headers = config.headers || {};
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error),
 );
 
 // Global error handler
 api.interceptors.response.use(
-  response => response,
-  error => {
-    const toast = useToast();
-    const message = error.response?.data?.message || error.message || 'An error occurred';
-    // toast.error(message);
-    return Promise.reject(error);
-  }
+    (response) => response,
+    (error) => {
+        const toast = useToast();
+        const message = error.response?.data?.message || error.message || 'An error occurred';
+
+        // Handle 401 Unauthorized - token expired or invalid
+        if (error.response?.status === 401) {
+            const authStore = useAuthStore();
+            authStore.logout();
+
+            // Redirect to login page
+            if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+            }
+
+            toast.error('Session expired. Please login again.');
+        } else {
+            // toast.error(message);
+        }
+
+        return Promise.reject(error);
+    },
 );
 
-export default api; 
+export default api;

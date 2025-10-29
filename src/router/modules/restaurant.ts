@@ -18,13 +18,13 @@ const restaurantRoutes = [
                 name: 'createRestaurant',
                 component: () => import('../../views/Restaurant/CreateRestaurant.vue'),
             },
-             {
-                path: 'edit-restaurant',
+            {
+                path: 'edit-restaurant/:id',
                 name: 'editRestaurant',
                 component: () => import('../../views/Restaurant/EditRestaurantList.vue'),
             },
             {
-                path: 'list-view',
+                path: 'list-view/:id',
                 name: 'restaurantListView',
                 component: () => import('../../views/Restaurant/RestaurantListView.vue'),
             },
@@ -63,7 +63,7 @@ const restaurantRoutes = [
                 name: 'viewMenu',
                 component: () => import('../../views/Restaurant/ViewMenu.vue'),
             },
-             {
+            {
                 path: 'variant-menu',
                 name: 'variantMenu',
                 component: () => import('../../views/Restaurant/MenuVariant.vue'),
@@ -128,12 +128,12 @@ const restaurantRoutes = [
                 name: 'createReservation',
                 component: () => import('../../views/Restaurant/CreateReservation.vue'),
             },
-             {
+            {
                 path: 'view-reservation',
                 name: 'viewReservation',
                 component: () => import('../../views/Restaurant/ViewReservation.vue'),
             },
-             {
+            {
                 path: 'edit-reservation',
                 name: 'editReservation',
                 component: () => import('../../views/Restaurant/EditReservation.vue'),
@@ -153,12 +153,12 @@ const restaurantRoutes = [
                 name: 'restaurantUsers',
                 component: () => import('../../views/Restaurant/RestaurantUsers.vue'),
             },
-             {
+            {
                 path: 'create-user',
                 name: 'createUser',
                 component: () => import('../../views/Restaurant/CreateUser.vue'),
             },
-           {
+            {
                 path: 'view-user',
                 name: 'viewUser',
                 component: () => import('../../views/Restaurant/ViewUser.vue'),
@@ -199,12 +199,12 @@ const restaurantRoutes = [
                 name: 'createRestaurantOwner',
                 component: () => import('../../views/Restaurant/CreateRestaurantOwner.vue'),
             },
-             {
+            {
                 path: 'edit-restaurant-owner',
                 name: 'editRestaurantOwner',
                 component: () => import('../../views/Restaurant/EditRestaurantOwner.vue'),
             },
-             {
+            {
                 path: 'view-owner',
                 name: 'viewOwner',
                 component: () => import('../../views/Restaurant/ViewRestaurantOwner.vue'),
@@ -249,13 +249,11 @@ const restaurantRoutes = [
                 name: 'editAppBanner',
                 component: () => import('../../views/Restaurant/EditAppBanner.vue'),
             },
-              {
+            {
                 path: 'restaurant-report',
                 name: 'restaurantReport',
                 component: () => import('../../views/Restaurant/RestaurantReport.vue'),
             },
-
-
         ],
     },
 ];
