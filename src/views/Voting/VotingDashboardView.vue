@@ -3,12 +3,17 @@
     <!-- Header Section with Purple/Orange Gradient -->
     <div class="bg-gradient-to-r from-purple-500 via-purple-400 to-orange-400 rounded-2xl shadow-lg p-6 mb-6">
       <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-white mb-1">Eviction Round Pending</h1>
-          <p class="text-sm text-white/90">2 contestants are marked for eviction. Round end On/this by Friday 11:59 PM</p>
+        <div class="flex items-start gap-3">
+          <svg class="w-6 h-6 text-white/80 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div>
+            <h1 class="text-2xl font-bold text-white mb-1">Eviction Round Pending</h1>
+            <p class="text-sm text-white/90">3 contestants are marked for eviction. Review and confirm by Friday 11:59 PM</p>
+          </div>
         </div>
-        <button class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md transition-colors duration-200">
-          Eviction Now
+        <button @click="showModal = true" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md transition-colors duration-200">
+          Review Now
         </button>
       </div>
     </div>
@@ -21,15 +26,15 @@
           <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Members</h4>
           <div class="w-9 h-9 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
         </div>
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">127</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
@@ -45,15 +50,15 @@
           <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Votes</h4>
           <div class="w-9 h-9 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
             </svg>
           </div>
         </div>
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">45,891</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
@@ -76,14 +81,14 @@
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">₦892,340</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            +8.6%
+            +8.5%
           </span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">From past voting</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">From paid voting</span>
         </div>
       </div>
 
@@ -93,18 +98,21 @@
           <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Active Contests</h4>
           <div class="w-9 h-9 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
         </div>
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">3</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-orange-400 text-black text-xs font-semibold rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
             2 ending soon
           </span>
-          <span class="text-xs text-gray-500 dark:text-gray-400">All Live Contests</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Live competitions</span>
         </div>
       </div>
     </div>
@@ -117,15 +125,18 @@
           <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400">Qualified</h4>
           <div class="w-9 h-9 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center">
             <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
         </div>
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">35</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
             Qualified
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">Moved to Bootcamp</span>
@@ -145,8 +156,11 @@
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">8</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-orange-400 text-black text-xs font-semibold rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
             This week: 3
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">Total eliminated</span>
@@ -166,8 +180,8 @@
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">1,234</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
@@ -190,8 +204,11 @@
         <div class="mb-4">
           <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">12m 34s</h3>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="inline-flex items-center px-2.5 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-md">
+        <div class="flex flex-col gap-2">
+          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
             +2m 15s
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">User engagement</span>
@@ -232,11 +249,6 @@
                       <span class="text-xs text-gray-400">2 minutes ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -244,7 +256,7 @@
             <!-- Activity Item 2 -->
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                   CS
                 </div>
               </div>
@@ -260,11 +272,6 @@
                       <span class="text-xs text-gray-400">45 minutes ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -272,7 +279,7 @@
             <!-- Activity Item 3 -->
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                   EA
                 </div>
               </div>
@@ -288,11 +295,6 @@
                       <span class="text-xs text-gray-400">1 hour ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -300,7 +302,7 @@
             <!-- Activity Item 4 -->
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                   BA
                 </div>
               </div>
@@ -316,11 +318,6 @@
                       <span class="text-xs text-gray-400">2 hours ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -328,7 +325,7 @@
             <!-- Activity Item 5 -->
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                   PU
                 </div>
               </div>
@@ -344,11 +341,6 @@
                       <span class="text-xs text-gray-400">3 hours ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -356,7 +348,7 @@
             <!-- Activity Item 6 -->
             <div class="flex items-start gap-4">
               <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
                   VM
                 </div>
               </div>
@@ -372,11 +364,6 @@
                       <span class="text-xs text-gray-400">5 hours ago</span>
                     </div>
                   </div>
-                  <button class="text-gray-400 hover:text-gray-600 p-1 flex-shrink-0">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </button>
                 </div>
               </div>
             </div>
@@ -394,7 +381,7 @@
               </svg>
               Top Contestants
             </h2>
-            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Leaderboard Phase</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">Bootcamp Phase</span>
           </div>
         </div>
         <div class="p-6">
@@ -403,27 +390,36 @@
             <div class="flex items-center justify-between py-2.5">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#1</span>
                     SJ
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Sarah Johnson</p>
+                  <div class="flex items-center gap-1 mb-1">
+                    <span class="text-xs text-green-600 inline-flex items-center">+2</span>
+                    <p class="text-xs text-gray-500">Lagos, NG</p>
+                  </div>
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-semibold rounded-md">Active</span>
-                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md">Premium</span>
+                    <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">finalist</span>
+                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-4">
                 <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-xs text-gray-500">+6</span>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">4.93K</span>
+                  <div class="flex items-center justify-end gap-1 mb-1">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">8,904</span>
                   </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
                 </div>
               </div>
             </div>
@@ -432,26 +428,36 @@
             <div class="flex items-center justify-between py-2.5">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    MR
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#2</span>
+                    DO
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Mike Ross</p>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">David Okafor</p>
+                  <div class="flex items-center gap-1 mb-1">
+                    <span class="text-xs text-red-600 inline-flex items-center">-1</span>
+                    <p class="text-xs text-gray-500">Abuja, NG</p>
+                  </div>
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-md">Final</span>
+                    <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">qualified</span>
+                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-4">
                 <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-xs text-gray-500">-23</span>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">3.4K</span>
+                  <div class="flex items-center justify-end gap-1 mb-1">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">7,691</span>
                   </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
                 </div>
               </div>
             </div>
@@ -460,25 +466,35 @@
             <div class="flex items-center justify-between py-2.5">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-amber-700" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#3</span>
                     AH
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Amina Hassan</p>
+                  <div class="flex items-center gap-1 mb-1">
+                    <span class="text-xs text-green-600 inline-flex items-center">+1</span>
+                    <p class="text-xs text-gray-500">Kano, NG</p>
+                  </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-500">New</span>
+                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-4">
                 <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">2.34K</span>
+                  <div class="flex items-center justify-end gap-1 mb-1">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">7,203</span>
                   </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
                 </div>
               </div>
             </div>
@@ -487,25 +503,35 @@
             <div class="flex items-center justify-between py-2.5">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    XO
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#4</span>
+                    SO
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Xandia Oturo</p>
+                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Sandra Okoro</p>
+                  <div class="flex items-center gap-1 mb-1">
+                    <span class="text-xs text-red-600 inline-flex items-center">-2</span>
+                    <p class="text-xs text-gray-500">Port Harcourt, NG</p>
+                  </div>
                   <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-500">Old</span>
+                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-4">
                 <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">1.42K</span>
+                  <div class="flex items-center justify-end gap-1 mb-1">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">6,847</span>
                   </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
                 </div>
               </div>
             </div>
@@ -514,56 +540,234 @@
             <div class="flex items-center justify-between py-2.5">
               <div class="flex items-center gap-3 flex-1">
                 <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    JK
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">John Keller</p>
-                  <div class="flex items-center gap-2">
-                    <span class="text-xs text-gray-500">Old</span>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">901</span>
-                  </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Contestant 6 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                    FR
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#5</span>
+                    FJ
                   </div>
                 </div>
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Fatima Bello</p>
+                  <div class="flex items-center gap-1 mb-1">
+                    <span class="text-xs text-green-600 inline-flex items-center">+1</span>
+                    <p class="text-xs text-gray-500">Kaduna, NG</p>
+                  </div>
                   <div class="flex items-center gap-2">
-                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-md">Verified</span>
+                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
               <div class="flex items-center gap-4">
                 <div class="text-right">
-                  <div class="flex items-center justify-end gap-1.5 mb-1">
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">4.22K</span>
+                  <div class="flex items-center justify-end gap-1 mb-1">
+                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span class="text-sm font-bold text-gray-900 dark:text-white">6,234</span>
                   </div>
-                  <button class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                    Message
-                  </button>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Eviction Review Modal -->
+  <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">Eviction Review - 6 Contestants Pending</h2>
+        <button @click="showModal = false" class="text-gray-400 hover:text-gray-600">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <div class="space-y-4">
+          <!-- Contestant 1 -->
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                SJ
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Sarah Johnson</p>
+                <p class="text-xs text-gray-500">1245 votes • Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+
+          <!-- Contestant 2 -->
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                MC
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Mike Chen</p>
+                <p class="text-xs text-gray-500">1988 votes • 2nd Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+
+          <!-- Contestant 3 -->
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                LR
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
+                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+
+          <!-- Contestant 4 -->
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                LR
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
+                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+
+          <!-- Contestant 5 -->
+          <div class="flex items-center justify-between py-3 border-b border-gray-100">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                LR
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
+                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+
+          <!-- Contestant 6 -->
+          <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-4 flex-1">
+              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                LR
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
+                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                </svg>
+                Save
+              </button>
+              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                </svg>
+                Evict
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <span class="text-sm text-gray-600">Deadline: Friday 11:59 PM</span>
+        <div class="flex items-center gap-3">
+          <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg">
+            Save All
+          </button>
+          <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg">
+            Proceed with Eviction
+          </button>
         </div>
       </div>
     </div>
@@ -575,6 +779,7 @@ import { ref, onMounted } from 'vue';
 
 // Component data
 const loading = ref(false);
+const showModal = ref(false);
 
 onMounted(() => {
   // Initialize component

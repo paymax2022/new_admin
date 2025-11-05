@@ -34,7 +34,7 @@
         />
         <SummaryCard 
           title="Monthly Revenue" 
-          :value="`₦${monthlyRevenue.toLocaleString()}`" 
+          :value="monthlyRevenue > 0 ? `₦${monthlyRevenue.toLocaleString()}` : `₦0 (Potential: ₦${potentialMonthlyRevenue.toLocaleString()})`" 
           icon="BanknotesIcon" 
           iconBg="bg-yellow-100" 
           iconColor="text-yellow-500" 
@@ -54,7 +54,7 @@
           iconColor="text-purple-500" 
         />
         <SummaryCard 
-          title="Engagement Score" 
+          :title="totalMembers > 0 ? 'Engagement Score' : 'Group Readiness'" 
           :value="`${engagementScore}%`" 
           icon="ChartBarIcon" 
           iconBg="bg-indigo-100" 
@@ -69,28 +69,28 @@
           description="Start a new group" 
           icon="UserGroupIcon" 
           color="bg-blue-500" 
-          @click="() => {}"
+          @click="showCreateGroupModal = true"
         />
         <QuickAction 
           title="Add Member" 
           description="Invite new members" 
           icon="UserPlusIcon" 
           color="bg-green-500" 
-          @click="() => {}"
+          @click="showAddMemberModal = true"
         />
         <QuickAction 
           title="Send Message" 
           description="Communicate with members" 
           icon="ChatBubbleLeftRightIcon" 
           color="bg-purple-500" 
-          @click="() => {}"
+          @click="showSendMessageModal = true"
         />
         <QuickAction 
           title="View Reports" 
           description="Analytics & insights" 
           icon="ChartBarIcon" 
           color="bg-orange-500" 
-          @click="() => {}"
+          @click="showViewReportsModal = true"
         />
       </div>
 
@@ -103,16 +103,22 @@
             <div class="text-sm text-gray-500">Total Groups</div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-green-600">{{ groups.filter(g => g.status === 'active').length }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ groups.filter(g => g.is_active).length }}</div>
             <div class="text-sm text-gray-500">Active Groups</div>
           </div>
           <div class="text-center">
-            <div class="text-2xl font-bold text-yellow-600">₦{{ monthlyRevenue.toLocaleString() }}</div>
-            <div class="text-sm text-gray-500">Monthly Revenue</div>
+            <div class="text-2xl font-bold text-yellow-600">
+              ₦{{ (monthlyRevenue > 0 ? monthlyRevenue : potentialMonthlyRevenue).toLocaleString() }}
+            </div>
+            <div class="text-sm text-gray-500">
+              {{ monthlyRevenue > 0 ? 'Monthly Revenue' : 'Potential Monthly Revenue' }}
+            </div>
           </div>
           <div class="text-center">
             <div class="text-2xl font-bold text-purple-600">{{ engagementScore }}%</div>
-            <div class="text-sm text-gray-500">Engagement Rate</div>
+            <div class="text-sm text-gray-500">
+              {{ totalMembers > 0 ? 'Engagement Rate' : 'Group Readiness' }}
+            </div>
           </div>
         </div>
       </div>
@@ -122,15 +128,15 @@
         <h2 class="text-lg font-semibold mb-4">Group Status Overview</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div class="text-2xl font-bold text-blue-600">{{ groups.filter(g => g.join_type === 'public').length }}</div>
+            <div class="text-2xl font-bold text-blue-600">{{ groups.filter(g => g.visibility === 'public').length }}</div>
             <div class="text-sm text-gray-500">Public Groups</div>
           </div>
           <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <div class="text-2xl font-bold text-green-600">{{ groups.filter(g => g.join_type === 'private').length }}</div>
+            <div class="text-2xl font-bold text-green-600">{{ groups.filter(g => g.visibility === 'private').length }}</div>
             <div class="text-sm text-gray-500">Private Groups</div>
           </div>
           <div class="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <div class="text-2xl font-bold text-purple-600">{{ groups.filter(g => g.join_type === 'direct_join').length }}</div>
+            <div class="text-2xl font-bold text-purple-600">{{ groups.filter(g => g.join_method === 'direct').length }}</div>
             <div class="text-sm text-gray-500">Direct Join Groups</div>
           </div>
         </div>
@@ -178,8 +184,11 @@
                   ₦{{ group.membership_fee.toLocaleString() }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    {{ group.status }}
+                  <span :class="[
+                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                    group.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                  ]">
+                    {{ group.is_active ? 'Active' : 'Inactive' }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -191,6 +200,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Create Group Modal -->
+    <CreateGroupModal 
+      v-if="showCreateGroupModal" 
+      @close="showCreateGroupModal = false" 
+      @created="onGroupCreated"
+    />
+
+    <!-- Add Member Modal -->
+    <AddMemberModal 
+      v-if="showAddMemberModal" 
+      :groups="groups"
+      @close="showAddMemberModal = false" 
+      @invited="onMemberInvited"
+    />
+
+    <!-- Send Message Modal -->
+    <SendMessageModal 
+      v-if="showSendMessageModal" 
+      :groups="groups"
+      @close="showSendMessageModal = false" 
+      @sent="onMessageSent"
+    />
+
+    <!-- View Reports Modal -->
+    <ViewReportsModal 
+      v-if="showViewReportsModal" 
+      :groups="groups"
+      @close="showViewReportsModal = false"
+    />
   </div>
 </template>
 
@@ -199,6 +238,10 @@ import { ref, computed, onMounted } from 'vue'
 import SummaryCard from '@/components/SummaryCard.vue';
 import QuickAction from '@/components/QuickAction.vue';
 import GroupNavigationTabs from '@/components/GroupNavigationTabs.vue';
+import CreateGroupModal from '@/components/CreateGroupModal.vue';
+import AddMemberModal from '@/components/AddMemberModal.vue';
+import SendMessageModal from '@/components/SendMessageModal.vue';
+import ViewReportsModal from '@/components/ViewReportsModal.vue';
 import {
   ChartBarIcon,
   UserGroupIcon,
@@ -214,6 +257,10 @@ const loading = ref(false)
 const groups = ref<Group[]>([])
 const dataLoaded = ref(false) // Prevent multiple API calls
 const componentId = Math.random().toString(36).substr(2, 9) // Unique component instance ID
+const showCreateGroupModal = ref(false)
+const showAddMemberModal = ref(false)
+const showSendMessageModal = ref(false)
+const showViewReportsModal = ref(false)
 
 console.log('OverviewView component instance created:', componentId)
 
@@ -229,6 +276,18 @@ const activeMembers = computed(() => {
 const monthlyRevenue = computed(() => {
   return groups.value.reduce((sum, group) => {
     if (group.payment_interval === 'monthly') {
+      // Calculate actual revenue (fee * members)
+      return sum + (group.membership_fee * group.total_members)
+    }
+    return sum
+  }, 0)
+})
+
+// Potential revenue if groups had members
+const potentialMonthlyRevenue = computed(() => {
+  return groups.value.reduce((sum, group) => {
+    if (group.payment_interval === 'monthly') {
+      // Show membership fee as potential revenue
       return sum + group.membership_fee
     }
     return sum
@@ -247,12 +306,18 @@ const upcomingEvents = computed(() => {
 
 const engagementScore = computed(() => {
   const total = totalMembers.value
-  const active = groups.value.reduce((sum, group) => sum + group.active_members, 0)
+  const active = activeMembers.value
   
   if (total > 0) {
+    // Calculate based on active vs total members
     return Math.round((active / total) * 100)
+  } else if (groups.value.length > 0) {
+    // When no members yet, show group readiness score
+    // Based on: active groups / total groups * 100
+    const activeGroups = groups.value.filter(g => g.is_active).length
+    return Math.round((activeGroups / groups.value.length) * 100)
   } else {
-    return Math.min(75, groups.value.length * 15)
+    return 0
   }
 })
 
@@ -277,29 +342,26 @@ const loadGroupsData = async () => {
     })
     
     console.log(`[${componentId}] Groups API response:`, response)
-    console.log(`[${componentId}] Response structure:`, {
-      ok: response.ok,
-      hasData: !!response.data,
-      dataStructure: response.data ? Object.keys(response.data) : 'no data',
-      groupsArray: response.data?.data ? response.data.data.length : 'no groups array'
-    })
     
     if (response && response.data) {
       console.log(`[${componentId}] Full response structure:`, JSON.stringify(response, null, 2))
       
-      let groupsData = null
-      if (response.data.data && Array.isArray(response.data.data)) {
-        groupsData = response.data.data
+      let groupsData: Group[] = []
+      const responseData: any = response.data
+      
+      // Check for nested data structure: response.data.data.data
+      if (responseData.data?.data && Array.isArray(responseData.data.data)) {
+        groupsData = responseData.data.data as Group[]
+        console.log(`[${componentId}] Found groups in response.data.data.data:`, groupsData.length)
+      } else if (responseData.data && Array.isArray(responseData.data)) {
+        groupsData = responseData.data as Group[]
         console.log(`[${componentId}] Found groups in response.data.data:`, groupsData.length)
-      } else if (Array.isArray(response.data)) {
-        groupsData = response.data
+      } else if (Array.isArray(responseData)) {
+        groupsData = responseData as Group[]
         console.log(`[${componentId}] Found groups in response.data:`, groupsData.length)
-      } else if (response.data.groups && Array.isArray(response.data.groups)) {
-        groupsData = response.data.groups
-        console.log(`[${componentId}] Found groups in response.data.groups:`, groupsData.length)
       }
       
-      if (groupsData && groupsData.length > 0) {
+      if (groupsData.length > 0) {
         groups.value = groupsData
         console.log(`[${componentId}] Groups loaded successfully:`, groups.value.length, 'groups')
         console.log(`[${componentId}] First group sample:`, groups.value[0])
@@ -320,18 +382,43 @@ const loadGroupsData = async () => {
       console.warn(`[${componentId}] Invalid response structure:`, response)
       groups.value = []
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`[${componentId}] Error loading groups data:`, error)
     console.error(`[${componentId}] Error details:`, {
-      message: error.message,
-      response: error.response?.data,
-      status: error.response?.status
+      message: error?.message,
+      response: error?.response?.data,
+      status: error?.response?.status
     })
     groups.value = []
     dataLoaded.value = false // Reset on error to allow retry
   } finally {
     loading.value = false
   }
+}
+
+// Handle group creation
+const onGroupCreated = (newGroup: any) => {
+  console.log(`[${componentId}] Group created successfully:`, newGroup)
+  // Reset dataLoaded flag to allow refresh
+  dataLoaded.value = false
+  // Reload groups data
+  loadGroupsData()
+}
+
+// Handle member invitation
+const onMemberInvited = (invitationData: any) => {
+  console.log(`[${componentId}] Member invited successfully:`, invitationData)
+  // Reset dataLoaded flag to allow refresh
+  dataLoaded.value = false
+  // Reload groups data to update member counts
+  loadGroupsData()
+}
+
+// Handle message sent
+const onMessageSent = (messageData: any) => {
+  console.log(`[${componentId}] Message sent successfully:`, messageData)
+  // No need to refresh groups data for messages
+  // Just log the success
 }
 
 // Load data on component mount

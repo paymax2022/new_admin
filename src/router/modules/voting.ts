@@ -14,9 +14,49 @@ const votingRoutes = [
                 component: () => import('../../views/Voting/VotingDashboardView.vue'),
             },
             {
+                path: 'contest-manager',
+                name: 'voting-contest-manager',
+                component: () => import('../../views/Voting/ContestManagerView.vue'),
+            },
+            {
                 path: 'contestants',
                 name: 'voting-contestants',
                 component: () => import('../../views/Voting/VotingContestantsView.vue'),
+            },
+            {
+                path: 'voting',
+                name: 'voting',
+                component: () => import('../../views/Voting/VotingView.vue'),
+            },
+            {
+                path: 'badges',
+                name: 'voting-badges',
+                component: () => import('../../views/Voting/BadgesView.vue'),
+            },
+            {
+                path: 'referrals',
+                name: 'voting-referrals',
+                component: () => import('../../views/Voting/ReferralsView.vue'),
+            },
+            {
+                path: 'eviction',
+                name: 'voting-eviction',
+                component: () => import('../../views/Voting/EvictionView.vue'),
+            },
+            {
+                path: 'notifications',
+                name: 'voting-notifications',
+                component: () => import('../../views/Voting/NotificationsView.vue'),
+            },
+            {
+                path: 'certificates',
+                name: 'voting-certificates',
+                component: () => import('../../views/Voting/CertificatesView.vue'),
+            },
+            {
+                path: 'analytics',
+                name: 'voting-analytics',
+                component: () => import('../../views/Voting/AnalyticsView.vue'),
             },
             {
                 path: 'results',

@@ -102,7 +102,7 @@ const totalMembers = computed(() => {
 const monthlyRevenue = computed(() => {
   return groups.value.reduce((sum, group) => {
     if (group.payment_interval === 'monthly') {
-      return sum + group.membership_fee;
+      return sum + (group.membership_fee * group.total_members);
     }
     return sum;
   }, 0);
@@ -135,9 +135,24 @@ const loadGroupsData = async () => {
       limit: 100
     });
     
-    if (response.ok && response.data && response.data.data) {
-      groups.value = response.data.data;
-      console.log('Groups loaded for widgets:', groups.value.length, 'groups');
+    if (response && response.data) {
+      let groupsData = null;
+      // Check for nested data structure: response.data.data.data
+      if (response.data.data && response.data.data.data && Array.isArray(response.data.data.data)) {
+        groupsData = response.data.data.data;
+      } else if (response.data.data && Array.isArray(response.data.data)) {
+        groupsData = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        groupsData = response.data;
+      }
+      
+      if (groupsData && groupsData.length > 0) {
+        groups.value = groupsData;
+        console.log('Groups loaded for widgets:', groups.value.length, 'groups');
+      } else {
+        console.warn('No groups data for widgets');
+        groups.value = [];
+      }
     } else {
       console.warn('No groups data for widgets');
       groups.value = [];
