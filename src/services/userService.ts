@@ -64,8 +64,6 @@ export default {
   }) {
     // Ensure page and limit are always provided with defaults
     const finalParams = {
-      page: 1,
-      limit: 10,
       ...params,
       // Force numeric types for pagination parameters
       page: params?.page ? Number(params.page) : 1,

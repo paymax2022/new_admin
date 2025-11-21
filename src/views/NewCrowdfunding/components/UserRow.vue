@@ -38,22 +38,49 @@
       {{ lastActive }}
     </td>
     <td class="border-b border-[#d9e3f0] bg-white px-5 py-4 align-top">
-      <div class="flex items-center justify-end gap-3 whitespace-nowrap">
-        <ActionButton
-          v-for="action in formattedActions"
-          :key="action.label"
-          v-bind="action"
-          @click="emit('action', { action, row: rowPayload })"
-        />
+      <div class="relative flex items-center justify-end" @click.stop data-action-menu>
+        <button
+          :ref="(el) => setButtonRef(el)"
+          type="button"
+          class="rounded-full p-2 text-[#6b7280] transition hover:bg-[#f1f5f9]"
+          @click="toggleDropdown"
+        >
+          <IconHorizontalDots class="h-5 w-5" />
+        </button>
+        <Teleport to="body">
+          <div
+            v-if="isDropdownOpen"
+            class="fixed z-[9999] w-48 rounded-2xl border border-[#e2e8f0] bg-white p-2 shadow-lg"
+            :style="dropdownPosition"
+            data-dropdown="true"
+          >
+            <button
+              v-for="action in formattedActions"
+              :key="action.label"
+              type="button"
+              class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition hover:bg-[#f8fafc]"
+              :style="{ color: action.textColor }"
+              @click="handleActionClick(action)"
+            >
+              <component :is="getIconComponent(action.icon)" class="h-4 w-4" />
+              {{ action.label }}
+            </button>
+          </div>
+        </Teleport>
       </div>
     </td>
   </tr>
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import type { ComponentPublicInstance } from 'vue';
 
-import ActionButton, { type ActionButtonConfig } from './UserRowActionButton.vue';
+import { type ActionButtonConfig } from './UserRowActionButton.vue';
+import IconHorizontalDots from '@/components/icon/icon-horizontal-dots.vue';
+import IconBan from '@/components/icon/icon-ban.vue';
+import IconCircleCheck from '@/components/icon/icon-circle-check.vue';
+import IconEye from '@/components/icon/icon-eye.vue';
 
 const emit = defineEmits(['action']);
 
@@ -76,6 +103,12 @@ const props = defineProps<{
   suspendModal?: Record<string, unknown>;
   activateModal?: Record<string, unknown>;
 }>();
+
+const iconMap = {
+  eye: IconEye,
+  ban: IconBan,
+  'circle-check': IconCircleCheck,
+};
 
 const baseActionStyles: Record<string, Pick<ActionButtonConfig, 'icon' | 'textColor' | 'bgColor' | 'borderColor'>> = {
   view: {
@@ -109,6 +142,10 @@ const formattedActions = computed<ActionButtonConfig[]>(() =>
   })
 );
 
+const getIconComponent = (iconName: keyof typeof iconMap) => {
+  return iconMap[iconName] || IconEye;
+};
+
 const rowPayload = computed(() => ({
   initials: props.initials,
   name: props.name,
@@ -128,5 +165,78 @@ const rowPayload = computed(() => ({
   suspendModal: props.suspendModal || {},
   activateModal: props.activateModal || {},
 }));
+
+const isDropdownOpen = ref(false);
+const buttonRef = ref<HTMLElement | null>(null);
+const dropdownPosition = ref<{ top: string; right: string } | { display: string }>({ display: 'none' });
+
+const setButtonRef = (el: HTMLElement | Element | ComponentPublicInstance | null) => {
+  if (el && el instanceof HTMLElement) {
+    buttonRef.value = el;
+  } else if (el && '$el' in el && el.$el instanceof HTMLElement) {
+    buttonRef.value = el.$el;
+  }
+};
+
+const updateDropdownPosition = () => {
+  if (!buttonRef.value || !isDropdownOpen.value) {
+    return;
+  }
+  
+  const rect = buttonRef.value.getBoundingClientRect();
+  dropdownPosition.value = {
+    top: `${rect.bottom + 8}px`,
+    right: `${window.innerWidth - rect.right}px`,
+  };
+};
+
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+  if (isDropdownOpen.value) {
+    nextTick(() => {
+      updateDropdownPosition();
+    });
+  }
+};
+
+const closeDropdown = () => {
+  isDropdownOpen.value = false;
+};
+
+const handleActionClick = (action: ActionButtonConfig) => {
+  emit('action', { action, row: rowPayload.value });
+  closeDropdown();
+};
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (isDropdownOpen.value) {
+    const target = event.target as HTMLElement;
+    const isButton = buttonRef.value?.contains(target);
+    const isDropdown = target.closest('[data-dropdown="true"]');
+    if (!isButton && !isDropdown) {
+      closeDropdown();
+    }
+  }
+};
+
+watch(isDropdownOpen, (isOpen) => {
+  if (isOpen) {
+    nextTick(() => {
+      updateDropdownPosition();
+    });
+  }
+});
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+  window.addEventListener('resize', updateDropdownPosition);
+  window.addEventListener('scroll', updateDropdownPosition, true);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+  window.removeEventListener('resize', updateDropdownPosition);
+  window.removeEventListener('scroll', updateDropdownPosition, true);
+});
 </script>
 

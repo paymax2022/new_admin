@@ -118,7 +118,7 @@ const Detail = defineComponent({
           h(
             'div',
             { class: 'text-sm text-[#111827]' },
-            slots.default ? slots.default() : null
+            slots.default ? slots.default() : undefined
           ),
         ]
       );

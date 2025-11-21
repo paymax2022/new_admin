@@ -395,6 +395,7 @@
     import SeoTab from '@/components/modules/Events/SeoTab.vue';
 
     const activeTab = ref('details');
+    const isAdmin = ref(true); // TODO: Get from auth context
     const eventForm = ref({
         startDate: '',
         endDate: '',

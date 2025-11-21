@@ -92,7 +92,7 @@ const campaignDuration = ref('');
 const enableLeaderboard = ref(false);
 const enableSocial = ref(false);
 const featuresPreview = computed(() => {
-  let features = [];
+  const features: string[] = [];
   if (enableLeaderboard.value) features.push('Leaderboard/competition');
   if (enableSocial.value) features.push('Social sharing/peer influence');
   return features.length ? features.join(', ') : 'No additional features.';

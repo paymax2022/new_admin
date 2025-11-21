@@ -216,7 +216,7 @@ const paginatedComplaints = computed(() => {
 
 const visiblePages = computed(() => {
   const maxVisiblePages = 5;
-  const pages = [];
+  const pages: number[] = [];
   let startPage = Math.max(1, pagination.currentPage - Math.floor(maxVisiblePages / 2));
   let endPage = startPage + maxVisiblePages - 1;
 

@@ -256,14 +256,16 @@ import IconPlus from '@/components/icon/icon-plus.vue';
 import ToggleRow from './components/SettingsToggleRow.vue';
 import NotificationRow from './components/SettingsNotificationRow.vue';
 
-const tabs = [
+type TabId = 'general' | 'categories' | 'notifications' | 'payments';
+
+const tabs: { id: TabId; label: string }[] = [
   { id: 'general', label: 'General' },
   { id: 'categories', label: 'Categories' },
   { id: 'notifications', label: 'Notifications' },
   { id: 'payments', label: 'Payments' },
 ];
 
-const activeTab = ref<'general' | 'categories' | 'notifications' | 'payments'>('general');
+const activeTab = ref<TabId>('general');
 
 const categories = [
   {

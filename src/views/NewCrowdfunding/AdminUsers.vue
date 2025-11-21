@@ -81,7 +81,16 @@
             <AdminUserRow
               v-for="user in adminUsers"
               :key="user.id"
-              v-bind="user"
+              :initials="user.initials"
+              :name="user.name"
+              :email="user.email"
+              :role="user.role"
+              :department="user.department"
+              :status="user.status"
+              :permissions="user.permissions"
+              :lastLogin="user.lastLogin"
+              :actions="user.actions"
+              :detail="user.detail || {}"
               @action="handleUserAction"
             />
           </tbody>
@@ -401,19 +410,20 @@ const suspendModal = ref<{ open: boolean; user: AdminUserRecord | null }>({ open
 const createRoleModal = ref(false);
 const editRoleModal = ref<{ open: boolean; role: any | null }>({ open: false, role: null });
 
-const handleUserAction = ({ action, row }: { action: { type: string }; row: AdminUserRecord }) => {
+const handleUserAction = ({ action, row }: { action: { label: string; type: string; style: string }; row: Record<string, unknown> }) => {
+  const userRecord = row as AdminUserRecord;
   if (action.type === 'view') {
-    profileModal.value = { open: true, user: row };
+    profileModal.value = { open: true, user: userRecord };
   }
   if (action.type === 'suspend') {
-    suspendModal.value = { open: true, user: row };
+    suspendModal.value = { open: true, user: userRecord };
   }
   if (action.type === 'edit') {
     editRoleModal.value = {
       open: true,
       role: {
-        name: row.role.label,
-        description: `${row.role.label} permissions overview`,
+        name: userRecord.role.label,
+        description: `${userRecord.role.label} permissions overview`,
         permissions: roleMatrix[0]?.permissions ?? [],
       },
     };

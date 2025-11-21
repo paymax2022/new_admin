@@ -141,7 +141,7 @@ import Popper from 'vue3-popper';
 
 const search = ref('');
 const isLoading = ref(false);
-const rows = ref([]);
+const rows = ref<Array<{ id: string; [key: string]: unknown }>>([]);
 const cols = ref([
     { field: 'id', title: 'ID', isUnique: true, hide: false },
     { field: 'Title', title: 'Title', hide: false },

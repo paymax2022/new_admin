@@ -1143,7 +1143,7 @@ const getBroadcastSummary = () => {
                          broadcastForm.value.recipients === 'active' ? '98' : 
                          broadcastForm.value.recipients === 'voters' ? '156' : '127';
   
-  const selectedChannels = [];
+  const selectedChannels: string[] = [];
   if (broadcastForm.value.channels.email) selectedChannels.push('Email');
   if (broadcastForm.value.channels.sms) selectedChannels.push('SMS');
   if (broadcastForm.value.channels.push) selectedChannels.push('Push Notification');

@@ -148,9 +148,10 @@ import IconPencilPaper from '@/components/icon/icon-pencil-paper.vue';
 import IconTrashLines from '@/components/icon/icon-trash-lines.vue';
 import Breadcrumb from '@/components/Shared/Breadcrumb.vue';
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
+const router = useRouter();
 const contest = ref<any>(null);
 const isLoading = ref(true);
 const error = ref<string | null>(null);
@@ -216,8 +217,8 @@ const fetchContestDetail = async () => {
             const errorText = await response.text();
             error.value = `Error fetching contest: ${errorText || 'Unknown error'}`;
         }
-    } catch (error) {
-        console.error('Error fetching contest detail:', error);
+    } catch (err) {
+        console.error('Error fetching contest detail:', err);
         error.value = 'Error fetching contest details. Please try again later.';
     } finally {
         isLoading.value = false;

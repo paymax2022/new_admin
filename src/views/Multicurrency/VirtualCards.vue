@@ -124,7 +124,14 @@
       </div>
     </section>
 
-    <VirtualCardDetailsModal v-if="detailsModal.open && detailsModal.card" :card="detailsModal.card" @close="closeDetails" />
+    <VirtualCardDetailsModal 
+      v-if="detailsModal.open && detailsModal.card" 
+      :card="{
+        ...detailsModal.card,
+        status: detailsModal.card.status as 'active' | 'suspended' | 'frozen'
+      }" 
+      @close="closeDetails" 
+    />
     <VirtualCardSuspendModal v-if="suspendModal.open && suspendModal.card" :card="suspendModal.card" @close="closeSuspend" />
   </div>
 </template>

@@ -136,14 +136,19 @@ const loadGroupsData = async () => {
     });
     
     if (response && response.data) {
-      let groupsData = null;
+      let groupsData: Group[] | null = null;
+      const responseData = response.data as unknown as { data?: { data?: Group[] } | Group[] } | Group[];
+      
       // Check for nested data structure: response.data.data.data
-      if (response.data.data && response.data.data.data && Array.isArray(response.data.data.data)) {
-        groupsData = response.data.data.data;
-      } else if (response.data.data && Array.isArray(response.data.data)) {
-        groupsData = response.data.data;
-      } else if (Array.isArray(response.data)) {
-        groupsData = response.data;
+      if (responseData && typeof responseData === 'object' && 'data' in responseData) {
+        const nested = responseData.data;
+        if (nested && typeof nested === 'object' && 'data' in nested && Array.isArray(nested.data)) {
+          groupsData = nested.data;
+        } else if (Array.isArray(nested)) {
+          groupsData = nested;
+        }
+      } else if (Array.isArray(responseData)) {
+        groupsData = responseData;
       }
       
       if (groupsData && groupsData.length > 0) {

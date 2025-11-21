@@ -454,7 +454,9 @@ const closeElectionDetailsModal = () => {
 const handleEditElection = () => {
   const electionData = electionDetailsModal.value.data;
   closeElectionDetailsModal();
-  openEditElectionModal(electionData);
+  if (electionData) {
+    openEditElectionModal(electionData);
+  }
 };
 
 const editElection = (election: typeof elections[0]) => {

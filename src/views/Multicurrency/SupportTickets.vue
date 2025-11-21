@@ -149,7 +149,11 @@
 
     <SupportTicketDetailsModal
       v-if="detailsModal.open && detailsModal.ticket"
-      :ticket="detailsModal.ticket"
+      :ticket="{
+        ...detailsModal.ticket,
+        priority: detailsModal.ticket.priority as 'high' | 'medium' | 'low',
+        status: detailsModal.ticket.status as 'open' | 'pending' | 'resolved'
+      }"
       @close="closeTicketDetails"
     />
     <SupportTicketAssignModal

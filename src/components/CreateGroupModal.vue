@@ -423,7 +423,35 @@ async function submit() {
 
     console.log('Creating group with data:', form.value);
 
-    const response = await groupService.createGroup(form.value);
+    // Transform form data to match API expectations
+    const groupData = {
+      ...form.value,
+      address: {
+        ...form.value.address,
+        zip_code: form.value.address.postal_code
+      }
+    };
+    // Remove postal_code if it exists
+    const { postal_code, ...addressWithoutPostal } = groupData.address;
+    const finalGroupData = {
+      ...groupData,
+      address: addressWithoutPostal,
+      visibility: (form.value.visibility === 'public' || form.value.visibility === 'private') 
+        ? form.value.visibility 
+        : 'public' as 'public' | 'private',
+      join_method: (form.value.join_method === 'direct' || form.value.join_method === 'invite_only')
+        ? form.value.join_method
+        : 'direct' as 'direct' | 'invite_only',
+      theme: {
+        primary_color: form.value.theme.primary_color,
+        secondary_color: form.value.theme.secondary_color,
+        accent_color: form.value.theme.accent_color,
+        background_image: '',
+        font_family: 'Arial'
+      }
+    };
+
+    const response = await groupService.createGroup(finalGroupData);
 
     console.log('Group created successfully:', response);
 

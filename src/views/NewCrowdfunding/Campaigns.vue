@@ -462,12 +462,34 @@ type CampaignRowData = {
   created: string;
   actions: {
     label: string;
+    type?: string;
     icon: any;
     textColor: string;
     bgColor: string;
     borderColor?: string;
   }[];
   modal: ModalData;
+  confirmAction?: {
+    title: string;
+    message: string;
+    confirmLabel: string;
+  };
+  declineAction?: {
+    title: string;
+    message: string;
+    confirmLabel: string;
+    placeholder: string;
+  };
+  suspendAction?: {
+    title: string;
+    message: string;
+    confirmLabel: string;
+  };
+  activateAction?: {
+    title: string;
+    message: string;
+    confirmLabel: string;
+  };
 };
 
 const campaignRows: CampaignRowData[] = [
