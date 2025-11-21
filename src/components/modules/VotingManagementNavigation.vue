@@ -17,7 +17,6 @@ const links = [
   { route: { name: 'voting-notifications' }, displayName: 'Notification' },
   { route: { name: 'voting-certificates' }, displayName: 'Certificates' },
   { route: { name: 'voting-analytics' }, displayName: 'Analytics' },
-  { route: { name: 'voting-settings' }, displayName: 'Settings' },
 ];
 </script>
 

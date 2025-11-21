@@ -54,12 +54,46 @@
                             </span>
                         </td>
                         <td class="px-4 py-3">
-                            <button
-                                @click="goToDetails(campaign.id)"
-                                class="flex items-center gap-1 text-indigo-600 border border-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-50"
-                            >
-                                Details
-                            </button>
+                            <div class="relative" @click.stop data-action-menu>
+                                <button
+                                    :ref="(el) => setButtonRef(campaign.id, el)"
+                                    type="button"
+                                    class="rounded-full p-2 text-gray-500 transition hover:bg-gray-100"
+                                    @click="toggleActionMenu(campaign.id)"
+                                >
+                                    <IconHorizontalDots class="h-5 w-5" />
+                                </button>
+                                <Teleport to="body">
+                                    <div
+                                        v-if="openActionMenu === campaign.id"
+                                        class="fixed z-[9999] w-40 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg"
+                                        :style="getDropdownPosition(campaign.id)"
+                                        data-dropdown="true"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-50"
+                                            @click="handleView(campaign.id)"
+                                        >
+                                            View
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-green-600 transition hover:bg-gray-50"
+                                            @click="handleApprove(campaign.id)"
+                                        >
+                                            Approve
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-gray-50"
+                                            @click="handleDecline(campaign.id)"
+                                        >
+                                            Decline
+                                        </button>
+                                    </div>
+                                </Teleport>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -103,9 +137,46 @@
                     <span :class="statusClass(campaign.status)">
                         {{ campaign.status }}
                     </span>
-                    <button @click="goToDetails(campaign.id)" class="text-indigo-600 border border-indigo-500 px-3 py-1 rounded-md hover:bg-indigo-50 text-sm">
-                        Details
-                    </button>
+                    <div class="relative" @click.stop data-action-menu>
+                        <button
+                            :ref="(el) => setButtonRef(campaign.id, el)"
+                            type="button"
+                            class="rounded-full p-2 text-gray-500 transition hover:bg-gray-100"
+                            @click="toggleActionMenu(campaign.id)"
+                        >
+                            <IconHorizontalDots class="h-5 w-5" />
+                        </button>
+                        <Teleport to="body">
+                            <div
+                                v-if="openActionMenu === campaign.id"
+                                class="fixed z-[9999] w-40 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg"
+                                :style="getDropdownPosition(campaign.id)"
+                                data-dropdown="true"
+                            >
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-gray-800 transition hover:bg-gray-50"
+                                    @click="handleView(campaign.id)"
+                                >
+                                    View
+                                </button>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-green-600 transition hover:bg-gray-50"
+                                    @click="handleApprove(campaign.id)"
+                                >
+                                    Approve
+                                </button>
+                                <button
+                                    type="button"
+                                    class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-gray-50"
+                                    @click="handleDecline(campaign.id)"
+                                >
+                                    Decline
+                                </button>
+                            </div>
+                        </Teleport>
+                    </div>
                 </div>
             </div>
         </div>
@@ -139,9 +210,11 @@
     </div>
 </template>
 
-<script setup>
-    import { ref, computed } from 'vue';
+<script setup lang="ts">
+    import { ref, computed, onMounted, onUnmounted } from 'vue';
+    import type { ComponentPublicInstance } from 'vue';
     import { useRouter } from 'vue-router';
+    import IconHorizontalDots from '@/components/icon/icon-horizontal-dots.vue';
     import Dp from '@/assets/image/dp.jpeg';
 
     const router = useRouter();
@@ -151,6 +224,64 @@
     const goToDetails = (campaignId) => {
         router.push({ name: 'detailsPage', params: { id: campaignId } });
     };
+    const openActionMenu = ref<number | null>(null);
+    const buttonRefs = ref<Record<number, HTMLElement | null>>({});
+
+    const setButtonRef = (campaignId: number, el: HTMLElement | Element | ComponentPublicInstance | null) => {
+        if (el && el instanceof HTMLElement) {
+            buttonRefs.value[campaignId] = el;
+        } else if (el && '$el' in el && el.$el instanceof HTMLElement) {
+            buttonRefs.value[campaignId] = el.$el;
+        }
+    };
+
+    const getDropdownPosition = (campaignId: number) => {
+        const button = buttonRefs.value[campaignId];
+        if (!button) {
+            return { display: 'none' };
+        }
+        
+        const rect = button.getBoundingClientRect();
+        return {
+            top: `${rect.bottom + 8}px`,
+            right: `${window.innerWidth - rect.right}px`,
+        };
+    };
+
+    const toggleActionMenu = (campaignId: number) => {
+        openActionMenu.value = openActionMenu.value === campaignId ? null : campaignId;
+    };
+    const closeActionMenu = () => {
+        openActionMenu.value = null;
+    };
+    const handleView = (campaignId: number) => {
+        goToDetails(campaignId);
+        closeActionMenu();
+    };
+    const handleApprove = (campaignId: number) => {
+        console.log('Approving campaign', campaignId);
+        closeActionMenu();
+    };
+    const handleDecline = (campaignId: number) => {
+        console.log('Declining campaign', campaignId);
+        closeActionMenu();
+    };
+    const handleClickOutside = (event: MouseEvent) => {
+        if (openActionMenu.value) {
+            const target = event.target as HTMLElement;
+            const isButton = Object.values(buttonRefs.value).some((ref) => ref?.contains(target));
+            const isDropdown = target.closest('[data-dropdown="true"]');
+            if (!isButton && !isDropdown) {
+                closeActionMenu();
+            }
+        }
+    };
+    onMounted(() => {
+        document.addEventListener('click', handleClickOutside);
+    });
+    onUnmounted(() => {
+        document.removeEventListener('click', handleClickOutside);
+    });
 
     const campaigns = ref([
         {

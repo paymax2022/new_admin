@@ -61,6 +61,9 @@
                         <!-- <GroupsNavigation /> -->
                         <GroupNavigation />
                         <VotingManagementNavigation />
+                        <MulticurrencyManagementNavigation />
+                        <CrowdfundingManagementNavigation />
+                        <ElectionNavigation />
                         <SystemNavigation />
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
@@ -100,6 +103,8 @@ import ReportsNavigation from '../modules/ReportsNavigation.vue';
 // import GroupsNavigation from '../modules/GroupsNavigation.vue';
 import GroupNavigation from '../modules/GroupNavigation.vue';
 import VotingManagementNavigation from '../modules/VotingManagementNavigation.vue';
+import CrowdfundingManagementNavigation from '../modules/CrowdfundingManagementNavigation.vue';
+import ElectionNavigation from '../modules/ElectionNavigation.vue';
 import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
@@ -122,6 +127,7 @@ import AnalyticsGamificationNavigation from '../modules/AnalyticsGamificationNav
 import SettingsNavigation from '../modules/SettingsNavigation.vue';
 import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue';
 import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
+import MulticurrencyManagementNavigation from '@/components/modules/MulticurrencyManagementNavigation.vue';
 
 const store = useAppStore();
 
