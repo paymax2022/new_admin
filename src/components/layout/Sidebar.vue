@@ -63,6 +63,7 @@
                         <VotingManagementNavigation />
                         <MulticurrencyManagementNavigation />
                         <CrowdfundingManagementNavigation />
+                        <NewRestaurantsNavigation />
                         <ElectionNavigation />
                         <SystemNavigation />
                         <BillsPaymentNavigation />
@@ -108,6 +109,7 @@ import ElectionNavigation from '../modules/ElectionNavigation.vue';
 import SystemNavigation from '../modules/SystemNavigation.vue';
 import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigation.vue';
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
+import NewRestaurantsNavigation from '../modules/NewRestaurants/NewRestaurantsNavigation.vue';
 import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
 import EventsNavigation from '../modules/Events/EventsNavigation.vue';
 import GroupMembershipNavigation from '../modules/GroupMembership/GroupMembershipNavigation.vue';

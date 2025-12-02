@@ -4,6 +4,7 @@ import visitorMgtRoutes from './modules/visitor-mgt';
 import billsPaymentRoutes from './modules/bills-payment';
 import crowdfundingRoutes from './modules/crowdfunding';
 import newCrowdfundingRoutes from './modules/new-crowdfunding';
+import newRestaurantsRoutes from './modules/new-restaurants';
 import deliveryRoutes from './modules/delivery';
 import eventsRoutes from './modules/events';
 import groupMembershipRoutes from './modules/group-membership';
@@ -314,6 +315,7 @@ const routes: RouteRecordRaw[] = [
     ...billsPaymentRoutes,
     ...crowdfundingRoutes,
     ...newCrowdfundingRoutes,
+    ...newRestaurantsRoutes,
     ...multicurrencyRoutes,
     ...deliveryRoutes,
     ...eventsRoutes,
