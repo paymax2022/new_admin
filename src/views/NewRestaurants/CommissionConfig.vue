@@ -185,7 +185,7 @@
 
         <!-- Edit Commission Tier Modal -->
         <TransitionRoot appear :show="showEditModal" as="template">
-            <Dialog as="div" @close="closeEditModal" class="relative z-50">
+            <Dialog as="div" :open="showEditModal" @close="handleDialogClose" class="relative z-50">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
@@ -303,13 +303,15 @@
                                 <!-- Modal Footer -->
                                 <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
                                     <button
-                                        @click.stop="closeEditModal"
+                                        type="button"
+                                        @click="closeEditModal"
                                         class="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
                                     >
                                         Close
                                     </button>
                                     <button
-                                        @click.stop="saveTierChanges"
+                                        type="button"
+                                        @click="saveTierChanges"
                                         class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
                                     >
                                         Save Changes
@@ -415,11 +417,14 @@ const openEditModal = (tier: any) => {
     showEditModal.value = true;
 };
 
-const closeEditModal = (event?: Event) => {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
+const handleDialogClose = (value: boolean) => {
+    if (!value) {
+        showEditModal.value = false;
+        editingTier.value = null;
     }
+};
+
+const closeEditModal = () => {
     showEditModal.value = false;
     editingTier.value = null;
 };
