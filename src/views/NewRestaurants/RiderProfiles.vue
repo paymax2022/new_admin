@@ -391,6 +391,169 @@
                 </div>
             </Dialog>
         </TransitionRoot>
+
+        <!-- Reject Application Modal -->
+        <TransitionRoot appear :show="showRejectModal" as="template">
+            <Dialog as="div" @close="closeRejectModal" class="relative z-50">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
+                        >
+                            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+                                <!-- Modal Header -->
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Application ID {{ selectedRider?.applicationId || 'APP-1001' }}</span>
+                                        </div>
+                                        <button @click="closeRejectModal" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="px-6 py-6">
+                                    <h2 class="text-2xl font-bold text-gray-900 uppercase mb-4">REJECT APPLICATION — PROVIDE REASON</h2>
+                                    <p class="text-sm text-gray-600 mb-6">
+                                        This message will be sent to the riders. Make it specific and helpful so they can fix the issues and re-apply.
+                                    </p>
+                                    
+                                    <div>
+                                        <label class="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            </svg>
+                                            Write rejection message (required)
+                                        </label>
+                                        <textarea
+                                            v-model="rejectionMessage"
+                                            rows="6"
+                                            placeholder="Reason for rejecting the application"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                                    <button
+                                        @click="closeRejectModal"
+                                        class="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        @click="sendRejection"
+                                        :disabled="!rejectionMessage.trim()"
+                                        :class="[
+                                            'px-6 py-2 rounded-lg text-sm text-white font-medium transition-colors',
+                                            rejectionMessage.trim() 
+                                                ? 'bg-red-600 hover:bg-red-700' 
+                                                : 'bg-gray-300 cursor-not-allowed'
+                                        ]"
+                                    >
+                                        Send
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
+
+        <!-- Reject Application Confirmation Modal -->
+        <TransitionRoot appear :show="showRejectConfirmationModal" as="template">
+            <Dialog as="div" @close="closeRejectConfirmationModal" class="relative z-50">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
+                        >
+                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+                                <!-- Modal Header -->
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            </svg>
+                                            <span class="text-sm text-gray-500">Application ID {{ selectedRider?.applicationId || 'APP-1001' }}</span>
+                                        </div>
+                                        <button @click="closeRejectConfirmationModal" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="px-6 py-6">
+                                    <h2 class="text-2xl font-bold text-gray-900 uppercase mb-4">REJECT APPLICATION SENT</h2>
+                                    <p class="text-sm text-gray-600 leading-relaxed">
+                                        The rejection message has been successfully sent to the rider.
+                                    </p>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="px-6 py-4 border-t border-gray-200 flex justify-end">
+                                    <button
+                                        @click="closeRejectConfirmationModal"
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
     </div>
 </template>
 
@@ -403,7 +566,10 @@ const statusFilter = ref('all');
 const openDocumentDropdowns = ref<Record<string, boolean>>({});
 const openStatusDropdowns = ref<Record<string, boolean>>({});
 const showRiderModal = ref(false);
+const showRejectModal = ref(false);
+const showRejectConfirmationModal = ref(false);
 const selectedRider = ref<any>(null);
+const rejectionMessage = ref('');
 
 const defaultDocuments = [
     { name: 'Driver License (Front)', size: '3.5MB' },
@@ -621,9 +787,30 @@ const handleActivate = () => {
 };
 
 const handleReject = () => {
+    showRiderModal.value = false;
+    showRejectModal.value = true;
+    rejectionMessage.value = '';
+};
+
+const closeRejectModal = () => {
+    showRejectModal.value = false;
+    rejectionMessage.value = '';
+};
+
+const sendRejection = () => {
+    if (!rejectionMessage.value.trim()) {
+        return;
+    }
     if (selectedRider.value) {
         selectedRider.value.status = 'Suspended';
     }
+    showRejectModal.value = false;
+    showRejectConfirmationModal.value = true;
+};
+
+const closeRejectConfirmationModal = () => {
+    showRejectConfirmationModal.value = false;
+    rejectionMessage.value = '';
     closeRiderModal();
 };
 </script>

@@ -17,6 +17,9 @@
         { route: { name: 'new-restaurants-rider-profiles' }, displayName: 'Rider Profiles' },
         { route: { name: 'new-restaurants-rider-performance-reports' }, displayName: 'Performance Reports' },
         { route: { name: 'new-restaurants-incentives' }, displayName: 'Incentives' },
+        { route: { name: 'new-restaurants-earnings' }, displayName: 'Earnings' },
+        { route: { name: 'new-restaurants-payouts' }, displayName: 'Payouts' },
+        { route: { name: 'new-restaurants-commission-config' }, displayName: 'Commission Config' },
     ];
 </script>
 

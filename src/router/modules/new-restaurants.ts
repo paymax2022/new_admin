@@ -62,6 +62,21 @@ const newRestaurantsRoutes = [
                 name: 'new-restaurants-incentives',
                 component: () => import('../../views/NewRestaurants/Incentives.vue'),
             },
+            {
+                path: 'earnings',
+                name: 'new-restaurants-earnings',
+                component: () => import('../../views/NewRestaurants/Earnings.vue'),
+            },
+            {
+                path: 'payouts',
+                name: 'new-restaurants-payouts',
+                component: () => import('../../views/NewRestaurants/Payouts.vue'),
+            },
+            {
+                path: 'commission-config',
+                name: 'new-restaurants-commission-config',
+                component: () => import('../../views/NewRestaurants/CommissionConfig.vue'),
+            },
         ],
     },
 ];
