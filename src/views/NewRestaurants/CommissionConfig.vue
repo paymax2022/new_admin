@@ -7,7 +7,7 @@
                     <h1 class="text-3xl font-bold text-gray-900">Commission Configuration</h1>
                     <p class="text-sm text-gray-500 mt-1">Manage commission tiers and custom rates for restaurants</p>
                 </div>
-                <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
+                <button @click="openCustomCommissionModal" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
                     Custom Commission
                 </button>
             </div>
@@ -183,9 +183,148 @@
             </div>
         </div>
 
+        <!-- Create Custom Commission Modal -->
+        <TransitionRoot appear :show="showCustomCommissionModal" as="template">
+            <Dialog as="div" @close="closeCustomCommissionModal" class="relative z-50">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
+                        >
+                            <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
+                                <!-- Modal Header -->
+                                <div class="px-6 py-4 border-b border-gray-200">
+                                    <h2 class="text-2xl font-bold text-gray-900">Create Custom Commission</h2>
+                                    <p class="text-sm text-gray-500 mt-1">Set a custom commission rate for a specific restaurant</p>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="px-6 py-6">
+                                    <div class="space-y-4">
+                                        <!-- Restaurant -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant</label>
+                                            <div class="relative">
+                                                <select
+                                                    v-model="customCommissionForm.restaurant"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white pr-10"
+                                                >
+                                                    <option value="">Select restaurant</option>
+                                                    <option value="Mama put">Mama put</option>
+                                                    <option value="Catwell">Catwell</option>
+                                                    <option value="Happy Me">Happy Me</option>
+                                                </select>
+                                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <!-- Custom Rate % -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Custom Rate %</label>
+                                            <div class="relative">
+                                                <input
+                                                    type="text"
+                                                    v-model="customCommissionForm.customRate"
+                                                    placeholder="--"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                >
+                                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <!-- Commission Rate (%) -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Commission Rate (%)</label>
+                                            <div class="relative">
+                                                <input
+                                                    type="number"
+                                                    v-model="customCommissionForm.commissionRate"
+                                                    placeholder="18"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                                                >
+                                                <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+
+                                        <!-- Effective Date -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Effective Date</label>
+                                            <div class="relative">
+                                                <input
+                                                    type="text"
+                                                    v-model="customCommissionForm.effectiveDate"
+                                                    placeholder="dd/mm/yyyy"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <!-- Reason -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Reason</label>
+                                            <div class="relative">
+                                                <input
+                                                    type="text"
+                                                    v-model="customCommissionForm.reason"
+                                                    placeholder="--"
+                                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+                                    <button
+                                        type="button"
+                                        @click="createCustomCommission"
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                                    >
+                                        Create
+                                    </button>
+                                    <button
+                                        type="button"
+                                        @click="closeCustomCommissionModal"
+                                        class="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
+
         <!-- Edit Commission Tier Modal -->
         <TransitionRoot appear :show="showEditModal" as="template">
-            <Dialog as="div" :open="showEditModal" @close="handleDialogClose" class="relative z-50">
+            <Dialog as="div" @close="closeEditModal" class="relative z-50">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
@@ -332,7 +471,16 @@ import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessu
 
 const activeTab = ref('commission-tiers');
 const showEditModal = ref(false);
+const showCustomCommissionModal = ref(false);
 const editingTier = ref<any>(null);
+
+const customCommissionForm = ref({
+    restaurant: '',
+    customRate: '',
+    commissionRate: '18',
+    effectiveDate: '',
+    reason: ''
+});
 
 const customCommissions = ref([
     {
@@ -417,16 +565,37 @@ const openEditModal = (tier: any) => {
     showEditModal.value = true;
 };
 
-const handleDialogClose = (value: boolean) => {
-    if (!value) {
-        showEditModal.value = false;
-        editingTier.value = null;
-    }
-};
-
 const closeEditModal = () => {
     showEditModal.value = false;
     editingTier.value = null;
+};
+
+const openCustomCommissionModal = () => {
+    customCommissionForm.value = {
+        restaurant: '',
+        customRate: '',
+        commissionRate: '18',
+        effectiveDate: '',
+        reason: ''
+    };
+    showCustomCommissionModal.value = true;
+};
+
+const closeCustomCommissionModal = () => {
+    showCustomCommissionModal.value = false;
+    customCommissionForm.value = {
+        restaurant: '',
+        customRate: '',
+        commissionRate: '18',
+        effectiveDate: '',
+        reason: ''
+    };
+};
+
+const createCustomCommission = () => {
+    // Handle creation logic here
+    console.log('Creating custom commission:', customCommissionForm.value);
+    closeCustomCommissionModal();
 };
 
 const saveTierChanges = () => {

@@ -17,13 +17,29 @@
         </div>
 
         <!-- KPI Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             <!-- Total Restaurants -->
             <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Total Restaurants</p>
                         <p class="text-3xl font-bold text-blue-600">2,847</p>
+                        <div class="flex items-center mt-2">
+                            <svg class="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-xs text-gray-600">0.5% vs yesterday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Orders -->
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Total Orders</p>
+                        <p class="text-3xl font-bold text-purple-600">690,000</p>
                         <div class="flex items-center mt-2">
                             <svg class="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
@@ -141,6 +157,58 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Customers -->
+            <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 mb-1">Total Customers</p>
+                        <p class="text-3xl font-bold text-indigo-600">50</p>
+                        <div class="flex items-center mt-2">
+                            <svg class="w-4 h-4 text-green-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="text-xs text-gray-600">0.5% vs yesterday</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Statistics Section -->
+        <div class="mb-6">
+            <!-- Order Filter & Stats Breakdown -->
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-4">
+                <h2 class="text-xl font-bold text-gray-800">Order Statistics</h2>
+                <div class="relative inline-block text-left">
+                    <button @click="orderStatsOpen = !orderStatsOpen" class="px-3 py-1 bg-red-100 text-red-600 rounded-lg text-sm font-medium flex items-center gap-1">
+                        {{ selectedOrderRange }}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <div v-if="orderStatsOpen" class="absolute right-0 z-10 mt-2 w-40 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                        <ul class="py-1 text-sm text-gray-700">
+                            <li v-for="range in orderRanges" :key="range" @click="selectOrderRange(range)" class="block px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                {{ range }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Breakdown Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div v-for="stat in orderStats" :key="stat.label" class="bg-white p-4 rounded-xl shadow-sm flex items-center border border-gray-100 space-x-4">
+                    <div :class="`p-3 rounded-full text-white ${stat.bg}`">
+                        <component :is="stat.icon" class="w-6 h-6" />
+                    </div>
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">{{ stat.label }}</p>
+                        <p class="text-lg font-semibold text-gray-800">{{ stat.value }}</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Main Content Grid -->
@@ -233,9 +301,30 @@
 import { ref, computed } from 'vue';
 import LineChart from '@/components/charts/LineChart.vue';
 import DonutChart from '@/components/charts/DonutChart.vue';
+import { CubeIcon, TruckIcon, ClockIcon, CheckCircleIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid';
 
 const selectedTimeRange = ref('Last 30 Days');
 const selectedOrderStatus = ref('all');
+
+// Order Statistics
+const orderStatsOpen = ref(false);
+const selectedOrderRange = ref('01 Jun - 30 Jun');
+const orderRanges = ['01 Jun - 30 Jun', '01 May - 31 May', '01 Apr - 30 Apr'];
+
+const orderStats = [
+    { label: 'Total Orders', value: 9, bg: 'bg-purple-500', icon: CubeIcon },
+    { label: 'Pending', value: 3, bg: 'bg-yellow-400', icon: ClockIcon },
+    { label: 'Processing', value: 0, bg: 'bg-green-300', icon: CheckCircleIcon },
+    { label: 'On The Way', value: 0, bg: 'bg-sky-400', icon: TruckIcon },
+    { label: 'Delivered', value: 4, bg: 'bg-purple-400', icon: CubeIcon },
+    { label: 'Canceled', value: 0, bg: 'bg-red-300', icon: XCircleIcon },
+    { label: 'Rejected', value: 1, bg: 'bg-red-400', icon: XMarkIcon },
+];
+
+function selectOrderRange(range: string) {
+    selectedOrderRange.value = range;
+    orderStatsOpen.value = false;
+}
 
 const orderTrendsData = {
     labels: ['7AM', '8AM', '9AM', '10AM', '11AM', '12PM', '1PM', '2PM', '3PM', '4PM', '5PM', '6PM', '7PM', '8PM'],

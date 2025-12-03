@@ -188,11 +188,18 @@
                                             <p class="text-sm text-gray-500">Restaurant ID</p>
                                             <p class="text-sm text-gray-500">{{ selectedRestaurant?.restaurantId || 'RES-2001' }}</p>
                                         </div>
-                                        <button @click="closeProfileModal" class="text-gray-500 hover:text-gray-700">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                            </svg>
-                                        </button>
+                                        <div class="flex items-center gap-2">
+                                            <button @click="openEditModal" class="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <button @click="closeProfileModal" class="text-gray-500 hover:text-gray-700">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-3">
@@ -1082,6 +1089,201 @@
                 </div>
             </Dialog>
         </TransitionRoot>
+
+        <!-- Edit Restaurant Profile Modal -->
+        <TransitionRoot appear :show="showEditModal" as="template">
+            <Dialog as="div" @close="closeEditModal" class="relative z-50">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4">
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
+                        >
+                            <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white shadow-xl transition-all max-h-[90vh] flex flex-col">
+                                <!-- Modal Header -->
+                                <div class="px-6 py-4 border-b border-gray-200 flex-shrink-0">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h2 class="text-2xl font-bold text-gray-900">Edit Restaurant Profile</h2>
+                                            <p class="text-sm text-gray-500 mt-1">Restaurant ID: {{ editForm.restaurantId || 'RES-2001' }}</p>
+                                        </div>
+                                        <button @click="closeEditModal" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Content -->
+                                <div class="px-6 py-6 overflow-y-auto flex-1">
+                                    <div class="space-y-4">
+                                        <!-- Restaurant Name -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Name</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.fullName"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Contact Person -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Contact Person</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.contactPerson"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                            <input
+                                                type="email"
+                                                v-model="editForm.email"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Address -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                            <textarea
+                                                v-model="editForm.fullAddress"
+                                                rows="3"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                            ></textarea>
+                                        </div>
+
+                                        <!-- Service -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Service</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.service"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Restaurant Category -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Category</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.category"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Cuisine Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Cuisine Type</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.cuisineType"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Restaurant Type -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Restaurant Type</label>
+                                            <input
+                                                type="text"
+                                                v-model="editForm.restaurantType"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Status -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                            <select
+                                                v-model="editForm.status"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                                <option value="Active">Active</option>
+                                                <option value="Inactive">Inactive</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Joined On -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Joined On</label>
+                                            <input
+                                                type="date"
+                                                v-model="editForm.joinedOn"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- Avg Rating -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Avg. Rating</label>
+                                            <input
+                                                type="number"
+                                                step="0.1"
+                                                v-model="editForm.avgRating"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                            >
+                                        </div>
+
+                                        <!-- About us -->
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">About us</label>
+                                            <textarea
+                                                v-model="editForm.aboutUs"
+                                                rows="4"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                                placeholder="Mama Put Express has applied to join the platform. Documents are pending verification. Requires approval to onboard."
+                                            ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Modal Footer -->
+                                <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3 flex-shrink-0">
+                                    <button
+                                        type="button"
+                                        @click="closeEditModal"
+                                        class="px-6 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 font-medium transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        @click="saveEditChanges"
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </div>
+            </Dialog>
+        </TransitionRoot>
     </div>
 </template>
 
@@ -1094,9 +1296,26 @@ const perPage = ref(10);
 const currentPage = ref(1);
 const showProfileModal = ref(false);
 const showDetailedModal = ref(false);
+const showEditModal = ref(false);
 const selectedRestaurant = ref<any>(null);
 const activeTab = ref('restaurant-profiles');
 const aboutUsText = ref('');
+
+const editForm = ref({
+    restaurantId: '',
+    fullName: '',
+    contactPerson: '',
+    email: '',
+    fullAddress: '',
+    service: '',
+    category: '',
+    cuisineType: '',
+    restaurantType: '',
+    status: 'Active',
+    joinedOn: '',
+    avgRating: '',
+    aboutUs: ''
+});
 
 // Menu items with dummy food images
 const menuItems = ref([
@@ -1320,6 +1539,59 @@ const closeDetailedModal = () => {
     showDetailedModal.value = false;
     selectedRestaurant.value = null;
     aboutUsText.value = '';
+};
+
+const openEditModal = () => {
+    if (selectedRestaurant.value) {
+        editForm.value = {
+            restaurantId: selectedRestaurant.value.restaurantId || '',
+            fullName: selectedRestaurant.value.fullName || '',
+            contactPerson: selectedRestaurant.value.contactPerson || '',
+            email: selectedRestaurant.value.email || '',
+            fullAddress: selectedRestaurant.value.fullAddress || '',
+            service: selectedRestaurant.value.service || '',
+            category: selectedRestaurant.value.category || '',
+            cuisineType: selectedRestaurant.value.cuisineType || '',
+            restaurantType: selectedRestaurant.value.restaurantType || '',
+            status: selectedRestaurant.value.status || 'Active',
+            joinedOn: selectedRestaurant.value.joinedOn || '',
+            avgRating: selectedRestaurant.value.avgRating || '',
+            aboutUs: selectedRestaurant.value.aboutUs || aboutUsText.value || ''
+        };
+        showEditModal.value = true;
+    }
+};
+
+const closeEditModal = () => {
+    showEditModal.value = false;
+};
+
+const saveEditChanges = () => {
+    if (selectedRestaurant.value) {
+        // Update selectedRestaurant with editForm values
+        Object.assign(selectedRestaurant.value, editForm.value);
+        
+        // Update the restaurant in the main list
+        const index = restaurants.value.findIndex(r => r.id === selectedRestaurant.value.id);
+        if (index !== -1) {
+            Object.assign(restaurants.value[index], editForm.value);
+            // Update the name field for display in table
+            restaurants.value[index].name = editForm.value.fullName.length > 15 
+                ? editForm.value.fullName.substring(0, 15) + '...' 
+                : editForm.value.fullName;
+            // Update the address field for display in table
+            restaurants.value[index].address = editForm.value.fullAddress.length > 20 
+                ? editForm.value.fullAddress.substring(0, 20) + '...' 
+                : editForm.value.fullAddress;
+        }
+        
+        // Update aboutUsText if it was changed
+        if (editForm.value.aboutUs) {
+            aboutUsText.value = editForm.value.aboutUs;
+        }
+        
+        closeEditModal();
+    }
 };
 
 const handleToggleStatus = () => {
