@@ -69,6 +69,7 @@
                         <BillsPaymentNavigation />
                         <CrowdfundingNavigation />
                         <DeliveryNavigation />
+                        <TransportationNavigation />
                         <EventsNavigation />
                         <GroupMembershipNavigation />
                         <InsuranceNavigation />
@@ -111,6 +112,7 @@ import BillsPaymentNavigation from '../modules/BillsPayment/BillsPaymentNavigati
 import CrowdfundingNavigation from '../modules/Crowdfunding/CrowdfundingNavigation.vue';
 import NewRestaurantsNavigation from '../modules/NewRestaurants/NewRestaurantsNavigation.vue';
 import DeliveryNavigation from '../modules/Delivery/DeliveryNavigation.vue';
+import TransportationNavigation from '../modules/Transportation/TransportationNavigation.vue';
 import EventsNavigation from '../modules/Events/EventsNavigation.vue';
 import GroupMembershipNavigation from '../modules/GroupMembership/GroupMembershipNavigation.vue';
 import InsuranceNavigation from '../modules/Insurance/InsuranceNavigation.vue';

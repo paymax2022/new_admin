@@ -6,6 +6,7 @@ import crowdfundingRoutes from './modules/crowdfunding';
 import newCrowdfundingRoutes from './modules/new-crowdfunding';
 import newRestaurantsRoutes from './modules/new-restaurants';
 import deliveryRoutes from './modules/delivery';
+import transportationRoutes from './modules/transportation';
 import eventsRoutes from './modules/events';
 import groupMembershipRoutes from './modules/group-membership';
 import insuranceRoutes from './modules/insurance';
@@ -318,6 +319,7 @@ const routes: RouteRecordRaw[] = [
     ...newRestaurantsRoutes,
     ...multicurrencyRoutes,
     ...deliveryRoutes,
+    ...transportationRoutes,
     ...eventsRoutes,
     ...groupMembershipRoutes,
     ...insuranceRoutes,
