@@ -8,7 +8,7 @@
     <div class="grid gap-4 md:grid-cols-4">
       <WalletStatCard
         title="Total Donations"
-        value="₦2,847,392"
+        :value="stats.totalDonations"
         caption="+18% from previous donations"
         :icon="IconDollar"
         accent-color="#2563EB"
@@ -16,7 +16,7 @@
       />
       <WalletStatCard
         title="Pending Withdrawals"
-        value="₦127,840"
+        :value="stats.pendingWithdrawals"
         caption="+5% from last month"
         :icon="IconWallet"
         accent-color="#F59E0B"
@@ -24,7 +24,7 @@
       />
       <WalletStatCard
         title="Processed Today"
-        value="₦45,230"
+        :value="stats.processedToday"
         caption="+12% new records"
         :icon="IconCircleCheck"
         accent-color="#10B981"
@@ -32,7 +32,7 @@
       />
       <WalletStatCard
         title="Platform Balance"
-        value="₦892,150"
+        :value="stats.platformBalance"
         caption="Includes all reserves"
         :icon="IconBalance"
         accent-color="#8B5CF6"
@@ -73,7 +73,7 @@
           </thead>
           <tbody>
             <TransactionRow
-              v-for="transaction in transactions"
+              v-for="transaction in filteredTransactions"
               :key="transaction.id"
               v-bind="transaction"
               @action="handleTransactionAction"
@@ -211,7 +211,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 
 import IconBalance from '@/components/icon/icon-wallet.vue';
 import IconCircleCheck from '@/components/icon/icon-circle-check.vue';
@@ -223,6 +224,15 @@ import IconX from '@/components/icon/icon-x.vue';
 import FilterSelect from './components/WalletFilterSelect.vue';
 import TransactionRow from './components/WalletTransactionRow.vue';
 import WalletStatCard from './components/WalletStatCard.vue';
+import crowdfundingService from '@/services/crowdfundingService';
+
+const toast = useToast();
+const loading = ref(false);
+const searchQuery = ref('');
+const statusFilter = ref('');
+const typeFilter = ref('');
+const currentPage = ref(1);
+const pageSize = ref(20);
 
 type TransactionRecord = {
   id: string;
@@ -257,7 +267,113 @@ type TransactionRecord = {
   };
 };
 
-const transactions: TransactionRecord[] = [
+const transactions = ref<TransactionRecord[]>([]);
+const stats = ref({
+  totalDonations: '₦2,847,392',
+  pendingWithdrawals: '₦127,840',
+  processedToday: '₦45,230',
+  platformBalance: '₦892,150',
+});
+
+const loadDonations = async () => {
+  try {
+    loading.value = true;
+    const response = await crowdfundingService.listAllDonations({
+      page: currentPage.value,
+      limit: pageSize.value,
+    });
+
+    if (response.success && response.data?.data) {
+      transactions.value = response.data.data.map((donation: any) => ({
+        id: donation.id,
+        type: { label: 'Donation', color: '#16A34A', bg: '#DCFCE7' },
+        from: donation.donor_email || donation.donor_name,
+        to: donation.campaign_title || 'Campaign',
+        amount: `₦${donation.amount.toLocaleString()}`,
+        fee: `₦${((donation.amount * 0.02) || 0).toFixed(2)}`,
+        status: {
+          label: donation.status === 'completed' ? 'Completed' : donation.status === 'pending' ? 'Pending' : 'Processing',
+          color: donation.status === 'completed' ? '#16A34A' : donation.status === 'pending' ? '#DC2626' : '#2563EB',
+          bg: donation.status === 'completed' ? '#E6FBF2' : donation.status === 'pending' ? '#FEE2E2' : '#DBEAFE',
+        },
+        date: new Date(donation.created_at).toLocaleString(),
+        action: { label: 'View Details' },
+        detail: {
+          user: {
+            name: donation.donor_name,
+            email: donation.donor_email || '',
+            avatarInitials: donation.donor_name?.substring(0, 2).toUpperCase() || 'AN',
+            status: { label: 'Verified', color: '#16A34A', bg: '#E6FBF2' },
+            currentBalance: '₦0.00',
+          },
+          totals: { donated: `₦${donation.amount.toLocaleString()}`, withdrawn: '₦0.00' },
+          activities: [
+            {
+              type: 'Donation',
+              status: donation.status === 'completed' ? 'Completed' : 'Pending',
+              statusColor: donation.status === 'completed' ? '#16A34A' : '#F59E0B',
+              statusBg: donation.status === 'completed' ? '#DCFCE7' : '#FEF3C7',
+              description: donation.campaign_title || 'Campaign',
+              amount: `-₦${donation.amount.toLocaleString()}`,
+              amountColor: '#DC2626',
+              txnId: donation.id,
+              date: new Date(donation.created_at).toLocaleString(),
+            },
+          ],
+        },
+      }));
+
+      // Calculate stats
+      const total = response.data.data.reduce((sum: number, d: any) => sum + (d.amount || 0), 0);
+      const pending = response.data.data
+        .filter((d: any) => d.status === 'pending')
+        .reduce((sum: number, d: any) => sum + (d.amount || 0), 0);
+
+      stats.value = {
+        totalDonations: `₦${total.toLocaleString()}`,
+        pendingWithdrawals: `₦${pending.toLocaleString()}`,
+        processedToday: `₦${(total * 0.02).toLocaleString()}`,
+        platformBalance: `₦${(total - pending).toLocaleString()}`,
+      };
+    }
+  } catch (error) {
+    console.error('Error loading donations:', error);
+    toast.error('Failed to load donations');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const filteredTransactions = computed(() => {
+  let filtered = transactions.value;
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (t) =>
+        t.id.toLowerCase().includes(query) ||
+        t.from.toLowerCase().includes(query) ||
+        t.to.toLowerCase().includes(query)
+    );
+  }
+
+  if (statusFilter.value && statusFilter.value !== 'All Status') {
+    filtered = filtered.filter((t) => t.status.label === statusFilter.value);
+  }
+
+  if (typeFilter.value && typeFilter.value !== 'All Type') {
+    filtered = filtered.filter((t) => t.type.label === typeFilter.value);
+  }
+
+  return filtered;
+});
+
+onMounted(() => {
+  loadDonations();
+});
+
+// Dummy data fallback
+const dummyTransactions: TransactionRecord[] = [
   {
     id: 'TXN001',
     type: { label: 'Donation', color: '#16A34A', bg: '#DCFCE7' },

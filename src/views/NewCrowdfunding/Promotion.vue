@@ -93,7 +93,8 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 
 import IconClock from '@/components/icon/icon-clock.vue';
 import IconRevenue from '@/components/icon/icon-dollar-sign.vue';
@@ -105,6 +106,27 @@ import FilterSelect from './components/WalletFilterSelect.vue';
 import PromotionModal from './components/PromotionModal.vue';
 import PromotionRow from './components/PromotionRow.vue';
 import PromotionStatCard from './components/PromotionStatCard.vue';
+import crowdfundingService from '@/services/crowdfundingService';
+
+const toast = useToast();
+const loading = ref(false);
+const searchQuery = ref('');
+const boostRates = ref<any[]>([]);
+
+const loadBoostRates = async () => {
+  try {
+    const response = await crowdfundingService.getBoostRates();
+    if (response.success && response.data) {
+      boostRates.value = response.data;
+    }
+  } catch (error) {
+    console.error('Error loading boost rates:', error);
+  }
+};
+
+onMounted(() => {
+  loadBoostRates();
+});
 
 type PromotionRecord = {
   id: string;

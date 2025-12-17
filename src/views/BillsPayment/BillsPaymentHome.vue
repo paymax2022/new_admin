@@ -150,96 +150,122 @@
       </div>
     </section>
 
-    <section class="grid gap-6 lg:grid-cols-2">
-      <article class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)] space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-[#111827]">Service Configuration</h2>
-          <div class="flex gap-2">
-            <button
-              v-for="service in configTabs"
-              :key="service"
-              class="rounded-full px-3 py-1 text-xs font-semibold"
-              :class="service === activeConfig ? 'bg-[#111827] text-white' : 'bg-[#f1f5f9] text-[#6b7280]'"
-              @click="activeConfig = service"
-            >
-              {{ service }}
-            </button>
-          </div>
-        </div>
-        <form class="space-y-4">
-          <div class="grid gap-4 md:grid-cols-2">
-            <Field label="Service Provider">
-              <select class="input-select">
-                <option>MTN Nigeria</option>
-              </select>
-            </Field>
-            <Field label="Maximum Amount (₦)">
-              <input type="number" class="input-select" placeholder="Enter amount" />
-            </Field>
-            <Field label="Service Fee (%)">
-              <input type="number" class="input-select" placeholder="2.5" />
-            </Field>
-            <Field label="Markup (%)">
-              <input type="number" class="input-select" placeholder="1.2" />
-            </Field>
-          </div>
-          <Field label="API Key / Route">
-            <input type="text" class="input-select" placeholder="Enter API route" />
-          </Field>
-          <div class="flex items-center justify-between rounded-2xl border border-[#f1f5f9] p-4">
-            <div>
-              <p class="text-sm font-semibold text-[#111827]">Service Enabled</p>
-              <p class="text-xs text-[#6b7280]">Toggle to enable/disable service</p>
-            </div>
-            <button
-              type="button"
-              class="relative h-6 w-11 rounded-full transition"
-              :class="serviceEnabled ? 'bg-[#111827]' : 'bg-[#e2e8f0]'"
-              @click="serviceEnabled = !serviceEnabled"
-            >
-              <span
-                class="absolute top-1 left-1 h-4 w-4 rounded-full bg-white transition"
-                :class="serviceEnabled ? 'translate-x-[20px]' : ''"
-              />
-            </button>
-          </div>
-          <div class="flex justify-end gap-3">
-            <button type="button" class="rounded-full border border-[#e2e8f0] px-4 py-2 text-sm font-semibold text-[#6b7280]">
-              Cancel
-            </button>
-            <button type="button" class="rounded-full bg-[#7c3aed] px-4 py-2 text-sm font-semibold text-white">
-              Save Changes
-            </button>
-          </div>
-        </form>
-      </article>
+    <!-- Transactions Table Section -->
+    <section class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)] space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-[#111827]">Transactions</h2>
+        <p class="text-sm text-[#6b7280]">Showing Airtime and Electricity transactions only</p>
+      </div>
 
-      <article class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)] space-y-4">
-        <h2 class="text-lg font-semibold text-[#111827]">System Health</h2>
-        <div class="space-y-4">
-          <div
-            v-for="health in systemHealth"
-            :key="health.label"
-            class="flex items-center justify-between rounded-2xl border border-[#f1f5f9] p-4"
-          >
-            <div>
-              <p class="text-sm font-semibold text-[#111827]">{{ health.label }}</p>
-              <p class="text-xs text-[#6b7280]">{{ health.description }}</p>
-            </div>
-            <span
-              class="rounded-full px-3 py-1 text-xs font-semibold uppercase"
-              :class="health.statusClass"
+      <!-- Search and Filters -->
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div class="flex-1 max-w-lg">
+          <div class="relative">
+            <MagnifyingGlassIcon class="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Search by user or transaction ID"
+              class="w-full rounded-md border border-gray-300 pl-10 pr-4 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              {{ health.status }}
-            </span>
-          </div>
-          <div class="rounded-2xl border border-[#f1f5f9] p-4 text-sm text-[#111827]">
-            <p>Next Sync</p>
-            <p class="text-2xl font-semibold mt-2">02:00 PM</p>
-            <p class="text-xs text-[#6b7280]">Estimated</p>
           </div>
         </div>
-      </article>
+        <div class="flex items-center space-x-3">
+          <select v-model="statusFilter" class="block w-40 rounded-md border border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="">All Status</option>
+            <option value="SUCCESSFUL">Completed</option>
+            <option value="PENDING">Pending</option>
+            <option value="FAILED">Failed</option>
+            <option value="REVERSED">Reversed</option>
+          </select>
+          <div class="flex items-center space-x-2">
+            <input type="date" v-model="startDate" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+            <span class="text-gray-500">to</span>
+            <input type="date" v-model="endDate" class="rounded-md border border-gray-300 py-2 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+          </div>
+          <button @click="refresh" class="inline-flex items-center justify-center rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+            <ArrowPathIcon class="h-4 w-4 mr-2" />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Vue3 DataTable -->
+      <div v-if="loading" class="flex justify-center items-center py-10">
+        <span class="text-blue-600 font-semibold">Loading...</span>
+      </div>
+      <div v-else-if="filteredTransactions.length === 0" class="rounded-lg border border-gray-200 p-10 text-center">
+        <h3 class="text-sm font-medium text-gray-900">No transactions found</h3>
+        <p class="mt-1 text-sm text-gray-500">Try adjusting your filters or refresh the page.</p>
+      </div>
+      <div v-else class="rounded-lg border border-gray-200 overflow-hidden">
+        <Vue3Datatable
+          :rows="filteredTransactions"
+          :columns="visibleColumns"
+          :totalRows="filteredTransactions.length"
+          :sortable="true"
+          :searchable="false"
+          :pageSize="rowsPerPage"
+          :pageSizeOptions="[10, 25, 50, 100]"
+          skin="bh-table-compact"
+          :loading="loading"
+          :classes="{
+            table: 'min-w-full divide-y divide-gray-200',
+            thead: 'bg-gray-50',
+            tbody: 'bg-white divide-y divide-gray-200',
+            tr: 'hover:bg-gray-50 transition-colors cursor-pointer',
+            th: 'px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700',
+            td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900',
+          }"
+        >
+          <template #user_name="data">
+            <div v-if="data && data.value" class="flex flex-col">
+              <span class="font-medium text-gray-900">
+                {{ data.value.user_name || '-' }}
+              </span>
+              <span v-if="data.value.user_email && data.value.user_email !== '-'" class="text-xs text-gray-500 mt-0.5">
+                {{ data.value.user_email }}
+              </span>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #status="data">
+            <span v-if="data && data.value" :class="getStatusClass(data.value.status || 'UNKNOWN')" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold">
+              <span :class="getStatusDotClass(data.value.status || 'UNKNOWN')" class="h-2 w-2 rounded-full"></span>
+              {{ data.value.status || 'UNKNOWN' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #created_at="data">
+            <div v-if="data && data.value" class="flex flex-col">
+              <span v-if="data.value.date_formatted && data.value.date_formatted !== '-'" class="text-gray-900">
+                {{ typeof data.value.date_formatted === 'string' ? data.value.date_formatted.split(',')[0] : '-' }}
+              </span>
+              <span v-else class="text-gray-900">-</span>
+              <span v-if="data.value.date_formatted && typeof data.value.date_formatted === 'string' && data.value.date_formatted.includes(',')" class="text-xs text-gray-500">
+                {{ data.value.date_formatted.split(',')[1]?.trim() }}
+              </span>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #amount="data">
+            <div v-if="data && data.value" class="text-right">
+              <span class="font-bold text-gray-900 text-base">{{ data.value.amount_formatted || formatCurrency(0) }}</span>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #category="data">
+            <span v-if="data && data.value" class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+              {{ data.value.category || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">N/A</span>
+          </template>
+        </Vue3Datatable>
+      </div>
     </section>
   </div>
 
@@ -271,7 +297,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, h, ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import type { ComponentPublicInstance } from 'vue';
 import ConfigureProviderModal from './components/ConfigureProviderModal.vue';
 import ProviderLogsModal from './components/ProviderLogsModal.vue';
@@ -282,6 +308,11 @@ import IconSettings from '@/components/icon/icon-settings.vue';
 import IconLink from '@/components/icon/icon-link.vue';
 import IconEye from '@/components/icon/icon-eye.vue';
 import IconBan from '@/components/icon/icon-ban.vue';
+import Vue3Datatable from '@bhplugin/vue3-datatable';
+import '@bhplugin/vue3-datatable/dist/style.css';
+import { MagnifyingGlassIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
+import transactionService from '@/services/transactionService';
+import { useToast } from 'vue-toastification';
 
 const serviceSummary = [
   {
@@ -381,48 +412,243 @@ const providers = [
   },
 ];
 
-const configTabs = ['Airtime', 'Data', 'Electricity', 'TV'];
-const activeConfig = ref('Airtime');
-const serviceEnabled = ref(true);
+const toast = useToast();
 
-const systemHealth = [
-  {
-    label: 'API Response Time',
-    description: 'Average response time in the last 24 hours',
-    status: 'Healthy',
-    statusClass: 'bg-[#dcfce7] text-[#15803d]',
-  },
-  {
-    label: 'Database Sync',
-    description: 'Last sync: 5 mins ago',
-    status: 'Healthy',
-    statusClass: 'bg-[#dcfce7] text-[#15803d]',
-  },
-  {
-    label: 'Transaction Error Rate',
-    description: '0.2% error rate in the last 24 hours',
-    status: 'Healthy',
-    statusClass: 'bg-[#dbeafe] text-[#1d4ed8]',
-  },
-  {
-    label: 'Queue Backlog',
-    description: '120 pending operations',
-    status: 'Monitor',
-    statusClass: 'bg-[#fef3c7] text-[#b45309]',
-  },
-];
+// Transaction table state
+const loading = ref(false);
+const transactions = ref([]);
+const searchQuery = ref('');
+const statusFilter = ref('');
+const startDate = ref('');
+const endDate = ref('');
+const rowsPerPage = ref(10);
 
-const Field = defineComponent({
-  name: 'Field',
-  props: { label: { type: String, required: true } },
-  setup(props, { slots }) {
-    return () =>
-      h('div', { class: 'space-y-2' }, [
-        h('p', { class: 'text-xs font-semibold uppercase tracking-wide text-[#94a3b8]' }, props.label),
-        slots.default ? slots.default() : null,
-      ]);
-  },
+// Format currency
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 0
+  }).format(value);
+};
+
+// Transform transaction data
+const transformTransactionData = (rawTransactions) => {
+  if (!Array.isArray(rawTransactions)) {
+    return [];
+  }
+  
+  return rawTransactions.map(t => {
+    if (!t || typeof t !== 'object') {
+      return null;
+    }
+    
+    try {
+      const amountValue = parseFloat(t.amount) || 0;
+      return {
+        ...t,
+        user_name: t.user ? `${t.user.first_name || ''} ${t.user.lastname || ''}`.trim() || '-' : '-',
+        user_email: t.user?.email || '-',
+        date_formatted: t.created_at ? new Date(t.created_at).toLocaleString() : '-',
+        amount_formatted: formatCurrency(amountValue),
+        category: t.category || t.service_type || t.type || t.transaction_type || 'N/A',
+        status: t.status || 'UNKNOWN',
+        amount: amountValue,
+        id: t.id || t.transaction_id || `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      };
+    } catch (error) {
+      console.error('Error transforming transaction:', error, t);
+      return {
+        id: t.id || 'UNKNOWN',
+        user_name: '-',
+        user_email: '-',
+        date_formatted: '-',
+        amount_formatted: formatCurrency(0),
+        category: 'N/A',
+        status: 'UNKNOWN',
+        amount: 0
+      };
+    }
+  }).filter(t => t !== null);
+};
+
+// Fetch transactions
+const fetchTransactions = async () => {
+  loading.value = true;
+  try {
+    let res;
+    try {
+      res = await transactionService.getTransactions();
+    } catch (e1) {
+      res = await transactionService.getTransactions({ page: 1, limit: 50 });
+    }
+
+    const data = res.data;
+    let rawTransactions = data.data || data || [];
+
+    if (rawTransactions.length > 0) {
+      transactions.value = transformTransactionData(rawTransactions);
+    } else {
+      throw new Error('No data returned from API');
+    }
+  } catch (e) {
+    console.error('Error fetching transactions:', e);
+    try {
+      const sampleRes = await transactionService.getSampleTransactions();
+      const sampleData = sampleRes.data.data || [];
+      transactions.value = transformTransactionData(sampleData);
+      toast.warning('Using sample data. API connection failed.');
+    } catch (fallbackError) {
+      console.error('Fallback also failed:', fallbackError);
+      transactions.value = [];
+      toast.error('Failed to load transactions');
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Filter transactions - only show Airtime and Electricity
+const filteredTransactions = computed(() => {
+  let filtered = [...transactions.value];
+
+  // Filter to only show Airtime and Electricity transactions
+  filtered = filtered.filter(t => {
+    const category = (t.category || '').toLowerCase();
+    return category.includes('airtime') || category.includes('electricity');
+  });
+
+  // Apply search filter
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(t =>
+      (t.id && t.id.toLowerCase().includes(q)) ||
+      (t.user_name && t.user_name.toLowerCase().includes(q)) ||
+      (t.user_email && t.user_email.toLowerCase().includes(q)) ||
+      (t.category && t.category.toLowerCase().includes(q))
+    );
+  }
+
+  // Apply status filter
+  if (statusFilter.value) {
+    filtered = filtered.filter(t => (t.status || 'UNKNOWN') === statusFilter.value);
+  }
+
+  // Apply date filters
+  if (startDate.value) {
+    filtered = filtered.filter(t => {
+      if (!t.created_at) return false;
+      try {
+        return new Date(t.created_at) >= new Date(startDate.value);
+      } catch {
+        return false;
+      }
+    });
+  }
+  if (endDate.value) {
+    const endDateObj = new Date(endDate.value);
+    endDateObj.setHours(23, 59, 59, 999);
+    filtered = filtered.filter(t => {
+      if (!t.created_at) return false;
+      try {
+        return new Date(t.created_at) <= endDateObj;
+      } catch {
+        return false;
+      }
+    });
+  }
+
+  return filtered;
 });
+
+// Table columns
+const columns = ref([
+  {
+    key: 'id',
+    title: 'Transaction ID',
+    field: 'id',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '180px',
+  },
+  {
+    key: 'date',
+    title: 'Date & Time',
+    field: 'created_at',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '200px',
+  },
+  {
+    key: 'user',
+    title: 'User',
+    field: 'user_name',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '220px',
+  },
+  {
+    key: 'category',
+    title: 'Transaction Type',
+    field: 'category',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '160px',
+  },
+  {
+    key: 'amount',
+    title: 'Amount',
+    field: 'amount',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    field: 'status',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '130px',
+  },
+]);
+
+const visibleColumns = computed(() => {
+  return columns.value.filter(col => col.visible !== false);
+});
+
+// Status styling functions
+const getStatusClass = (status) => {
+  const statusClasses = {
+    'SUCCESSFUL': 'bg-green-100 text-green-800 border border-green-200',
+    'FAILED': 'bg-red-100 text-red-800 border border-red-200',
+    'PENDING': 'bg-yellow-100 text-yellow-800 border border-yellow-200',
+    'REVERSED': 'bg-gray-100 text-gray-800 border border-gray-200'
+  };
+  return statusClasses[status] || 'bg-gray-100 text-gray-800 border border-gray-200';
+};
+
+const getStatusDotClass = (status) => {
+  const dotClasses = {
+    'SUCCESSFUL': 'bg-green-500',
+    'FAILED': 'bg-red-500',
+    'PENDING': 'bg-yellow-500',
+    'REVERSED': 'bg-gray-500'
+  };
+  return dotClasses[status] || 'bg-gray-500';
+};
+
+const refresh = () => {
+  fetchTransactions();
+  toast.info('Refreshing transactions...');
+};
+
 
 const configModal = ref<{ open: boolean; provider: (typeof providers)[0] | null }>({
   open: false,
@@ -485,6 +711,7 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+  fetchTransactions();
 });
 
 onUnmounted(() => {

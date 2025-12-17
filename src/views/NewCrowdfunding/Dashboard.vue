@@ -15,7 +15,7 @@
     <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <DashboardStatCard
         title="Total Campaigns"
-        value="1,247"
+        :value="stats.totalCampaigns"
         caption="+12% from last month"
         :icon="IconLayoutGrid"
         accent-color="#3B82F6"
@@ -24,7 +24,7 @@
       />
       <DashboardStatCard
         title="Pending Approvals"
-        value="23"
+        :value="stats.pendingApprovals"
         caption="-15% from last month"
         :icon="IconClock"
         accent-color="#F59E0B"
@@ -33,7 +33,7 @@
       />
       <DashboardStatCard
         title="Total Donations"
-        value="&#8358;2.4M"
+        :value="stats.totalDonations"
         caption="+12% from last month"
         :icon="IconCash"
         accent-color="#10B981"
@@ -42,7 +42,7 @@
       />
       <DashboardStatCard
         title="Active Users"
-        value="8,945"
+        :value="stats.activeUsers"
         caption="-7% from last month"
         :icon="IconUsersGroup"
         accent-color="#6366F1"
@@ -67,40 +67,18 @@
 
           <div class="mt-6 space-y-5">
             <CampaignCard
-              name="Emergency Surgery Fund"
-              category="Medical"
-              status="Pending"
-              status-color="#F59E0B"
-              status-bg="#FFF7E6"
-              progress-label="Progress"
-              :current-amount="250000"
-              :goal-amount="500000"
-              progress-color="#3B82F6"
-              :progress="0.6"
-            />
-            <CampaignCard
-              name="School Technology Drive"
-              category="Education"
-              status="Approved"
-              status-color="#10B981"
-              status-bg="#E6FBF2"
-              progress-label="Progress"
-              :current-amount="162000"
-              :goal-amount="200000"
-              progress-color="#3B82F6"
-              :progress="0.82"
-            />
-            <CampaignCard
-              name="Community Health Outreach"
-              category="Health"
-              status="Approved"
-              status-color="#10B981"
-              status-bg="#E6FBF2"
-              progress-label="Progress"
-              :current-amount="185000"
-              :goal-amount="200000"
-              progress-color="#3B82F6"
-              :progress="0.92"
+              v-for="campaign in recentCampaigns"
+              :key="campaign.name"
+              :name="campaign.name"
+              :category="campaign.category"
+              :status="campaign.status"
+              :status-color="campaign.statusColor"
+              :status-bg="campaign.statusBg"
+              :progress-label="campaign.progressLabel"
+              :current-amount="campaign.currentAmount"
+              :goal-amount="campaign.goalAmount"
+              :progress-color="campaign.progressColor"
+              :progress="campaign.progress"
             />
           </div>
         </div>
@@ -152,6 +130,7 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted, ref } from 'vue';
 import IconChatDots from '@/components/icon/icon-chat-dots.vue';
 import IconClipboardText from '@/components/icon/icon-clipboard-text.vue';
 import IconClock from '@/components/icon/icon-clock.vue';
@@ -163,5 +142,73 @@ import IconCash from '@/components/icon/icon-cash-banknotes.vue';
 import DashboardStatCard from './components/DashboardStatCard.vue';
 import CampaignCard from './components/CampaignCard.vue';
 import QuickActionRow from './components/QuickActionRow.vue';
+import crowdfundingService from '@/services/crowdfundingService';
+
+const loading = ref(false);
+const stats = ref({
+  totalCampaigns: '1,247',
+  pendingApprovals: '23',
+  totalDonations: '₦2.4M',
+  activeUsers: '8,945',
+});
+
+const recentCampaigns = ref([
+  {
+    name: 'Emergency Surgery Fund',
+    category: 'Medical',
+    status: 'Pending',
+    statusColor: '#F59E0B',
+    statusBg: '#FFF7E6',
+    progressLabel: 'Progress',
+    currentAmount: 250000,
+    goalAmount: 500000,
+    progressColor: '#3B82F6',
+    progress: 0.6,
+  },
+]);
+
+const loadDashboardData = async () => {
+  try {
+    loading.value = true;
+    const [statisticsResponse, campaignsResponse] = await Promise.all([
+      crowdfundingService.getStatistics({ period: 'monthly' }),
+      crowdfundingService.listAllCampaigns({ page: 1, limit: 3, status: 'all', sort: 'created_at' }),
+    ]);
+
+    if (statisticsResponse.success && statisticsResponse.data) {
+      const statsData = statisticsResponse.data;
+      stats.value = {
+        totalCampaigns: statsData.total_campaigns?.toLocaleString() || '0',
+        pendingApprovals: statsData.pending_approvals?.toLocaleString() || '0',
+        totalDonations: `₦${(statsData.total_amount_raised / 1000000).toFixed(1)}M`,
+        activeUsers: statsData.active_users?.toLocaleString() || '0',
+      };
+    }
+
+    if (campaignsResponse.success && campaignsResponse.data?.data) {
+      recentCampaigns.value = campaignsResponse.data.data.slice(0, 3).map((campaign: any) => ({
+        name: campaign.title,
+        category: campaign.category,
+        status: campaign.status === 'pending' ? 'Pending' : campaign.status === 'approved' ? 'Approved' : 'Active',
+        statusColor: campaign.status === 'pending' ? '#F59E0B' : '#10B981',
+        statusBg: campaign.status === 'pending' ? '#FFF7E6' : '#E6FBF2',
+        progressLabel: 'Progress',
+        currentAmount: campaign.current_amount || 0,
+        goalAmount: campaign.goal_amount || 0,
+        progressColor: '#3B82F6',
+        progress: campaign.goal_amount > 0 ? (campaign.current_amount || 0) / campaign.goal_amount : 0,
+      }));
+    }
+  } catch (error) {
+    console.error('Error loading dashboard data:', error);
+    // Keep dummy data on error
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  loadDashboardData();
+});
 </script>
 
