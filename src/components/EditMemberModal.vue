@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+  <div v-if="member" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
     <div class="bg-white dark:bg-gray-900 rounded-xl shadow-xl w-full max-w-lg p-0 relative">
       <!-- Close Button -->
       <button class="absolute top-4 right-4 text-gray-400 hover:text-black dark:hover:text-white text-2xl" @click="$emit('close')">&times;</button>

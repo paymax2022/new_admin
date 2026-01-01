@@ -3,7 +3,10 @@ import authRoutes from './modules/auth';
 import visitorMgtRoutes from './modules/visitor-mgt';
 import billsPaymentRoutes from './modules/bills-payment';
 import crowdfundingRoutes from './modules/crowdfunding';
+import newCrowdfundingRoutes from './modules/new-crowdfunding';
+import newRestaurantsRoutes from './modules/new-restaurants';
 import deliveryRoutes from './modules/delivery';
+import transportationRoutes from './modules/transportation';
 import eventsRoutes from './modules/events';
 import groupMembershipRoutes from './modules/group-membership';
 import insuranceRoutes from './modules/insurance';
@@ -11,6 +14,8 @@ import restaurantRoutes from './modules/restaurant';
 import transactionsRoutes from './modules/transactions';
 import usersMgtRoutes from './modules/users-mgt';
 import votingRoutes from './modules/voting';
+import multicurrencyRoutes from './modules/multicurrency';
+import electionRoutes from './modules/election';
 
 const routes: RouteRecordRaw[] = [
     /************ MAIN APP ROUTES **********************/
@@ -282,6 +287,16 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/SettingsView.vue'),
     },
     {
+        path: '/multicurrency-settings',
+        name: 'multicurrency-settings',
+        component: () => import('@/views/Settings/MulticurrencySettings.vue'),
+    },
+    {
+        path: '/multicurrency-system-settings',
+        name: 'multicurrency-system-settings',
+        component: () => import('@/views/Settings/MulticurrencySystemSettings.vue'),
+    },
+    {
         path: '/help-support',
         name: 'help-support',
         component: () => import('@/views/HelpSupportView.vue'),
@@ -300,7 +315,11 @@ const routes: RouteRecordRaw[] = [
     ...authRoutes,
     ...billsPaymentRoutes,
     ...crowdfundingRoutes,
+    ...newCrowdfundingRoutes,
+    ...newRestaurantsRoutes,
+    ...multicurrencyRoutes,
     ...deliveryRoutes,
+    ...transportationRoutes,
     ...eventsRoutes,
     ...groupMembershipRoutes,
     ...insuranceRoutes,
@@ -309,6 +328,7 @@ const routes: RouteRecordRaw[] = [
     ...usersMgtRoutes,
     ...visitorMgtRoutes,
     ...votingRoutes,
+    ...electionRoutes,
     /************ ERROR ROUTE **********************/
     {
         path: '/:catchAll(.*)*',

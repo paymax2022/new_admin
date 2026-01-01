@@ -1,0 +1,625 @@
+{
+	"info": {
+		"_postman_id": "crowdfunding-api-collection",
+		"name": "Crowdfunding API",
+		"description": "Complete API collection for Crowdfunding module - Campaign management, donations, reviews, and admin operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "crowdfunding"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Campaign Management",
+			"item": [
+				{
+					"name": "Create Campaign",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Help Build a Community Center\",\n  \"description\": \"We are raising funds to build a community center for underprivileged children\",\n  \"goal_amount\": 50000,\n  \"category\": \"community\",\n  \"end_date\": \"2025-06-30T23:59:59Z\",\n  \"images\": [\n    \"https://example.com/image1.jpg\",\n    \"https://example.com/image2.jpg\"\n  ],\n  \"video_url\": \"https://youtube.com/example\",\n  \"location\": {\n    \"city\": \"Lagos\",\n    \"state\": \"Lagos\",\n    \"country\": \"Nigeria\"\n  },\n  \"beneficiary_info\": {\n    \"name\": \"Community Trust Foundation\",\n    \"contact\": \"+234XXXXXXXXXX\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign"]
+						},
+						"description": "Create a new crowdfunding campaign. Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaign by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Retrieve detailed information about a specific campaign"
+					},
+					"response": []
+				},
+				{
+					"name": "List All Campaigns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign?page=1&limit=20&status=active&category=community&sort=created_at",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Items per page"
+								},
+								{
+									"key": "status",
+									"value": "active",
+									"description": "Filter by status: active, completed, cancelled, pending"
+								},
+								{
+									"key": "category",
+									"value": "community",
+									"description": "Filter by category"
+								},
+								{
+									"key": "sort",
+									"value": "created_at",
+									"description": "Sort by: created_at, goal_amount, current_amount"
+								}
+							]
+						},
+						"description": "List all campaigns with optional filtering and pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Campaign",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Campaign Title\",\n  \"description\": \"Updated description\",\n  \"goal_amount\": 75000,\n  \"images\": [\n    \"https://example.com/new-image.jpg\"\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Update campaign details. Only campaign owner can update."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Campaign Activity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/activity",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "activity"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Get fundraising activity timeline for a campaign"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing crowdfunding campaigns"
+		},
+		{
+			"name": "Campaign Boost",
+			"item": [
+				{
+					"name": "Get Boost Rates",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/boost/rates",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", "boost", "rates"]
+						},
+						"description": "Get current boost rates and pricing for campaign promotion"
+					},
+					"response": []
+				},
+				{
+					"name": "Boost Campaign",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"duration_days\": 7,\n  \"boost_type\": \"premium\",\n  \"payment_method\": \"wallet\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/boost",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "boost"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Boost a campaign for better visibility. Charges apply based on duration and type."
+					},
+					"response": []
+				}
+			],
+			"description": "Campaign promotion and boosting features"
+		},
+		{
+			"name": "Donations",
+			"item": [
+				{
+					"name": "Make Donation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 5000,\n  \"payment_method\": \"wallet\",\n  \"is_anonymous\": false,\n  \"message\": \"Great cause! Happy to support.\",\n  \"cover_fees\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/donate",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "donate"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Make a donation to a campaign"
+					},
+					"response": []
+				},
+				{
+					"name": "List Campaign Donations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/donations?page=1&limit=20",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "donations"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "List all donations for a specific campaign"
+					},
+					"response": []
+				}
+			],
+			"description": "Donation-related endpoints"
+		},
+		{
+			"name": "Reviews",
+			"item": [
+				{
+					"name": "Create Campaign Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"rating\": 5,\n  \"comment\": \"Excellent campaign with transparent communication. Highly recommend!\",\n  \"would_recommend\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/review",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "review"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "Submit a review for a campaign. Typically requires donation history."
+					},
+					"response": []
+				},
+				{
+					"name": "List Campaign Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/campaign/:id/reviews?page=1&limit=20&sort=rating",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "campaign", ":id", "reviews"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "sort",
+									"value": "rating",
+									"description": "Sort by: rating, created_at"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}",
+									"description": "Campaign ID"
+								}
+							]
+						},
+						"description": "List all reviews for a specific campaign"
+					},
+					"response": []
+				}
+			],
+			"description": "Campaign review and rating endpoints"
+		},
+		{
+			"name": "File Upload",
+			"item": [
+				{
+					"name": "Upload Campaign Files",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "type",
+									"value": "image",
+									"type": "text",
+									"description": "File type: image, document, video"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/upload/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "upload", ""]
+						},
+						"description": "Upload images, videos, or documents for campaign use"
+					},
+					"response": []
+				}
+			],
+			"description": "File upload endpoints for campaign media"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Admin - List All Campaigns",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/campaigns?page=1&limit=50&status=all&sort=created_at",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "campaigns"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "all",
+									"description": "all, active, pending, approved, rejected, suspended"
+								},
+								{
+									"key": "sort",
+									"value": "created_at"
+								}
+							]
+						},
+						"description": "Admin: List all campaigns across all users with advanced filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Get Campaign Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/campaigns/:id",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "campaigns", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}"
+								}
+							]
+						},
+						"description": "Admin: Get full campaign details including sensitive information"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Update Campaign Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"approved\",\n  \"reason\": \"Campaign meets all guidelines and requirements\",\n  \"notes\": \"Verified beneficiary information and supporting documents\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/campaigns/:id/status",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "campaigns", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}"
+								}
+							]
+						},
+						"description": "Admin: Approve, reject, or suspend a campaign. Status options: approved, rejected, suspended"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Delete Campaign",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/campaigns/:id?reason=Violation of community guidelines",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "campaigns", ":id"],
+							"query": [
+								{
+									"key": "reason",
+									"value": "Violation of community guidelines"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{campaign_id}}"
+								}
+							]
+						},
+						"description": "Admin: Permanently delete a campaign"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - List All Donations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/donations?page=1&limit=50&from_date=2025-01-01&to_date=2025-12-31",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "donations"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "from_date",
+									"value": "2025-01-01"
+								},
+								{
+									"key": "to_date",
+									"value": "2025-12-31"
+								}
+							]
+						},
+						"description": "Admin: List all donations across all campaigns"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/statistics?period=monthly&year=2025",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "statistics"],
+							"query": [
+								{
+									"key": "period",
+									"value": "monthly",
+									"description": "daily, weekly, monthly, yearly"
+								},
+								{
+									"key": "year",
+									"value": "2025"
+								}
+							]
+						},
+						"description": "Admin: Get overall platform statistics and analytics"
+					},
+					"response": []
+				},
+				{
+					"name": "Admin - List All Reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/crowdfunding/admin/reviews?page=1&limit=50&rating=all",
+							"host": ["{{base_url}}"],
+							"path": ["api", "v1", "crowdfunding", "admin", "reviews"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "rating",
+									"value": "all",
+									"description": "Filter by rating: all, 1, 2, 3, 4, 5"
+								}
+							]
+						},
+						"description": "Admin: List all reviews across all campaigns"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin-only endpoints for platform management"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "campaign_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

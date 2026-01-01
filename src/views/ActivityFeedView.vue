@@ -143,7 +143,7 @@ const loadActivityFeed = async () => {
         icon: getPostIcon(post.post_type),
         iconColor: getPostIconColor(post.post_type),
         title: getPostTitle(post),
-        desc: post.title,
+        desc: post.content,
         badge: 'New',
         badgeType: 'info',
         time: formatTimeAgo(post.created_at),

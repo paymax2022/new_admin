@@ -85,9 +85,9 @@
     </div>
     <SendMessageModal
       v-if="showSendMessageModal && selectedMember"
-      :member="selectedMember"
+      :groups="[]"
       @close="closeSendMessageModal"
-      @send="handleSendMessage"
+      @sent="handleSendMessage"
     />
     <ChangeRoleModal
       v-if="showChangeRoleModal && selectedRoleMember"
@@ -108,8 +108,9 @@
     />
     <AddMemberModal
       v-if="showAddMemberModal"
+      :groups="[]"
       @close="closeAddMemberModal"
-      @add="handleAddMember"
+      @invited="handleAddMember"
     />
   </div>
 </template>

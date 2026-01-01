@@ -159,25 +159,29 @@ export interface PaginatedResponse<T> {
 class GroupService {
   // Use the working API service but override base URL for GPMS calls with token from localStorage
   private gpmsApi = {
-    get: (url: string, config?: any) => {
+    get: async (url: string, config?: any) => {
       const fullUrl = `https://all-in-one-w69p.onrender.com/api/v1/gpms${url}`;
       console.log('GPMS API GET:', fullUrl);
-      return api.get(fullUrl, config);
+      const response = await api.get(fullUrl, config);
+      return response.data;
     },
-    post: (url: string, data?: any, config?: any) => {
+    post: async (url: string, data?: any, config?: any) => {
       const fullUrl = `https://all-in-one-w69p.onrender.com/api/v1/gpms${url}`;
       console.log('GPMS API POST:', fullUrl);
-      return api.post(fullUrl, data, config);
+      const response = await api.post(fullUrl, data, config);
+      return response.data;
     },
-    put: (url: string, data?: any, config?: any) => {
+    put: async (url: string, data?: any, config?: any) => {
       const fullUrl = `https://all-in-one-w69p.onrender.com/api/v1/gpms${url}`;
       console.log('GPMS API PUT:', fullUrl);
-      return api.put(fullUrl, data, config);
+      const response = await api.put(fullUrl, data, config);
+      return response.data;
     },
-    delete: (url: string, config?: any) => {
+    delete: async (url: string, config?: any) => {
       const fullUrl = `https://all-in-one-w69p.onrender.com/api/v1/gpms${url}`;
       console.log('GPMS API DELETE:', fullUrl);
-      return api.delete(fullUrl, config);
+      const response = await api.delete(fullUrl, config);
+      return response.data;
     }
   };
 
@@ -226,7 +230,8 @@ class GroupService {
   }
 
   async exportMembers(groupId: string, format: 'csv' | 'excel'): Promise<Blob> {
-    const response = await this.gpmsApi.get(`/groups/${groupId}/members/export?format=${format}`, { responseType: 'blob' });
+    const fullUrl = `https://all-in-one-w69p.onrender.com/api/v1/gpms/groups/${groupId}/members/export?format=${format}`;
+    const response = await api.get(fullUrl, { responseType: 'blob' });
     return response.data;
   }
 

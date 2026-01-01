@@ -24,12 +24,12 @@
             <div class="space-y-2">
                 <RouterLink
                     :to="{ name: 'votingContestDetailContestant', params: { contestId: $route.params.contestId, contestantId: contact._id } }"
-                    v-for="contact in contacts"
+                    v-for="(contact, index) in contacts"
                     :key="contact._id"
                     class="p-2 flex justify-between items-center shadow-md rounded-md hover:bg-gray-50"
                 >
                     <div class="space-x-4 flex items-center">
-                        <span class="font-bold text-gray-400">{{ i }}</span>
+                        <span class="font-bold text-gray-400">{{ index + 1 }}</span>
                         <div class="w-10 h-10 rounded overflow-hidden">
                             <img class="w-full h-full object-cover" :src="contact.image" :alt="contact.name" />
                         </div>
@@ -47,7 +47,7 @@
 
     const route = useRoute();
     const contestId = route.params.contestId;
-    const contacts = ref([]);
+    const contacts = ref<Array<{ _id: string; name: string; image: string }>>([]);
 
     const fetchContacts = async () => {
         try {

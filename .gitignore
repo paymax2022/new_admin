@@ -35,3 +35,11 @@ coverage
 *.tsbuildinfo
 Admin Paymax (2).json
 api-spec.json
+test-group-endpoints.html
+test-console-script.js
+CREATE_GROUP_IMPLEMENTATION.md
+GROUP_SERVICE_API_DOCUMENTATION.md
+ADD_MEMBER_IMPLEMENTATION.md
+SEND_MESSAGE_AND_REPORTS_IMPLEMENTATION.md
+Bills.json
+Crowdfunding .json

@@ -3,6 +3,7 @@ import api from './api';
 export default {
   getTransactions(params?: {
     page?: number;
+    limit?: number;
     rows_per_page?: number;
     start_date?: string;
     end_date?: string;
@@ -10,9 +11,15 @@ export default {
     status?: string;
   }) {
     // Clean and map parameters to match API expectations
+    // Use 'limit' as that's what other services use
     const cleanParams: any = {};
     if (params?.page !== undefined) cleanParams.page = params.page;
-    if (params?.rows_per_page !== undefined) cleanParams.rows_per_page = params.rows_per_page;
+    // Prefer 'limit' over 'rows_per_page' to match other services
+    if (params?.limit !== undefined) {
+      cleanParams.limit = params.limit;
+    } else if (params?.rows_per_page !== undefined) {
+      cleanParams.limit = params.rows_per_page;
+    }
     if (params?.start_date !== undefined) cleanParams.start_date = params.start_date;
     if (params?.end_date !== undefined) cleanParams.end_date = params.end_date;
     if (params?.q !== undefined) cleanParams.q = params.q;

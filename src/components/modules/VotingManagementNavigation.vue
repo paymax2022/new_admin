@@ -1,15 +1,22 @@
 <template>
-  <li class="menu nav-item">
-    <router-link :to="{ name: 'voting-dashboard' }" class="nav-link group">
-      <div class="flex items-center">
-        <icon-menu-components class="group-hover:!text-primary shrink-0" />
-        <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Voting Dashboard</span>
-      </div>
-    </router-link>
-  </li>
+  <DropdownNav dropdownName="votingManagement" title="Voting" :iconComponent="IconMenuComponents" :links="links" />
 </template>
 
 <script lang="ts" setup>
 import IconMenuComponents from '@/components/icon/menu/icon-menu-components.vue';
+import DropdownNav from '@/components/Shared/Nav/DropdownNav.vue';
+
+const links = [
+  { route: { name: 'voting-dashboard' }, displayName: 'Voting Dashboard' },
+  { route: { name: 'voting-contest-manager' }, displayName: 'Contest Manager' },
+  { route: { name: 'voting-contestants' }, displayName: 'Contestants' },
+  { route: { name: 'voting' }, displayName: 'Voting' },
+  { route: { name: 'voting-badges' }, displayName: 'Badges' },
+  { route: { name: 'voting-referrals' }, displayName: 'Referrals' },
+  { route: { name: 'voting-eviction' }, displayName: 'Eviction' },
+  { route: { name: 'voting-notifications' }, displayName: 'Notification' },
+  { route: { name: 'voting-certificates' }, displayName: 'Certificates' },
+  { route: { name: 'voting-analytics' }, displayName: 'Analytics' },
+];
 </script>
 
