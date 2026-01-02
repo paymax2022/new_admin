@@ -752,7 +752,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const activeTab = ref('overview');
 const showEditModal = ref(false);
 const showCloseModal = ref(false);
@@ -762,8 +765,65 @@ const autoMoveCreate = ref(false);
 const enableFreeVoting = ref(false);
 const enablePaidVoting = ref(false);
 
+// Contest data
+const contests = ref<any[]>([]);
+const selectedContest = ref<any>(null);
+const isLoading = ref(false);
+
+// Fetch contests
+const fetchContests = async () => {
+  isLoading.value = true;
+  try {
+    const response = await votingService.getContests();
+    if (response.ok && response.data) {
+      contests.value = Array.isArray(response.data) ? response.data : [];
+    } else {
+      toast.error(response.message || 'Error fetching contests');
+    }
+  } catch (error: any) {
+    console.error('Error fetching contests:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching contests');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Close contest
+const closeContest = async (contestId: string) => {
+  try {
+    const response = await votingService.closeContest(contestId);
+    if (response.ok) {
+      toast.success('Contest closed successfully');
+      showCloseModal.value = false;
+      await fetchContests();
+    } else {
+      toast.error(response.message || 'Error closing contest');
+    }
+  } catch (error: any) {
+    console.error('Error closing contest:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error closing contest');
+  }
+};
+
+// Proceed in contest
+const proceedInContest = async (contestId: string) => {
+  try {
+    const response = await votingService.proceedInContest(contestId);
+    if (response.ok) {
+      toast.success('Contest proceeded successfully');
+      showStartModal.value = false;
+      await fetchContests();
+    } else {
+      toast.error(response.message || 'Error proceeding contest');
+    }
+  } catch (error: any) {
+    console.error('Error proceeding contest:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error proceeding contest');
+  }
+};
+
 onMounted(() => {
-  console.log('Contest Manager mounted');
+  fetchContests();
 });
 </script>
 

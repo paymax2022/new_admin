@@ -51,28 +51,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
-const prizes = ref([
-    {
-        position: '1',
-        prize: '1,000,000'
-    },
-    {
-        position: '2',
-        prize: '500,000'
-    },
-    {
-        position: '3',
-        prize: '300,000'
-    }
-])
+const toast = useToast();
+const route = useRoute();
+const contestId = route.params.contestId as string;
+const prizes = ref<any[]>([]);
+const otherBenefits = ref<any[]>([]);
+const isLoading = ref(false);
 
-const otherBenefits = ref([
-    {
-        position: '1',
-        type: 'Car',
-        benefit_name: 'Brand New 2024 Lexus LC'
+const fetchPrizes = async () => {
+    if (!contestId) {
+        console.error('Contest ID is undefined');
+        return;
     }
-])
+    isLoading.value = true;
+    try {
+        const response = await votingService.getPrizes(contestId);
+        if (response.ok && response.data) {
+            prizes.value = Array.isArray(response.data) ? response.data : [];
+        } else {
+            toast.error(response.message || 'Error fetching prizes');
+        }
+    } catch (error: any) {
+        console.error('Error fetching prizes:', error);
+        toast.error(error.response?.data?.message || error.message || 'Error fetching prizes');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const fetchBenefits = async () => {
+    if (!contestId) {
+        return;
+    }
+    try {
+        const response = await votingService.getBenefits(contestId);
+        if (response.ok && response.data) {
+            otherBenefits.value = Array.isArray(response.data) ? response.data : [];
+        }
+    } catch (error: any) {
+        console.error('Error fetching benefits:', error);
+    }
+};
+
+onMounted(() => {
+    fetchPrizes();
+    fetchBenefits();
+});
 </script>

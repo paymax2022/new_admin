@@ -928,8 +928,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
+const route = useRoute();
 const loading = ref(false);
 const activeCategory = ref('all');
 const dropdownOpen = ref<string | null>(null);
@@ -938,6 +943,67 @@ const showApproveModal = ref(false);
 const approveContestantName = ref('Michael Chen');
 const showMoveModal = ref(false);
 const showSuccessModal = ref(false);
+
+// Contestants data
+const contestants = ref<any[]>([]);
+const categories = ref<string[]>([]);
+const selectedContestId = ref<string>('');
+
+// Stats
+const totalContestants = computed(() => contestants.value.length);
+const maleContestants = computed(() => contestants.value.filter(c => c.gender === 'male').length);
+const femaleContestants = computed(() => contestants.value.filter(c => c.gender === 'female').length);
+const atRiskContestants = computed(() => contestants.value.filter(c => c.status === 'at_risk').length);
+
+// Fetch contestants
+const fetchContestants = async (contestId?: string) => {
+  loading.value = true;
+  try {
+    const id = contestId || selectedContestId.value || route.params.contestId as string;
+    if (!id) {
+      console.warn('No contest ID provided');
+      return;
+    }
+    const response = await votingService.getContestants(id);
+    if (response.ok && response.data) {
+      contestants.value = Array.isArray(response.data) ? response.data : [];
+    } else {
+      toast.error(response.message || 'Error fetching contestants');
+    }
+  } catch (error: any) {
+    console.error('Error fetching contestants:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching contestants');
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Fetch categories
+const fetchCategories = async () => {
+  try {
+    const response = await votingService.getContestantsCategories();
+    if (response.ok && response.data) {
+      categories.value = Array.isArray(response.data) ? response.data : [];
+    }
+  } catch (error: any) {
+    console.error('Error fetching categories:', error);
+  }
+};
+
+// Get contestant by ID
+const getContestantById = async (contestantId: string) => {
+  try {
+    const response = await votingService.getContestantById(contestantId);
+    if (response.ok && response.data) {
+      return response.data;
+    } else {
+      toast.error(response.message || 'Error fetching contestant');
+    }
+  } catch (error: any) {
+    console.error('Error fetching contestant:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching contestant');
+  }
+};
 
 const editForm = ref({
   fullName: 'Amina Hassan',
@@ -993,6 +1059,11 @@ const handleViewRound2 = () => {
 };
 
 onMounted(() => {
-  console.log('Voting Contestants View mounted');
+  fetchCategories();
+  // If contestId is available in route params, fetch contestants
+  if (route.params.contestId) {
+    selectedContestId.value = route.params.contestId as string;
+    fetchContestants();
+  }
 });
 </script>

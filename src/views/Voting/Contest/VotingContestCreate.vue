@@ -152,9 +152,12 @@ import TextareaInput from '@/components/Shared/Input/TextareaInput.vue';
 import TextInput from '@/components/Shared/Input/TextInput.vue';
 import Multiselect from '@suadelabs/vue3-multiselect';
 import '@suadelabs/vue3-multiselect/dist/vue3-multiselect.css';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 import { ref } from 'vue';
 
 const router = useRouter();
+const toast = useToast();
 
 const audience = ['Nigeria', 'International'];
 const countries = ['Nigeria', 'USA', 'UK', 'Canada', 'India'];
@@ -245,29 +248,78 @@ const removeOtherBenefit = (index: number) => {
 
 const submitContest = async () => {
     try {
-        const response = await fetch('/api/contests', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                ...contestData.value,
-                rounds: rounds.value,
-                prizeAwards: prizeAwards.value,
-                otherBenefits: otherBenefits.value,
-            }),
-        });
+        // Create FormData for multipart/form-data
+        const formData = new FormData();
+        
+        // Add contest fields
+        formData.append('title', contestData.value.title || '');
+        formData.append('category', contestData.value.category || '');
+        formData.append('campaign_leader_name', contestData.value.leaderName || '');
+        formData.append('campaign_leader_role', contestData.value.leaderRole || '');
+        formData.append('assistant_leader_name', contestData.value.asstName || '');
+        formData.append('assistant_leader_role', contestData.value.asstRole || '');
+        formData.append('start_date', rounds.value[0]?.start_date || '');
+        formData.append('end_date', rounds.value[rounds.value.length - 1]?.end_date || '');
+        formData.append('repeat_frequency', contestData.value.repeatContest || 'none');
+        formData.append('fee_required', contestData.value.participationFee > 0 ? 'true' : 'false');
+        if (contestData.value.participationFee > 0) {
+            formData.append('registration_fee', contestData.value.participationFee.toString());
+        }
+        
+        // Add logo if available
+        if (contestData.value.logo) {
+            formData.append('logo', contestData.value.logo);
+        }
 
-        if (response.ok) {
-    
+        const response = await votingService.createContest(formData);
+        
+        if (response.ok && response.data) {
+            const contestId = response.data.id || response.data._id;
+            
+            // Create rounds if provided
+            if (rounds.value.length > 0 && contestId) {
+                const roundsData = rounds.value.map((round, index) => ({
+                    name: round.name,
+                    round: index + 1,
+                    min_votes: round.min_votes,
+                    contest_id: contestId,
+                    start_date: round.start_date,
+                    end_date: round.end_date,
+                    description: round.description || ''
+                }));
+                await votingService.createContestRounds(roundsData);
+            }
+            
+            // Create prizes if provided
+            if (prizeAwards.value.length > 0 && contestId) {
+                const prizesData = prizeAwards.value.map((prize, index) => ({
+                    position: index + 1,
+                    prize: prize.prize,
+                    contest_id: contestId
+                }));
+                await votingService.createPrizes(prizesData);
+            }
+            
+            // Create benefits if provided
+            if (otherBenefits.value.length > 0 && contestId) {
+                const benefitsData = otherBenefits.value.map(benefit => ({
+                    type: benefit.type,
+                    contest_id: contestId,
+                    benefit_name: benefit.benefit_name,
+                    awarded: false,
+                    position: benefit.position
+                }));
+                await votingService.createBenefits(benefitsData);
+            }
+            
+            toast.success('Contest created successfully!');
             router.push({ path: '/voting/contests' });
         } else {
-            const errorData = await response.json();
-            alert(`Error creating contest: ${errorData.message || 'Unknown error'}`);
+            toast.error(response.message || 'Error creating contest');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error submitting contest:', error);
-        alert('Error creating contest. Please try again later.');
+        toast.error(error.response?.data?.message || error.message || 'Error creating contest. Please try again later.');
     }
 };
 </script>

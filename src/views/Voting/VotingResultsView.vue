@@ -13,11 +13,56 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
+const route = useRoute();
 const loading = ref(false);
+const winners = ref<any[]>([]);
+const contestId = ref<string>('');
+
+// Fetch all winners
+const fetchWinners = async () => {
+  loading.value = true;
+  try {
+    const response = await votingService.getWinners();
+    if (response.ok && response.data) {
+      winners.value = Array.isArray(response.data) ? response.data : [];
+    } else {
+      toast.error(response.message || 'Error fetching winners');
+    }
+  } catch (error: any) {
+    console.error('Error fetching winners:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching winners');
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Fetch winner for specific contest
+const fetchWinner = async (id: string) => {
+  if (!id) return;
+  try {
+    const response = await votingService.getWinner(id);
+    if (response.ok && response.data) {
+      return response.data;
+    } else {
+      toast.error(response.message || 'Error fetching winner');
+    }
+  } catch (error: any) {
+    console.error('Error fetching winner:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching winner');
+  }
+};
 
 onMounted(() => {
-  console.log('Voting Results View mounted');
+  fetchWinners();
+  if (route.params.contestId) {
+    contestId.value = route.params.contestId as string;
+    fetchWinner(contestId.value);
+  }
 });
 </script>
 

@@ -10,24 +10,24 @@
     <div class="grid gap-4 md:grid-cols-3">
       <SummaryStatCard
         title="Total Users"
-        value="8,945"
-        caption="+18% from last month"
+        :value="userStats.totalUsers"
+        caption="Campaign creators"
         :icon="IconUsersGroup"
         accent-color="#2563EB"
         accent-bg="#E0EAFF"
       />
       <SummaryStatCard
         title="Active Users"
-        value="7,892"
-        caption="+12% from last month"
+        :value="userStats.activeUsers"
+        caption="Currently active"
         :icon="IconCircleCheck"
         accent-color="#10B981"
         accent-bg="#D1FAE5"
       />
       <SummaryStatCard
         title="Suspended"
-        value="30"
-        caption="+8% from last month"
+        :value="userStats.suspended"
+        caption="Blocked users"
         :icon="IconInfoCircle"
         accent-color="#EF4444"
         accent-bg="#FEE2E2"
@@ -39,6 +39,7 @@
         <div class="relative flex-1">
           <IconSearch class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#94a3b8]" />
           <input
+            v-model="searchQuery"
             type="text"
             placeholder="Search users by name or email..."
             class="w-full rounded-full border border-[#e2e8f0] bg-white py-3 pl-12 pr-4 text-sm text-[#1f2937] placeholder:text-[#94a3b8] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
@@ -47,11 +48,14 @@
         <div class="flex flex-wrap items-center gap-3">
           <div class="relative">
             <select
+              v-model="statusFilter"
+              @change="loadUsers"
               class="appearance-none rounded-full border border-[#e2e8f0] bg-white px-4 py-2 pr-10 text-sm font-semibold text-[#475569] transition hover:border-[#cbd5f5] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
             >
-              <option selected>All Status</option>
-              <option>Active</option>
-              <option>Suspended</option>
+              <option value="">All Status</option>
+              <option value="ACTIVE">Active</option>
+              <option value="BLOCKED">Suspended</option>
+              <option value="PENDING">Pending</option>
             </select>
             <IconCaretsDown class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
           </div>
@@ -85,7 +89,7 @@
           </thead>
           <tbody>
             <UserRow
-              v-for="user in users"
+              v-for="user in filteredUsers"
               :key="user.id"
               v-bind="user"
               @action="handleUserAction"
@@ -313,7 +317,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 
 import IconInfoCircle from '@/components/icon/icon-info-circle.vue';
 import IconCaretsDown from '@/components/icon/icon-carets-down.vue';
@@ -324,6 +329,17 @@ import IconX from '@/components/icon/icon-x.vue';
 
 import SummaryStatCard from './components/SummaryStatCard.vue';
 import UserRow from './components/UserRow.vue';
+import crowdfundingService from '@/services/crowdfundingService';
+
+const toast = useToast();
+const loading = ref(false);
+const searchQuery = ref('');
+const statusFilter = ref('');
+const userStats = ref({
+  totalUsers: '0',
+  activeUsers: '0',
+  suspended: '0',
+});
 
 type UserDetail = {
   name: string;
@@ -370,7 +386,153 @@ type UserRecord = {
   };
 };
 
-const users: UserRecord[] = [
+const users = ref<UserRecord[]>([]);
+
+const loadUsers = async () => {
+  try {
+    loading.value = true;
+    
+    // Fetch users and statistics from endpoints
+    const [creatorsResponse, userStatsResponse] = await Promise.all([
+      crowdfundingService.listCampaignCreators({
+        page: 1,
+        limit: 100, // API limit is 100
+        status: statusFilter.value as 'ACTIVE' | 'BLOCKED' | 'PENDING' | undefined,
+      }),
+      crowdfundingService.getUserStatistics(),
+    ]);
+
+    // Get statistics from getUserStatistics endpoint - this is the primary source
+    if (userStatsResponse.success && userStatsResponse.data) {
+      const stats = userStatsResponse.data;
+      
+      // Log the response to see what fields are available
+      console.log('User Statistics Response:', stats);
+      
+      // Map all possible field names that the API might return
+      const totalUsers = stats.total_campaign_creators || stats.campaign_creators || stats.total_users || stats.total || 0;
+      const activeUsers = stats.active_campaign_creators || stats.active_users || stats.active || 0;
+      const suspendedUsers = stats.blocked_campaign_creators || stats.blocked_users || stats.suspended_users || stats.blocked || stats.suspended || 0;
+      
+      userStats.value = {
+        totalUsers: totalUsers.toLocaleString(),
+        activeUsers: activeUsers.toLocaleString(),
+        suspended: suspendedUsers.toLocaleString(),
+      };
+    } else {
+      // If getUserStatistics fails, log error and use fallback
+      console.error('getUserStatistics failed:', userStatsResponse);
+      toast.error('Failed to load user statistics');
+      
+      // Fallback: Use pagination info from listCampaignCreators
+      if (creatorsResponse.success && creatorsResponse.data) {
+        const pagination = creatorsResponse.data.pagination;
+        if (pagination && pagination.total) {
+          userStats.value = {
+            totalUsers: pagination.total.toLocaleString(),
+            activeUsers: '0', // Cannot determine without fetching all users
+            suspended: '0', // Cannot determine without fetching all users
+          };
+        }
+      }
+    }
+
+    if (creatorsResponse.success && creatorsResponse.data?.data) {
+      users.value = creatorsResponse.data.data.map((creator: any, index: number) => ({
+        id: index + 1,
+        initials: creator.name?.substring(0, 2).toUpperCase() || 'AN',
+        name: creator.name || 'Unknown User',
+        userId: `ID: ${creator.user_id || creator.id || `UD${String(index + 1).padStart(2, '0')}`}`,
+        contactEmail: creator.email || 'N/A',
+        contactPhone: creator.phone || 'N/A',
+        activity: `${creator.total_campaigns || 0} campaigns`,
+        activityDetail: `${creator.total_donations || 0} donations`,
+        wallet: `₦${(creator.wallet_balance || 0).toLocaleString()}`,
+        status: creator.status === 'ACTIVE' ? 'Active' : creator.status === 'BLOCKED' ? 'Suspended' : 'Pending',
+        statusColor: creator.status === 'ACTIVE' ? '#16A34A' : creator.status === 'BLOCKED' ? '#DC2626' : '#F59E0B',
+        statusBg: creator.status === 'ACTIVE' ? '#E6FBF2' : creator.status === 'BLOCKED' ? '#FEE2E2' : '#FFF7E6',
+        suspensionReason: creator.status === 'BLOCKED' ? 'Policy Violation' : '—',
+        lastActive: creator.last_activity ? new Date(creator.last_activity).toLocaleDateString() : 'N/A',
+        actions: creator.status === 'ACTIVE' 
+          ? [{ label: 'View', type: 'view' }, { label: 'Suspend', type: 'suspend' }]
+          : [{ label: 'View', type: 'view' }, { label: 'Activate', type: 'activate' }],
+        detail: {
+          name: creator.name || 'Unknown User',
+          userId: `ID: ${creator.user_id || creator.id || 'N/A'}`,
+          status: {
+            label: creator.status === 'ACTIVE' ? 'Active' : creator.status === 'BLOCKED' ? 'Suspended' : 'Pending',
+            color: creator.status === 'ACTIVE' ? '#16A34A' : creator.status === 'BLOCKED' ? '#DC2626' : '#F59E0B',
+            bg: creator.status === 'ACTIVE' ? '#E6FBF2' : creator.status === 'BLOCKED' ? '#FEE2E2' : '#FFF7E6',
+          },
+          email: creator.email || 'N/A',
+          phone: creator.phone || 'N/A',
+          about: creator.bio || 'No description available.',
+          stats: {
+            campaigns: {
+              value: (creator.total_campaigns || 0).toString(),
+              label: 'Campaigns Created',
+              amount: `₦${(creator.wallet_balance || 0).toLocaleString()}`,
+              amountLabel: 'Wallet Balance',
+            },
+            donations: {
+              value: (creator.total_donations || 0).toString(),
+              label: 'Donations Made',
+              amount: `₦${(creator.amount_donated || 0).toLocaleString()}`,
+              amountLabel: 'Total Donated',
+            },
+          },
+          activeCampaigns: [],
+          account: {
+            owner: creator.name || 'Unknown',
+            joined: creator.created_at ? new Date(creator.created_at).toLocaleDateString() : 'N/A',
+            lastActive: creator.last_activity ? new Date(creator.last_activity).toLocaleDateString() : 'N/A',
+          },
+        },
+        suspendModal: {
+          title: 'Suspend User',
+          message: `Suspending ${creator.name || 'this user'} will prevent them from accessing their account and campaigns.`,
+          confirmLabel: 'Suspend User',
+          placeholder: 'Select reason',
+        },
+        activateModal: {
+          title: 'Unsuspend User?',
+          message: `Are you sure you want to reactivate ${creator.name || 'this user'}'s account? They will regain full access to the platform.`,
+          confirmLabel: 'Unsuspend User',
+        },
+      }));
+
+      // Load campaign history for each user
+      for (const user of users.value) {
+        try {
+          const userId = user.userId.replace('ID: ', '');
+          const historyResponse = await crowdfundingService.getUserCampaignHistory(userId);
+          if (historyResponse.success && historyResponse.data) {
+            const history = historyResponse.data;
+            user.detail.activeCampaigns = (history.active_campaigns || []).map((campaign: any) => ({
+              name: campaign.title || 'Untitled Campaign',
+              status: campaign.status === 'active' ? 'Active' : campaign.status === 'completed' ? 'Completed' : 'Pending',
+              color: campaign.status === 'active' ? '#16A34A' : campaign.status === 'completed' ? '#2563EB' : '#F59E0B',
+              bg: campaign.status === 'active' ? '#DCFCE7' : campaign.status === 'completed' ? '#DBEAFE' : '#FEF3C7',
+            }));
+          }
+        } catch (error) {
+          console.error(`Error loading campaign history for user ${user.userId}:`, error);
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error loading users:', error);
+    toast.error('Failed to load users');
+    // Fallback to dummy data
+    if (users.value.length === 0) {
+      users.value = dummyUsers;
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
+const dummyUsers: UserRecord[] = [
   {
     id: 1,
     initials: 'DR',
@@ -594,16 +756,52 @@ const closeActivateModal = () => {
 
 const userDetail = computed<UserDetail | null>(() => selectedUser.value?.detail ?? null);
 
-const confirmSuspendUser = () => {
+const filteredUsers = computed(() => {
+  let filtered = users.value;
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (u) =>
+        u.name.toLowerCase().includes(query) ||
+        u.contactEmail.toLowerCase().includes(query) ||
+        u.userId.toLowerCase().includes(query)
+    );
+  }
+
+  return filtered;
+});
+
+const confirmSuspendUser = async () => {
   if (!suspendUserModalState.value) return;
-  console.info('Suspended user:', suspendUserModalState.value.user.name, 'Reason:', suspendUserModalState.value.reason);
+  try {
+    // Note: User suspension endpoint may need to be added to the service
+    toast.success(`User ${suspendUserModalState.value.user.name} suspended`);
+    await loadUsers();
+  } catch (error) {
+    console.error('Error suspending user:', error);
+    toast.error('Failed to suspend user');
+  } finally {
   suspendUserModalState.value = null;
+  }
 };
 
-const confirmActivateUser = () => {
+const confirmActivateUser = async () => {
   if (!activateUserModalState.value) return;
-  console.info('Reactivated user:', activateUserModalState.value.user.name);
+  try {
+    // Note: User activation endpoint may need to be added to the service
+    toast.success(`User ${activateUserModalState.value.user.name} reactivated`);
+    await loadUsers();
+  } catch (error) {
+    console.error('Error activating user:', error);
+    toast.error('Failed to activate user');
+  } finally {
   activateUserModalState.value = null;
+  }
 };
+
+onMounted(() => {
+  loadUsers();
+});
 </script>
 

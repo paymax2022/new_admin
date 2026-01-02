@@ -9,7 +9,7 @@
           </svg>
           <div>
             <h1 class="text-2xl font-bold text-white mb-1">Eviction Round Pending</h1>
-            <p class="text-sm text-white/90">3 contestants are marked for eviction. Review and confirm by Friday 11:59 PM</p>
+            <p class="text-sm text-white/90">{{ evictionPending.length }} {{ evictionPending.length === 1 ? 'contestant is' : 'contestants are' }} marked for eviction. Review and confirm by Friday 11:59 PM</p>
           </div>
         </div>
         <button @click="showModal = true" class="px-6 py-2.5 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg shadow-md transition-colors duration-200">
@@ -31,14 +31,14 @@
           </div>
         </div>
         <div class="mb-4">
-          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">127</h3>
+          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ formatNumber(dashboardStats.totalMembers) }}</h3>
         </div>
         <div class="flex flex-col gap-2">
-          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+          <span :class="percentageChanges.totalMembers.isPositive ? 'bg-purple-600 text-white' : 'bg-red-500 text-white'" class="inline-flex items-center gap-1 w-fit px-2.5 py-1 text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="percentageChanges.totalMembers.isPositive ? 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' : 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6'" />
             </svg>
-            +12%
+            {{ percentageChanges.totalMembers.isPositive ? '+' : '-' }}{{ percentageChanges.totalMembers.value.toFixed(1) }}%
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">Active registrations</span>
         </div>
@@ -130,7 +130,7 @@
           </div>
         </div>
         <div class="mb-4">
-          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">35</h3>
+          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ dashboardStats.qualified }}</h3>
         </div>
         <div class="flex flex-col gap-2">
           <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
@@ -154,14 +154,14 @@
           </div>
         </div>
         <div class="mb-4">
-          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">8</h3>
+          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ dashboardStats.evictions }}</h3>
         </div>
         <div class="flex flex-col gap-2">
           <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-orange-400 text-black text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            This week: 3
+            Pending: {{ evictionPending.length }}
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">Total eliminated</span>
         </div>
@@ -178,14 +178,14 @@
           </div>
         </div>
         <div class="mb-4">
-          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">1,234</h3>
+          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ formatNumber(dashboardStats.referrals) }}</h3>
         </div>
         <div class="flex flex-col gap-2">
-          <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
+          <span :class="percentageChanges.referrals.isPositive ? 'bg-purple-600 text-white' : 'bg-red-500 text-white'" class="inline-flex items-center gap-1 w-fit px-2.5 py-1 text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="percentageChanges.referrals.isPositive ? 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6' : 'M13 17h8m0 0V9m0 8l-8-8-4 4-6-6'" />
             </svg>
-            +15%
+            {{ percentageChanges.referrals.isPositive ? '+' : '-' }}{{ percentageChanges.referrals.value.toFixed(1) }}%
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">New sign-ups</span>
         </div>
@@ -202,14 +202,14 @@
           </div>
         </div>
         <div class="mb-4">
-          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">12m 34s</h3>
+          <h3 class="text-4xl font-bold text-gray-900 dark:text-white mb-1">{{ dashboardStats.avgSession }}</h3>
         </div>
         <div class="flex flex-col gap-2">
           <span class="inline-flex items-center gap-1 w-fit px-2.5 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            +2m 15s
+            Average
           </span>
           <span class="text-xs text-gray-500 dark:text-gray-400">User engagement</span>
         </div>
@@ -230,142 +230,31 @@
         </div>
         <div class="p-6">
           <div class="space-y-5">
-            <!-- Activity Item 1 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  NV
+            <div v-if="recentActivity.length > 0">
+              <div v-for="activity in recentActivity" :key="activity.id" class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    {{ activity.initials }}
+                  </div>
                 </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">New Vote Received</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">A new vote was casted to the voting system</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">2 minutes ago</span>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="flex-1">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ activity.title }}</p>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ activity.description }}</p>
+                      <div class="flex items-center mt-2">
+                        <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span class="text-xs text-gray-400">{{ formatTimeAgo(activity.timestamp) }}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Activity Item 2 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  CS
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Contest Suspended</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">An admin suspended a contest for the budget Season 3</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">45 minutes ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Item 3 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  EA
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Eviction Alert</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">2 contestants were set for another eviction round</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">1 hour ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Item 4 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  BA
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Badge Awarded</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Top voter badge was given to all top contestants</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">2 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Item 5 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  PU
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Phase Update</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Contest Phase 2 is now Live on Voting module</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">3 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Activity Item 6 -->
-            <div class="flex items-start gap-4">
-              <div class="flex-shrink-0">
-                <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
-                  VM
-                </div>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-start justify-between gap-2">
-                  <div class="flex-1">
-                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Voting Milestone</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Refer total vote reached for the online voting show</p>
-                    <div class="flex items-center mt-2">
-                      <svg class="w-4 h-4 text-gray-400 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-xs text-gray-400">5 hours ago</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div v-else class="text-center py-8 text-gray-500">
+              <p class="text-sm">No recent activity</p>
             </div>
           </div>
         </div>
@@ -386,191 +275,46 @@
         </div>
         <div class="p-6">
           <div class="space-y-4">
-            <!-- Contestant 1 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
-                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#1</span>
-                    SJ
+            <div v-if="topContestants.length > 0">
+              <div v-for="(contestant, index) in topContestants" :key="contestant.id" class="flex items-center justify-between py-2.5">
+                <div class="flex items-center gap-3 flex-1">
+                  <div class="flex-shrink-0">
+                    <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
+                      <svg v-if="index === 0" class="w-4 h-4 absolute -top-1 -left-1 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#{{ contestant.rank }}</span>
+                      {{ contestant.initials }}
+                    </div>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{{ contestant.name }}</p>
+                    <div class="flex items-center gap-1 mb-1">
+                      <p class="text-xs text-gray-500">{{ contestant.location }}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span v-if="contestant.status === 'finalist'" class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">finalist</span>
+                      <span v-else-if="contestant.status === 'qualified'" class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">qualified</span>
+                      <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
+                        View Profile
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Sarah Johnson</p>
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-xs text-green-600 inline-flex items-center">+2</span>
-                    <p class="text-xs text-gray-500">Lagos, NG</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded-full">finalist</span>
-                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1 mb-1">
-                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">8,904</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Contestant 2 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
-                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#2</span>
-                    DO
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">David Okafor</p>
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-xs text-red-600 inline-flex items-center">-1</span>
-                    <p class="text-xs text-gray-500">Abuja, NG</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full">qualified</span>
-                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1 mb-1">
-                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">7,691</span>
+                <div class="flex items-center gap-4">
+                  <div class="text-right">
+                    <div class="flex items-center justify-end gap-1 mb-1">
+                      <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <span class="text-sm font-bold text-gray-900 dark:text-white">{{ formatNumber(contestant.votes) }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Contestant 3 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
-                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-amber-700" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#3</span>
-                    AH
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Amina Hassan</p>
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-xs text-green-600 inline-flex items-center">+1</span>
-                    <p class="text-xs text-gray-500">Kano, NG</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1 mb-1">
-                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">7,203</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Contestant 4 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
-                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#4</span>
-                    SO
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Sandra Okoro</p>
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-xs text-red-600 inline-flex items-center">-2</span>
-                    <p class="text-xs text-gray-500">Port Harcourt, NG</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1 mb-1">
-                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">6,847</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Contestant 5 -->
-            <div class="flex items-center justify-between py-2.5">
-              <div class="flex items-center gap-3 flex-1">
-                <div class="flex-shrink-0">
-                  <div class="w-11 h-11 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md relative">
-                    <svg class="w-4 h-4 absolute -top-1 -left-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                    <span class="absolute -top-1 -right-1 text-xs font-bold text-gray-900 bg-white rounded-full w-4 h-4 flex items-center justify-center">#5</span>
-                    FJ
-                  </div>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Fatima Bello</p>
-                  <div class="flex items-center gap-1 mb-1">
-                    <span class="text-xs text-green-600 inline-flex items-center">+1</span>
-                    <p class="text-xs text-gray-500">Kaduna, NG</p>
-                  </div>
-                  <div class="flex items-center gap-2">
-                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors duration-200">
-                      View Profile
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="flex items-center gap-4">
-                <div class="text-right">
-                  <div class="flex items-center justify-end gap-1 mb-1">
-                    <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span class="text-sm font-bold text-gray-900 dark:text-white">6,234</span>
-                  </div>
-                </div>
-              </div>
+            <div v-else class="text-center py-8 text-gray-500">
+              <p class="text-sm">No contestants data available</p>
             </div>
           </div>
         </div>
@@ -583,7 +327,7 @@
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
       <!-- Modal Header -->
       <div class="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">Eviction Review - 6 Contestants Pending</h2>
+        <h2 class="text-xl font-bold text-gray-900">Eviction Review - {{ evictionPending.length }} {{ evictionPending.length === 1 ? 'Contestant' : 'Contestants' }} Pending</h2>
         <button @click="showModal = false" class="text-gray-400 hover:text-gray-600">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -592,168 +336,37 @@
       </div>
 
       <!-- Modal Body -->
-      <div class="p-6 overflow-y-auto max-h-[60vh]">
+        <div class="p-6 overflow-y-auto max-h-[60vh]">
         <div class="space-y-4">
-          <!-- Contestant 1 -->
-          <div class="flex items-center justify-between py-3 border-b border-gray-100">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                SJ
+          <div v-if="evictionPending.length > 0">
+            <div v-for="(contestant, index) in evictionPending" :key="contestant.id" :class="index < evictionPending.length - 1 ? 'border-b border-gray-100' : ''" class="flex items-center justify-between py-3">
+              <div class="flex items-center gap-4 flex-1">
+                <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  {{ contestant.initials }}
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-gray-900">{{ contestant.name }}</p>
+                  <p class="text-xs text-gray-500">{{ formatNumber(contestant.votes) }} votes • {{ contestant.rank }}</p>
+                </div>
               </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Sarah Johnson</p>
-                <p class="text-xs text-gray-500">1245 votes • Last</p>
+              <div class="flex items-center gap-2">
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                  </svg>
+                  Save
+                </button>
+                <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                  </svg>
+                  Evict
+                </button>
               </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
             </div>
           </div>
-
-          <!-- Contestant 2 -->
-          <div class="flex items-center justify-between py-3 border-b border-gray-100">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                MC
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Mike Chen</p>
-                <p class="text-xs text-gray-500">1988 votes • 2nd Last</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
-            </div>
-          </div>
-
-          <!-- Contestant 3 -->
-          <div class="flex items-center justify-between py-3 border-b border-gray-100">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                LR
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
-                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
-            </div>
-          </div>
-
-          <!-- Contestant 4 -->
-          <div class="flex items-center justify-between py-3 border-b border-gray-100">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                LR
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
-                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
-            </div>
-          </div>
-
-          <!-- Contestant 5 -->
-          <div class="flex items-center justify-between py-3 border-b border-gray-100">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                LR
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
-                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
-            </div>
-          </div>
-
-          <!-- Contestant 6 -->
-          <div class="flex items-center justify-between py-3">
-            <div class="flex items-center gap-4 flex-1">
-              <div class="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                LR
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">Lisa Rodriguez</p>
-                <p class="text-xs text-gray-500">1502 votes • 3rd Last</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                </svg>
-                Save
-              </button>
-              <button class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
-                </svg>
-                Evict
-              </button>
-            </div>
+          <div v-else class="text-center py-8 text-gray-500">
+            <p class="text-sm">No pending evictions</p>
           </div>
         </div>
       </div>
@@ -775,14 +388,458 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useToast } from 'vue-toastification';
+import votingService from '@/services/votingService';
 
-// Component data
+const toast = useToast();
 const loading = ref(false);
 const showModal = ref(false);
 
+// Dashboard statistics
+const dashboardStats = ref({
+  totalMembers: 0,
+  totalVotes: 0,
+  revenue: 0,
+  activeContests: 0,
+  qualified: 0,
+  evictions: 0,
+  referrals: 0,
+  avgSession: '0m 0s',
+});
+
+const percentageChanges = ref({
+  totalMembers: { value: 0, isPositive: true },
+  totalVotes: { value: 0, isPositive: true },
+  revenue: { value: 0, isPositive: true },
+  referrals: { value: 0, isPositive: true },
+});
+
+const topContestants = ref<any[]>([]);
+const recentActivity = ref<any[]>([]);
+const evictionPending = ref<any[]>([]);
+
+// Helper function to calculate percentage change
+const calculatePercentageChange = (current: number, previous: number): { value: number; isPositive: boolean } => {
+  if (!previous || previous === 0) {
+    return { value: current > 0 ? 100 : 0, isPositive: true };
+  }
+  const change = ((current - previous) / previous) * 100;
+  return { value: Math.abs(change), isPositive: change >= 0 };
+};
+
+// Format currency
+const formatCurrency = (amount: number): string => {
+  return `₦${amount.toLocaleString()}`;
+};
+
+// Format number
+const formatNumber = (num: number): string => {
+  return num.toLocaleString();
+};
+
+// Format time ago
+const formatTimeAgo = (timestamp: string | Date): string => {
+  if (!timestamp) return 'Just now';
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} ${diffMins === 1 ? 'minute' : 'minutes'} ago`;
+  if (diffHours < 24) return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'} ago`;
+  if (diffDays < 7) return `${diffDays} ${diffDays === 1 ? 'day' : 'days'} ago`;
+  return date.toLocaleDateString();
+};
+
+// Load dashboard data
+const loadDashboardData = async () => {
+  try {
+    loading.value = true;
+    
+    // Fetch dashboard stats and other data in parallel
+    const [statsResponse, contestsResponse, dashboardResponse] = await Promise.allSettled([
+      votingService.getDashboardStats(),
+      votingService.getContests(),
+      votingService.getAdminDashboard(),
+    ]);
+
+    // Process dashboard stats
+    let statsData: any = null;
+    if (statsResponse.status === 'fulfilled') {
+      const response = statsResponse.value as any;
+      // Handle different response structures
+      if (response.ok && response.data) {
+        statsData = response.data;
+      } else if (response.success && response.data) {
+        statsData = response.data;
+      } else if (response.data && !response.ok && !response.success) {
+        // Sometimes data is directly in response
+        statsData = response.data;
+      }
+      
+      console.log('Dashboard Stats Response:', response);
+      console.log('Stats Data:', statsData);
+    }
+
+    if (statsData) {
+      dashboardStats.value = {
+        totalMembers: statsData.total_members || statsData.total_contestants || statsData.members || statsData.totalMembers || 0,
+        totalVotes: statsData.total_votes || statsData.votes || statsData.totalVotes || 0,
+        revenue: statsData.revenue || statsData.total_revenue || statsData.paid_votes_revenue || statsData.totalRevenue || 0,
+        activeContests: statsData.active_contests || statsData.contests_count || statsData.activeContests || 0,
+        qualified: statsData.qualified || statsData.qualified_contestants || statsData.qualifiedCount || 0,
+        evictions: statsData.evictions || statsData.evicted_count || statsData.evictionsCount || 0,
+        referrals: statsData.referrals || statsData.referral_count || statsData.totalReferrals || 0,
+        avgSession: statsData.avg_session || statsData.average_session || statsData.avgSession || '0m 0s',
+      };
+
+      // Calculate percentage changes if previous period data is available
+      if (statsData.previous_total_members || statsData.previousTotalMembers) {
+        percentageChanges.value.totalMembers = calculatePercentageChange(
+          dashboardStats.value.totalMembers,
+          statsData.previous_total_members || statsData.previousTotalMembers
+        );
+      }
+      if (statsData.previous_total_votes || statsData.previousTotalVotes) {
+        percentageChanges.value.totalVotes = calculatePercentageChange(
+          dashboardStats.value.totalVotes,
+          statsData.previous_total_votes || statsData.previousTotalVotes
+        );
+      }
+      if (statsData.previous_revenue || statsData.previousRevenue) {
+        percentageChanges.value.revenue = calculatePercentageChange(
+          dashboardStats.value.revenue,
+          statsData.previous_revenue || statsData.previousRevenue
+        );
+      }
+      if (statsData.previous_referrals || statsData.previousReferrals) {
+        percentageChanges.value.referrals = calculatePercentageChange(
+          dashboardStats.value.referrals,
+          statsData.previous_referrals || statsData.previousReferrals
+        );
+      }
+    }
+
+    // Process contests data and calculate stats from contests
+    let allContests: any[] = [];
+    if (contestsResponse.status === 'fulfilled') {
+      const response = contestsResponse.value as any;
+      console.log('Contests Response:', response);
+      
+      // Handle different response structures
+      if (response.ok && response.data) {
+        allContests = Array.isArray(response.data) ? response.data : response.data.data || [];
+      } else if (response.success && response.data) {
+        allContests = Array.isArray(response.data) ? response.data : response.data.data || [];
+      } else if (Array.isArray(response.data)) {
+        allContests = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        allContests = response.data.data;
+      }
+      
+      console.log('Parsed Contests:', allContests.length);
+      
+      // Filter active contests
+      const activeContests = allContests.filter((c: any) => 
+        c.status === 'active' || c.status === 'ACTIVE' || c.status === 'ongoing' || c.status === 'OPEN'
+      );
+      
+      // Update active contests count from real data
+      if (activeContests.length > 0) {
+        dashboardStats.value.activeContests = activeContests.length;
+      }
+      
+      // Get contests ending soon (within 7 days)
+      const endingSoon = activeContests.filter((c: any) => {
+        if (!c.end_date && !c.endDate) return false;
+        const endDate = new Date(c.end_date || c.endDate);
+        const today = new Date();
+        const daysUntilEnd = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        return daysUntilEnd <= 7 && daysUntilEnd > 0;
+      });
+      
+      // Calculate total votes and revenue from contests if not available from stats
+      if (dashboardStats.value.totalVotes === 0 || dashboardStats.value.revenue === 0) {
+        let totalVotesFromContests = 0;
+        let totalRevenueFromContests = 0;
+        
+        for (const contest of allContests) {
+          if (contest.total_votes || contest.totalVotes) {
+            totalVotesFromContests += parseInt(contest.total_votes || contest.totalVotes || 0);
+          }
+          if (contest.revenue || contest.total_revenue || contest.paid_votes_revenue) {
+            totalRevenueFromContests += parseFloat(contest.revenue || contest.total_revenue || contest.paid_votes_revenue || 0);
+          }
+        }
+        
+        if (totalVotesFromContests > 0 && dashboardStats.value.totalVotes === 0) {
+          dashboardStats.value.totalVotes = totalVotesFromContests;
+        }
+        if (totalRevenueFromContests > 0 && dashboardStats.value.revenue === 0) {
+          dashboardStats.value.revenue = totalRevenueFromContests;
+        }
+      }
+      
+      // Calculate total members (contestants) from all contests
+      if (dashboardStats.value.totalMembers === 0 && allContests.length > 0) {
+        try {
+          let totalContestants = 0;
+          const contestPromises = allContests.slice(0, 10).map(async (contest: any) => {
+            try {
+              const contestantsRes = await votingService.getContestants(contest.id || contest._id);
+              if (contestantsRes.ok && contestantsRes.data) {
+                const contestants = Array.isArray(contestantsRes.data) ? contestantsRes.data : [];
+                return contestants.length;
+              }
+            } catch (error) {
+              console.error(`Error fetching contestants for contest ${contest.id}:`, error);
+            }
+            return 0;
+          });
+          
+          const contestantCounts = await Promise.all(contestPromises);
+          totalContestants = contestantCounts.reduce((sum, count) => sum + count, 0);
+          
+          if (totalContestants > 0) {
+            dashboardStats.value.totalMembers = totalContestants;
+          }
+        } catch (error) {
+          console.error('Error calculating total members:', error);
+        }
+      }
+    }
+
+    // Process admin dashboard data (already handled above, this is just for top contestants/activity/evictions)
+    if (dashboardData) {
+      const dashboard = dashboardData;
+      
+      // Get top contestants from leaderboard if available
+      if (dashboard.top_contestants || dashboard.leaderboard) {
+        const leaderboard = dashboard.top_contestants || dashboard.leaderboard || [];
+        topContestants.value = leaderboard.slice(0, 5).map((contestant: any, index: number) => ({
+          id: contestant.id || contestant.contestant_id || contestant._id,
+          name: contestant.name || `${contestant.first_name || ''} ${contestant.last_name || ''}`.trim() || 'Unknown',
+          initials: (contestant.name || contestant.first_name || 'AN').substring(0, 2).toUpperCase(),
+          votes: parseInt(contestant.votes || contestant.total_votes || contestant.vote_count || 0),
+          rank: index + 1,
+          location: contestant.location || contestant.state || contestant.city || 'NG',
+          status: contestant.status || 'active',
+        }));
+      }
+      
+      // Get recent activity
+      if (dashboard.recent_activity || dashboard.activities) {
+        const activities = dashboard.recent_activity || dashboard.activities || [];
+        recentActivity.value = activities.slice(0, 6).map((activity: any) => ({
+          id: activity.id || activity._id,
+          type: activity.type || activity.activity_type,
+          title: activity.title || activity.message,
+          description: activity.description || activity.details,
+          timestamp: activity.created_at || activity.timestamp || activity.createdAt,
+          initials: (activity.user_name || activity.type || 'AC').substring(0, 2).toUpperCase(),
+        }));
+      }
+      
+      // Get eviction pending
+      if (dashboard.eviction_pending || dashboard.pending_evictions) {
+        const evictions = dashboard.eviction_pending || dashboard.pending_evictions || [];
+        evictionPending.value = evictions.map((eviction: any) => ({
+          id: eviction.id || eviction.contestant_id || eviction._id,
+          name: eviction.name || `${eviction.first_name || ''} ${eviction.last_name || ''}`.trim() || 'Unknown',
+          initials: (eviction.name || eviction.first_name || 'AN').substring(0, 2).toUpperCase(),
+          votes: parseInt(eviction.votes || eviction.total_votes || eviction.vote_count || 0),
+          rank: eviction.rank || 'Last',
+        }));
+      }
+    }
+
+    // If we don't have top contestants from dashboard, try to get from contests
+    if (topContestants.value.length === 0 && allContests.length > 0) {
+      // Get leaderboard for first active contest
+      const activeContest = allContests.find((c: any) => 
+        c.status === 'active' || c.status === 'ACTIVE' || c.status === 'ongoing' || c.status === 'OPEN'
+      );
+      
+      if (activeContest && (activeContest.id || activeContest._id)) {
+        try {
+          const contestId = activeContest.id || activeContest._id;
+          const leaderboardResponse = await votingService.getVoteLeaderboard(contestId);
+          const response = leaderboardResponse as any;
+          
+          if ((response.ok || response.success) && response.data) {
+            const leaderboard = Array.isArray(response.data) 
+              ? response.data 
+              : response.data.data || [];
+            
+            topContestants.value = leaderboard.slice(0, 5).map((contestant: any, index: number) => ({
+              id: contestant.id || contestant.contestant_id || contestant._id,
+              name: contestant.name || `${contestant.first_name || ''} ${contestant.last_name || ''}`.trim() || 'Unknown',
+              initials: (contestant.name || contestant.first_name || 'AN').substring(0, 2).toUpperCase(),
+              votes: parseInt(contestant.votes || contestant.total_votes || contestant.vote_count || 0),
+              rank: index + 1,
+              location: contestant.location || contestant.state || contestant.city || 'NG',
+              status: contestant.status || 'active',
+            }));
+            
+            // Calculate total votes from leaderboard if not set
+            if (dashboardStats.value.totalVotes === 0 && leaderboard.length > 0) {
+              const totalVotes = leaderboard.reduce((sum: number, c: any) => {
+                return sum + parseInt(c.votes || c.total_votes || c.vote_count || 0);
+              }, 0);
+              if (totalVotes > 0) {
+                dashboardStats.value.totalVotes = totalVotes;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching leaderboard:', error);
+        }
+      }
+    }
+    
+    // Calculate qualified and evictions from contestants if not available
+    if ((dashboardStats.value.qualified === 0 || dashboardStats.value.evictions === 0) && allContests.length > 0) {
+      try {
+        let qualifiedCount = 0;
+        let evictedCount = 0;
+        
+        // Check first few contests for qualified/evicted contestants
+        for (const contest of allContests.slice(0, 5)) {
+          try {
+            const contestId = contest.id || contest._id;
+            const contestantsRes = await votingService.getContestants(contestId);
+            const response = contestantsRes as any;
+            
+            if ((response.ok || response.success) && response.data) {
+              const contestants = Array.isArray(response.data) ? response.data : [];
+              
+              qualifiedCount += contestants.filter((c: any) => 
+                c.status === 'qualified' || c.status === 'QUALIFIED' || c.qualified === true
+              ).length;
+              
+              evictedCount += contestants.filter((c: any) => 
+                c.status === 'evicted' || c.status === 'EVICTED' || c.evicted === true
+              ).length;
+            }
+          } catch (error) {
+            console.error(`Error fetching contestants for contest ${contest.id}:`, error);
+          }
+        }
+        
+        if (qualifiedCount > 0 && dashboardStats.value.qualified === 0) {
+          dashboardStats.value.qualified = qualifiedCount;
+        }
+        if (evictedCount > 0 && dashboardStats.value.evictions === 0) {
+          dashboardStats.value.evictions = evictedCount;
+        }
+      } catch (error) {
+        console.error('Error calculating qualified/evicted:', error);
+      }
+    }
+
+    // If we don't have recent activity, try to get from recent votes
+    if (recentActivity.value.length === 0 && allContests.length > 0) {
+      try {
+        // Get contestants from first active contest
+        const firstContest = allContests.find((c: any) => 
+          c.status === 'active' || c.status === 'ACTIVE' || c.status === 'ongoing'
+        ) || allContests[0];
+        
+        if (firstContest && (firstContest.id || firstContest._id)) {
+          const contestId = firstContest.id || firstContest._id;
+          const contestantsResponse = await votingService.getContestants(contestId);
+          const response = contestantsResponse as any;
+          
+          if ((response.ok || response.success) && response.data) {
+            const contestants = Array.isArray(response.data) ? response.data : [];
+            
+            // Get recent votes for first few contestants
+            // Note: Recent votes endpoint may not be available, so we'll skip if it fails
+            for (const contestant of contestants.slice(0, 3)) {
+              try {
+                const contestantId = contestant.id || contestant._id || contestant.contestant_id;
+                if (contestantId) {
+                  const recentVotesResponse = await votingService.getRecentVotes(contestantId);
+                  const voteResponse = recentVotesResponse as any;
+                  
+                  // Only process if we got valid data (not an error response)
+                  if (voteResponse && !voteResponse.message?.includes('Route not found') && voteResponse.data) {
+                    const votes = Array.isArray(voteResponse.data) ? voteResponse.data : [];
+                    
+                    if (votes.length > 0) {
+                      recentActivity.value = votes.slice(0, 6).map((vote: any) => ({
+                        id: vote.id || vote._id,
+                        type: 'vote',
+                        title: 'New Vote Received',
+                        description: `A new vote was casted for ${contestant.name || contestant.first_name || 'a contestant'}`,
+                        timestamp: vote.created_at || vote.timestamp || vote.createdAt,
+                        initials: 'NV',
+                      }));
+                      
+                      if (recentActivity.value.length > 0) break;
+                    }
+                  }
+                }
+              } catch (error: any) {
+                // Silently skip if endpoint doesn't exist
+                if (!error?.response?.data?.message?.includes('Route not found')) {
+                  console.error('Error fetching recent votes:', error);
+                }
+              }
+            }
+            
+            // If we still don't have recent activity, create placeholder from contest data
+            if (recentActivity.value.length === 0 && allContests.length > 0) {
+              // Use contest creation dates as recent activity
+              recentActivity.value = allContests.slice(0, 6).map((contest: any, index: number) => ({
+                id: contest.id || contest._id || `contest-${index}`,
+                type: 'contest',
+                title: 'Contest Activity',
+                description: contest.title || contest.name || 'Contest activity update',
+                timestamp: contest.created_at || contest.createdAt || contest.start_date || new Date().toISOString(),
+                initials: 'CA',
+              }));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching recent activity:', error);
+      }
+    }
+
+    // Final logging and ensure all values are set
+    console.log('=== FINAL DASHBOARD STATS ===');
+    console.log('Total Members:', dashboardStats.value.totalMembers);
+    console.log('Total Votes:', dashboardStats.value.totalVotes);
+    console.log('Revenue:', dashboardStats.value.revenue);
+    console.log('Active Contests:', dashboardStats.value.activeContests);
+    console.log('Qualified:', dashboardStats.value.qualified);
+    console.log('Evictions:', dashboardStats.value.evictions);
+    console.log('Referrals:', dashboardStats.value.referrals);
+    console.log('Avg Session:', dashboardStats.value.avgSession);
+    console.log('Top Contestants:', topContestants.value.length);
+    console.log('Recent Activity:', recentActivity.value.length);
+    console.log('Eviction Pending:', evictionPending.value.length);
+    console.log('Dashboard data loaded:', {
+      stats: dashboardStats.value,
+      topContestants: topContestants.value,
+      recentActivity: recentActivity.value,
+      evictionPending: evictionPending.value,
+    });
+
+  } catch (error) {
+    console.error('Error loading dashboard data:', error);
+    toast.error('Failed to load dashboard data');
+  } finally {
+    loading.value = false;
+  }
+};
+
 onMounted(() => {
-  // Initialize component
-  console.log('Voting Dashboard mounted');
+  loadDashboardData();
 });
 </script>

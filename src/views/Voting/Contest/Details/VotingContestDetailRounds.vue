@@ -36,29 +36,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
-const rounds = ref([
-    {
-        id: 1,
-        name: 'Round 1',
-        min_votes: 100,
-        start_date: '2023-01-01',
-        end_date: '2023-01-31'
-    },
-    {
-        id: 2,
-        name: 'Round 2',
-        min_votes: 200,
-        start_date: '2023-02-01',
-        end_date: '2023-02-28'
-    },
-    {
-        id: 3,
-        name: 'Round 3',
-        min_votes: 300,
-        start_date: '2023-03-01',
-        end_date: '2023-03-31'
+const toast = useToast();
+const route = useRoute();
+const contestId = route.params.contestId as string;
+const rounds = ref<any[]>([]);
+const isLoading = ref(false);
+
+const fetchRounds = async () => {
+    if (!contestId) {
+        console.error('Contest ID is undefined');
+        return;
     }
-])
+    isLoading.value = true;
+    try {
+        const response = await votingService.getContestRounds(contestId);
+        if (response.ok && response.data) {
+            rounds.value = Array.isArray(response.data) ? response.data : [];
+        } else {
+            toast.error(response.message || 'Error fetching rounds');
+        }
+    } catch (error: any) {
+        console.error('Error fetching rounds:', error);
+        toast.error(error.response?.data?.message || error.message || 'Error fetching rounds');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+onMounted(() => {
+    fetchRounds();
+});
 </script>

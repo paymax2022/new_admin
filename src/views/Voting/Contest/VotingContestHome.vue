@@ -138,6 +138,8 @@ import TextInput from '@/components/Shared/Input/TextInput.vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import { RouterLink } from 'vue-router';
 import Popper from 'vue3-popper';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
 const search = ref('');
 const isLoading = ref(false);
@@ -166,60 +168,55 @@ const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 };
 
+const toast = useToast();
+
 const fetchContests = async () => {
     isLoading.value = true;
     try {
-        const response = await fetch('/api/contests', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Fetched contests:', data);
-            rows.value = data.map(contest => ({
-                id: contest._id,
-                Email: contest.sponsorship_email || 'N/A',
-                title: contest.title,
-                Description: contest.description,
-                Category: contest.category || 'N/A',
-                Alias: contest.alias || 'N/A',
-                campaign_leader_name: contest.leaderName,
-                campaign_leader_role: contest.leaderRole,
-                campaign_leader_signature: contest.leaderSignature || 'N/A',
-                assistant_leader_name: contest.asstName,
-                assistant_leader_role: contest.asstRole,
-                assistant_leader_signature: contest.asstSignature || 'N/A',
-                round: contest.rounds?.length || 1,
-                fee_required: contest.participationFee > 0,
-                registration_fee: contest.participationFee,
-                repeat_frequency: contest.repeatContest || 'None',
+        const response = await votingService.getContests();
+        if (response.ok && response.data) {
+            const contests = Array.isArray(response.data) ? response.data : [];
+            console.log('Fetched contests:', contests);
+            rows.value = contests.map(contest => ({
+                id: contest.id || contest._id,
+                Email: contest.Email || contest.sponsorship_email || 'N/A',
+                title: contest.Title || contest.title || 'N/A',
+                Description: contest.Description || contest.description || '',
+                Category: contest.Category || contest.category || 'N/A',
+                Alias: contest.Alias || contest.alias || 'N/A',
+                campaign_leader_name: contest.campaign_leader_name || 'N/A',
+                campaign_leader_role: contest.campaign_leader_role || 'N/A',
+                campaign_leader_signature: contest.campaign_leader_signature || 'N/A',
+                assistant_leader_name: contest.assistant_leader_name || 'N/A',
+                assistant_leader_role: contest.assistant_leader_role || 'N/A',
+                assistant_leader_signature: contest.assistant_leader_signature || 'N/A',
+                round: contest.round || 1,
+                fee_required: contest.fee_required === true || contest.fee_required === 'true',
+                registration_fee: contest.registration_fee || 0,
+                repeat_frequency: contest.repeat_frequency || 'none',
                 user_id: contest.user_id || 'N/A',
                 supported_by: contest.supported_by || 'N/A',
                 brief_objective: contest.brief_objective || 'N/A',
-                sponsorship_email: contest.sponsorship_email || 'N/A',
+                sponsorship_email: contest.Email || contest.sponsorship_email || 'N/A',
                 contest_mechanism_summary: contest.contest_mechanism_summary || 'N/A',
-                country: contest.country,
-                audience: contest.audience,
-                start_date: contest.rounds?.[0]?.start_date || '',
-                end_date: contest.rounds?.[0]?.end_date || '',
-                created_at: contest.createdAt,
+                country: contest.country || 'N/A',
+                audience: contest.audience || 'N/A',
+                start_date: contest.start_date || '',
+                end_date: contest.end_date || '',
+                created_at: contest.created_at || '',
                 participants: contest.participants || 0,
-                prize: contest.prizeAwards?.[0]?.prize || 0,
-                status: determineStatus(contest.rounds?.[0]?.start_date, contest.rounds?.[0]?.end_date),
+                prize: contest.prize || 0,
+                status: contest.status || determineStatus(contest.start_date, contest.end_date),
             }));
             console.log('Mapped rows:', rows.value);
             await nextTick();
         } else {
-            console.error('Fetch error:', response.status, response.statusText);
-            const errorText = await response.text(); // Capture error details
-            console.error('Error details:', errorText);
-            alert(`Error fetching contests: ${errorText || 'Unknown error'}`);
+            console.error('Error fetching contests:', response.message || 'Unknown error');
+            toast.error(response.message || 'Error fetching contests');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching contests:', error);
-        alert('Error fetching contests. Please try again later.');
+        toast.error(error.response?.data?.message || error.message || 'Error fetching contests. Please try again later.');
     } finally {
         isLoading.value = false;
     }
@@ -238,23 +235,16 @@ const determineStatus = (startDate: string, endDate: string) => {
 const deleteContest = async (id: string) => {
     if (!confirm('Are you sure you want to delete this contest?')) return;
     try {
-        const response = await fetch('/api/contests', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id }),
-        });
+        const response = await votingService.deleteContest(id);
         if (response.ok) {
-            alert('Contest deleted successfully!');
+            toast.success('Contest deleted successfully!');
             rows.value = rows.value.filter(row => row.id !== id);
         } else {
-            const errorData = await response.json();
-            alert(`Error deleting contest: ${errorData.message || 'Unknown error'}`);
+            toast.error(response.message || 'Error deleting contest');
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting contest:', error);
-        alert('Error deleting contest. Please try again later.');
+        toast.error(error.response?.data?.message || error.message || 'Error deleting contest. Please try again later.');
     }
 };
 

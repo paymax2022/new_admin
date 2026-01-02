@@ -113,6 +113,8 @@ const loading = ref(false);
 const searchQuery = ref('');
 const boostRates = ref<any[]>([]);
 
+const promotions = ref<PromotionRecord[]>([]);
+
 const loadBoostRates = async () => {
   try {
     const response = await crowdfundingService.getBoostRates();
@@ -124,9 +126,73 @@ const loadBoostRates = async () => {
   }
 };
 
-onMounted(() => {
-  loadBoostRates();
-});
+const loadPromotions = async () => {
+  try {
+    loading.value = true;
+    // Load campaigns that have been boosted
+    const campaignsResponse = await crowdfundingService.listAllCampaigns({
+      page: 1,
+      limit: 50,
+      status: 'all',
+    });
+
+    if (campaignsResponse.success && campaignsResponse.data?.data) {
+      // Filter campaigns that might have boost/promotion data
+      // Note: This is a placeholder - actual promotion data structure may differ
+      promotions.value = campaignsResponse.data.data
+        .filter((campaign: any) => campaign.boosted || campaign.promoted)
+        .map((campaign: any, index: number) => ({
+          id: campaign.id || `PR${String(index + 1).padStart(3, '0')}`,
+          campaign: campaign.title,
+          type: { label: campaign.boosted ? 'Featured' : 'Not Featured', color: campaign.boosted ? '#2563EB' : '#94A3B8', bg: campaign.boosted ? '#DBEAFE' : '#E2E8F0' },
+          duration: campaign.boost_duration || '7 days',
+          budget: `₦${(campaign.boost_budget || 0).toLocaleString()}`,
+          progress: {
+            label: `${Math.round(((campaign.current_amount || 0) / (campaign.goal_amount || 1)) * 100)}%`,
+            color: '#2563EB',
+            bg: '#DBEAFE',
+            value: `${Math.round(((campaign.current_amount || 0) / (campaign.goal_amount || 1)) * 100)}%`,
+          },
+          urgency: { label: campaign.urgent ? 'High' : 'Low', color: campaign.urgent ? '#DC2626' : '#16A34A', bg: campaign.urgent ? '#DC2626' : '#E6FBF2' },
+          status: {
+            label: campaign.status === 'active' ? 'Active' : campaign.status === 'completed' ? 'Completed' : campaign.status === 'rejected' ? 'Rejected' : 'Archived',
+            color: campaign.status === 'active' ? '#16A34A' : campaign.status === 'completed' ? '#16A34A' : campaign.status === 'rejected' ? '#DC2626' : '#94A3B8',
+            bg: campaign.status === 'active' ? '#E6FBF2' : campaign.status === 'completed' ? '#E6FBF2' : campaign.status === 'rejected' ? '#FEE2E2' : '#E2E8F0',
+          },
+          requested: new Date(campaign.created_at).toLocaleDateString(),
+          actions: [{ label: 'View', type: 'view' }],
+          detail: {
+            campaign: campaign.title,
+            owner: campaign.owner?.name || 'Unknown',
+            email: campaign.owner?.email || 'N/A',
+            category: campaign.category,
+            budget: `₦${(campaign.boost_budget || 0).toLocaleString()}`,
+            paymentMethod: campaign.payment_method || 'Wallet',
+            duration: campaign.boost_duration || '7 days',
+            currentRaised: `₦${(campaign.current_amount || 0).toLocaleString()}`,
+            goal: `₦${(campaign.goal_amount || 0).toLocaleString()}`,
+            progress: `${Math.round(((campaign.current_amount || 0) / (campaign.goal_amount || 1)) * 100)}%`,
+            requestedDate: new Date(campaign.created_at).toLocaleDateString(),
+            startDate: campaign.boost_start_date || new Date(campaign.created_at).toLocaleDateString(),
+            endDate: campaign.boost_end_date || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+            urgency: { label: campaign.urgent ? 'High' : 'Low', color: campaign.urgent ? '#FFFFFF' : '#2563EB', bg: campaign.urgent ? '#DC2626' : '#DBEAFE' },
+            description: campaign.description || 'No description available.',
+          },
+        }));
+    }
+
+    // If no promotions found, use dummy data
+    if (promotions.value.length === 0) {
+      promotions.value = dummyPromotions;
+    }
+  } catch (error) {
+    console.error('Error loading promotions:', error);
+    toast.error('Failed to load promotions');
+    promotions.value = dummyPromotions;
+  } finally {
+    loading.value = false;
+  }
+};
 
 type PromotionRecord = {
   id: string;
@@ -158,7 +224,7 @@ type PromotionRecord = {
   };
 };
 
-const promotions: PromotionRecord[] = [
+const dummyPromotions: PromotionRecord[] = [
   {
     id: 'PR001',
     campaign: 'Emergency Medical Fund for Children',

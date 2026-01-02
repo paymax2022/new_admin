@@ -44,44 +44,61 @@
 <script setup lang="ts">
     import { ref, onMounted } from 'vue';
     import { useRoute } from 'vue-router';
+    import votingService from '@/services/votingService';
+    import { useToast } from 'vue-toastification';
 
+    const toast = useToast();
     const route = useRoute();
-    const contestId = route.params.contestId;
+    const contestId = route.params.contestId as string;
     const contacts = ref<Array<{ _id: string; name: string; image: string }>>([]);
+    const contest = ref<any>(null);
+    const isLoading = ref(false);
+
+    const fetchContest = async () => {
+        if (!contestId) {
+            console.error('Contest ID is undefined');
+            return;
+        }
+        isLoading.value = true;
+        try {
+            const response = await votingService.getContestById(contestId);
+            if (response.ok && response.data) {
+                contest.value = response.data;
+            } else {
+                toast.error(response.message || 'Error fetching contest');
+            }
+        } catch (error: any) {
+            console.error('Error fetching contest:', error);
+            toast.error(error.response?.data?.message || error.message || 'Error fetching contest');
+        } finally {
+            isLoading.value = false;
+        }
+    };
 
     const fetchContacts = async () => {
         try {
-            // Ensure contestId is defined
             if (!contestId) {
                 console.error('Contest ID is undefined');
                 return;
             }
 
-            const response = await fetch(`/api/contact/${contestId}`);
-            const data = await response.json();
-            console.log('Fetched contacts:', data); // Debugging
-
-            if (response.ok) {
-                // Ensure data is an array; handle cases where it might be nested
-                if (Array.isArray(data)) {
-                    contacts.value = data;
-                } else if (data.contacts && Array.isArray(data.contacts)) {
-                    contacts.value = data.contacts;
-                } else {
-                    console.error('Response data is not an array:', data);
-                    contacts.value = [];
-                }
-            } else {
-                console.error('Error fetching contacts:', data.message || 'Unknown error');
-                contacts.value = [];
+            const response = await votingService.getContestants(contestId);
+            if (response.ok && response.data) {
+                const contestants = Array.isArray(response.data) ? response.data : [];
+                contacts.value = contestants.map((c: any) => ({
+                    _id: c.id || c._id,
+                    name: c.nick_name || c.name || 'Unknown',
+                    image: c.image || ''
+                }));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error fetching contacts:', error);
-            contacts.value = [];
+            toast.error(error.response?.data?.message || error.message || 'Error fetching contestants');
         }
     };
 
     onMounted(() => {
+        fetchContest();
         fetchContacts();
     });
 </script>

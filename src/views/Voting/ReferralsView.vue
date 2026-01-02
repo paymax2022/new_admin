@@ -424,9 +424,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
+const route = useRoute();
 const activeTab = ref('tracking');
+const userId = ref<string>('');
+const referrals = ref<any[]>([]);
+const isLoading = ref(false);
 
 const referrals = ref([
   {
@@ -597,6 +605,37 @@ const getPreviewLink = (name: string, id: string) => {
   return `${nameSlug}-${idNumber}`;
 };
 
+// Fetch referral
+const fetchReferral = async (id: string) => {
+  if (!id) return;
+  isLoading.value = true;
+  try {
+    const response = await votingService.getReferral(id);
+    if (response.ok && response.data) {
+      // Process referral data
+      console.log('Referral data:', response.data);
+    }
+  } catch (error: any) {
+    console.error('Error fetching referral:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching referral');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Get user by referral
+const getUserByReferral = async (referralId: string) => {
+  try {
+    const response = await votingService.getUserByReferral(referralId);
+    if (response.ok && response.data) {
+      return response.data;
+    }
+  } catch (error: any) {
+    console.error('Error fetching user by referral:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error fetching user');
+  }
+};
+
 const generateLinks = () => {
   // TODO: Implement link generation logic
   console.log('Generating links for:', {
@@ -606,5 +645,12 @@ const generateLinks = () => {
   });
   showGenerateLinksModal.value = false;
 };
+
+onMounted(() => {
+  // Fetch referral data if userId is available
+  if (userId.value) {
+    fetchReferral(userId.value);
+  }
+});
 </script>
 

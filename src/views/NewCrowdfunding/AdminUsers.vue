@@ -7,32 +7,36 @@
 
     <div class="grid gap-4 md:grid-cols-4">
       <AdminUserStatCard
+        :key="`total-${adminStats.totalAdminUsers}`"
         title="Total Admin Users"
-        value="24"
+        :value="adminStats.totalAdminUsers"
         caption="All members"
         :icon="IconUsersGroup"
         accent-color="#2563EB"
         accent-bg="#E0EAFF"
       />
       <AdminUserStatCard
+        :key="`active-${adminStats.activeSessions}`"
         title="Active Sessions"
-        value="18"
-        caption="72% online"
+        :value="adminStats.activeSessions"
+        caption="Currently active"
         :icon="IconMessagesDot"
         accent-color="#8B5CF6"
         accent-bg="#EDE9FE"
       />
       <AdminUserStatCard
+        :key="`super-${adminStats.superAdmins}`"
         title="Super Admins"
-        value="3"
+        :value="adminStats.superAdmins"
         caption="Full access"
         :icon="IconCrown"
         accent-color="#10B981"
         accent-bg="#D1FAE5"
       />
       <AdminUserStatCard
+        :key="`pending-${adminStats.pendingInvites}`"
         title="Pending Invites"
-        value="5"
+        :value="adminStats.pendingInvites"
         caption="Awaiting response"
         :icon="IconMail"
         accent-color="#F97316"
@@ -45,6 +49,7 @@
         <div class="relative flex-1">
           <IconSearch class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#94a3b8]" />
           <input
+            v-model="searchQuery"
             type="text"
             placeholder="Search admin users..."
             class="w-full rounded-full border border-[#e2e8f0] bg-white py-3 pl-12 pr-4 text-sm text-[#1f2937] placeholder:text-[#94a3b8] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
@@ -65,36 +70,89 @@
       </div>
 
       <div class="overflow-x-auto">
-        <table class="min-w-full">
-          <thead>
-            <tr class="text-left text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">User</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">Role</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">Department</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">Status</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">Permissions</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3">Last Login</th>
-              <th class="border-b border-[#d9e3f0] bg-white px-5 py-3 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <AdminUserRow
-              v-for="user in adminUsers"
-              :key="user.id"
-              :initials="user.initials"
-              :name="user.name"
-              :email="user.email"
-              :role="user.role"
-              :department="user.department"
-              :status="user.status"
-              :permissions="user.permissions"
-              :lastLogin="user.lastLogin"
-              :actions="user.actions"
-              :detail="user.detail || {}"
-              @action="handleUserAction"
-            />
-          </tbody>
-        </table>
+        <Vue3Datatable
+          v-if="filteredAdminUsers.length > 0"
+          :rows="filteredAdminUsers"
+          :columns="tableColumns"
+          :totalRows="filteredAdminUsers.length"
+          :sortable="true"
+          :searchable="false"
+          :pageSize="rowsPerPage"
+          :pageSizeOptions="[10, 25, 50, 100]"
+          skin="bh-table-compact"
+          :loading="loading"
+          :classes="{
+            table: 'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
+            thead: 'bg-gray-50 dark:bg-gray-800',
+            tbody: 'bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700',
+            tr: 'hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer',
+            th: 'px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300',
+            td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100',
+          }"
+          @row-clicked="onRowClick"
+        >
+          <template #user="data">
+            <div v-if="data && data.value" class="flex items-center gap-3">
+              <div class="flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold" :style="{ backgroundColor: data.value.role.bg, color: data.value.role.color }">
+                {{ data.value.initials }}
+              </div>
+              <div class="flex flex-col">
+                <span class="font-medium text-gray-900 dark:text-white">{{ data.value.name }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ data.value.email }}</span>
+              </div>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #role="data">
+            <span v-if="data && data.value" :class="data.value.role.bg" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" :style="{ color: data.value.role.color }">
+              {{ data.value.role.label }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #department="data">
+            <span v-if="data && data.value" class="text-gray-900 dark:text-white">{{ data.value.department || '-' }}</span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #status="data">
+            <span v-if="data && data.value" :class="data.value.status.bg" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold" :style="{ color: data.value.status.color }">
+              <span :class="data.value.status.color" class="h-2 w-2 rounded-full" :style="{ backgroundColor: data.value.status.color }"></span>
+              {{ data.value.status.label }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #permissions="data">
+            <span v-if="data && data.value" class="text-gray-900 dark:text-white">{{ data.value.permissions || '-' }}</span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #lastLogin="data">
+            <span v-if="data && data.value" class="text-gray-900 dark:text-white">{{ data.value.lastLogin || '-' }}</span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <template #actions="data">
+            <div v-if="data && data.value && data.value.actions" class="flex items-center justify-center gap-2">
+              <button
+                v-for="action in data.value.actions"
+                :key="action.type"
+                @click.stop="handleUserAction({ action, row: data.value })"
+                :class="action.style === 'danger' ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50' : action.style === 'ghost' ? 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' : 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50'"
+                class="inline-flex items-center rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors"
+                :title="action.label"
+              >
+                {{ action.label }}
+              </button>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </Vue3Datatable>
+        <div v-else class="text-center py-12 text-gray-500">
+          No admin users found
+        </div>
       </div>
     </div>
 
@@ -201,7 +259,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed, nextTick } from 'vue';
+import { useToast } from 'vue-toastification';
+import Vue3Datatable from '@bhplugin/vue3-datatable';
 import IconCrown from '@/components/icon/icon-award.vue';
 import IconMail from '@/components/icon/icon-mail.vue';
 import IconMessagesDot from '@/components/icon/icon-messages-dot.vue';
@@ -211,12 +271,107 @@ import IconUsersGroup from '@/components/icon/icon-users-group.vue';
 
 import FilterSelect from './components/WalletFilterSelect.vue';
 import AdminUserStatCard from './components/AdminUserStatCard.vue';
-import AdminUserRow from './components/AdminUserRow.vue';
 import AddAdminUserModal from './components/AddAdminUserModal.vue';
 import AdminUserProfileModal from './components/AdminUserProfileModal.vue';
 import AdminUserSuspendModal from './components/AdminUserSuspendModal.vue';
 import AdminCreateRoleModal from './components/AdminCreateRoleModal.vue';
 import AdminEditRoleModal from './components/AdminEditRoleModal.vue';
+import crowdfundingService from '@/services/crowdfundingService';
+
+const toast = useToast();
+const loading = ref(false);
+const searchQuery = ref('');
+const roleFilter = ref('');
+const statusFilter = ref('');
+const rowsPerPage = ref(10);
+
+const adminStats = ref({
+  totalAdminUsers: '0',
+  activeSessions: '0',
+  superAdmins: '0',
+  pendingInvites: '0',
+});
+
+// Table columns configuration
+const tableColumns = ref([
+  {
+    key: 'user',
+    title: 'User',
+    field: 'user',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '250px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'role',
+    title: 'Role',
+    field: 'role',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'department',
+    title: 'Department',
+    field: 'department',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    field: 'status',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '130px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'permissions',
+    title: 'Permissions',
+    field: 'permissions',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'lastLogin',
+    title: 'Last Login',
+    field: 'lastLogin',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'actions',
+    title: 'Actions',
+    field: 'actions',
+    sortable: false,
+    filterable: false,
+    visible: true,
+    width: '200px',
+    headerClass: 'font-semibold text-center',
+    cellClass: 'text-center',
+  },
+]);
+
+const onRowClick = (row: any) => {
+  if (row.actions && row.actions.length > 0) {
+    handleUserAction({ action: row.actions[0], row });
+  }
+};
 
 type AdminUserRecord = {
   id: string;
@@ -237,7 +392,164 @@ type AdminUserRecord = {
   };
 };
 
-const adminUsers: AdminUserRecord[] = [
+const adminUsers = ref<AdminUserRecord[]>([]);
+
+const loadAdminUsers = async () => {
+  try {
+    loading.value = true;
+    console.log('Loading admin users with role: ADMIN');
+    const response = await crowdfundingService.listAdminUsers({
+      page: 1,
+      limit: 100,
+      role: 'ADMIN', // Filter for admin role
+      status: statusFilter.value || undefined,
+    });
+
+    console.log('Admin Users API Response:', response);
+
+    // Handle response structure
+    let usersData: any[] = [];
+    if (response.success && response.data) {
+      if (Array.isArray(response.data)) {
+        usersData = response.data;
+      } else if (response.data.data && Array.isArray(response.data.data)) {
+        usersData = response.data.data;
+      }
+    } else if (response.ok && response.data) {
+      if (Array.isArray(response.data)) {
+        usersData = response.data;
+      } else if (response.data.data && Array.isArray(response.data.data)) {
+        usersData = response.data.data;
+      }
+    }
+
+    console.log('Parsed usersData:', usersData.length, usersData);
+
+    if (usersData.length > 0) {
+      adminUsers.value = usersData.map((user: any, index: number) => {
+        const firstName = user.first_name || user.firstname || '';
+        const lastName = user.last_name || user.lastname || '';
+        const fullName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
+        const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'AN';
+        
+        // Determine role label and colors
+        const roleLabel = user.role === 'SYSTEM_ADMIN' || user.role === 'SYS_ADMIN' ? 'Super Admin' :
+                         user.role === 'ADMIN' ? 'Admin' :
+                         user.userType === 'ADMIN' ? 'Admin' :
+                         user.role || 'Admin';
+        
+        const roleColor = roleLabel === 'Super Admin' ? '#2563EB' :
+                         roleLabel.includes('Campaign') ? '#F59E0B' :
+                         roleLabel.includes('Compliance') ? '#8B5CF6' :
+                         '#6366F1';
+        
+        const roleBg = roleLabel === 'Super Admin' ? '#DBEAFE' :
+                      roleLabel.includes('Campaign') ? '#FEF3C7' :
+                      roleLabel.includes('Compliance') ? '#EDE9FE' :
+                      '#EEF0FF';
+
+        const userStatus = user.status === 'ACTIVE' ? 'Active' :
+                           user.status === 'BLOCKED' || user.status === 'SUSPENDED' ? 'Suspended' :
+                           user.status === 'DEACTIVATED' ? 'Deactivated' : 'Pending';
+
+        return {
+          id: user.id || user.user_id || `U${String(index + 1).padStart(3, '0')}`,
+          name: fullName,
+          email: user.email || 'N/A',
+          initials: initials,
+          role: {
+            label: roleLabel,
+            color: roleColor,
+            bg: roleBg,
+          },
+          department: user.department || user.userType || 'Operations',
+          status: {
+            label: userStatus,
+            color: userStatus === 'Active' ? '#16A34A' : userStatus === 'Suspended' ? '#DC2626' : '#F59E0B',
+            bg: userStatus === 'Active' ? '#E6FBF2' : userStatus === 'Suspended' ? '#FEE2E2' : '#FFF7E6',
+          },
+          permissions: user.permissions || 'All Access',
+          lastLogin: user.last_login ? new Date(user.last_login).toLocaleDateString() : 
+                     user.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'N/A',
+          actions: userStatus === 'Active' 
+            ? [
+                { label: 'View Profile', type: 'view', style: 'primary' },
+                { label: 'Edit User', type: 'edit', style: 'primary' },
+                { label: 'Suspend User', type: 'suspend', style: 'danger' },
+              ]
+            : [
+                { label: 'View Profile', type: 'view', style: 'primary' },
+                { label: 'Edit User', type: 'edit', style: 'primary' },
+                { label: 'Re-activate', type: 'reactivate', style: 'ghost' },
+              ],
+          detail: {
+            email: user.email || 'N/A',
+            department: user.department || user.userType || 'Operations',
+            joinedDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A',
+            activity: {
+              today: 0,
+              thisWeek: '0',
+              uptime: '0%',
+            },
+          },
+        };
+      });
+
+      // Calculate statistics from loaded users
+      const totalAdmins = adminUsers.value.length;
+      const superAdmins = adminUsers.value.filter(u => u.role.label === 'Super Admin').length;
+      const activeAdmins = adminUsers.value.filter(u => u.status.label === 'Active').length;
+      
+      console.log('=== ADMIN STATS CALCULATION ===');
+      console.log('Total Admins:', totalAdmins);
+      console.log('Super Admins:', superAdmins);
+      console.log('Active Admins:', activeAdmins);
+      console.log('Admin Users:', adminUsers.value.map(u => ({ name: u.name, role: u.role.label, status: u.status.label })));
+      
+      // Update stats reactively - update individual properties
+      adminStats.value.totalAdminUsers = totalAdmins.toString();
+      adminStats.value.activeSessions = activeAdmins.toString();
+      adminStats.value.superAdmins = superAdmins.toString();
+      adminStats.value.pendingInvites = '0'; // This might need a separate endpoint
+      
+      await nextTick();
+      
+      console.log('Updated adminStats:', adminStats.value);
+      console.log('adminStats.value.totalAdminUsers:', adminStats.value.totalAdminUsers);
+      console.log('adminStats.value.activeSessions:', adminStats.value.activeSessions);
+      console.log('adminStats.value.superAdmins:', adminStats.value.superAdmins);
+    } else {
+      console.log('No admin users found, setting stats to 0');
+      adminStats.value.totalAdminUsers = '0';
+      adminStats.value.activeSessions = '0';
+      adminStats.value.superAdmins = '0';
+      adminStats.value.pendingInvites = '0';
+    }
+  } catch (error) {
+    console.error('Error loading admin users:', error);
+    toast.error('Failed to load admin users');
+    // Fallback to dummy data
+    if (adminUsers.value.length === 0) {
+      adminUsers.value = dummyAdminUsers;
+      
+      // Calculate stats from dummy data
+      const totalAdmins = adminUsers.value.length;
+      const superAdmins = adminUsers.value.filter(u => u.role.label === 'Super Admin').length;
+      const activeAdmins = adminUsers.value.filter(u => u.status.label === 'Active').length;
+      
+      adminStats.value.totalAdminUsers = totalAdmins.toString();
+      adminStats.value.activeSessions = activeAdmins.toString();
+      adminStats.value.superAdmins = superAdmins.toString();
+      adminStats.value.pendingInvites = '0';
+      
+      console.log('Using dummy data stats:', adminStats.value);
+    }
+  } finally {
+    loading.value = false;
+  }
+};
+
+const dummyAdminUsers: AdminUserRecord[] = [
   {
     id: 'U001',
     name: 'Sarah Johnson',
@@ -449,5 +761,33 @@ const isMenuOpen = ref(false);
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const filteredAdminUsers = computed(() => {
+  let filtered = adminUsers.value;
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (u) =>
+        u.name.toLowerCase().includes(query) ||
+        u.email.toLowerCase().includes(query) ||
+        u.department.toLowerCase().includes(query)
+    );
+  }
+
+  if (roleFilter.value && roleFilter.value !== 'All Roles') {
+    filtered = filtered.filter((u) => u.role.label === roleFilter.value);
+  }
+
+  if (statusFilter.value && statusFilter.value !== 'All Status') {
+    filtered = filtered.filter((u) => u.status.label === statusFilter.value);
+  }
+
+  return filtered;
+});
+
+onMounted(() => {
+  loadAdminUsers();
+});
 </script>
 

@@ -37,26 +37,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
-const votePrices = ref([
-    {
-        id: 1,
-        name: 'Silver',
-        votes: 10,
-        price: 1000
-    },
-    {
-        id: 2,
-        name: 'Gold',
-        votes: 50,
-        price: 5000
-    },
-    {
-        id: 3,
-        name: 'Platinum',
-        votes: 100,
-        price: 10000
+const toast = useToast();
+const route = useRoute();
+const contestId = route.params.contestId as string;
+const votePrices = ref<any[]>([]);
+const voteRule = ref<any>(null);
+const isLoading = ref(false);
+
+const fetchVotePrices = async () => {
+    if (!contestId) {
+        console.error('Contest ID is undefined');
+        return;
     }
-])
+    isLoading.value = true;
+    try {
+        const response = await votingService.getVotePrices(contestId);
+        if (response.ok && response.data) {
+            votePrices.value = Array.isArray(response.data) ? response.data : [];
+        } else {
+            toast.error(response.message || 'Error fetching vote prices');
+        }
+    } catch (error: any) {
+        console.error('Error fetching vote prices:', error);
+        toast.error(error.response?.data?.message || error.message || 'Error fetching vote prices');
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const fetchVoteRule = async () => {
+    if (!contestId) {
+        return;
+    }
+    try {
+        const response = await votingService.getVoteRule(contestId);
+        if (response.ok && response.data) {
+            voteRule.value = response.data;
+        }
+    } catch (error: any) {
+        console.error('Error fetching vote rule:', error);
+    }
+};
+
+onMounted(() => {
+    fetchVotePrices();
+    fetchVoteRule();
+});
 </script>

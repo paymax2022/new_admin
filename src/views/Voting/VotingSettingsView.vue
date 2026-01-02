@@ -573,9 +573,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import votingService from '@/services/votingService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
+const route = useRoute();
 const activeTab = ref('profile');
+const contestId = ref<string>('');
+const voteRule = ref<any>(null);
+const isLoading = ref(false);
 
 const profileForm = ref({
   fullName: 'Admin User',
@@ -662,8 +670,73 @@ const updatePassword = () => {
   // Handle password update logic here
 };
 
+// Fetch vote rule
+const fetchVoteRule = async (id: string) => {
+  if (!id) return;
+  isLoading.value = true;
+  try {
+    const response = await votingService.getVoteRule(id);
+    if (response.ok && response.data) {
+      voteRule.value = response.data;
+      // Populate voting logic form with vote rule data
+      if (voteRule.value) {
+        votingLogicForm.value.freeVotingInterval = voteRule.value.delay_timing || '';
+        votingLogicForm.value.maxVotesPerSession = voteRule.value.standard_max_vote_per_limit || 10;
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching vote rule:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Save vote rule
+const saveVoteRule = async () => {
+  if (!contestId.value) {
+    toast.error('Contest ID is required');
+    return;
+  }
+  try {
+    const ruleData = {
+      contest_id: contestId.value,
+      points_per_vote: 2,
+      voting_delays: parseInt(votingLogicForm.value.freeVotingInterval) || 1,
+      delay_timing: 'minute',
+      standard_max_vote_per_limit: votingLogicForm.value.maxVotesPerSession || 10,
+      standard_vote_after_min: 60,
+    };
+    
+    if (voteRule.value?.id) {
+      // Update existing rule
+      const response = await votingService.updateVoteRule({ ...ruleData, id: voteRule.value.id });
+      if (response.ok) {
+        toast.success('Vote rule updated successfully');
+      } else {
+        toast.error(response.message || 'Error updating vote rule');
+      }
+    } else {
+      // Create new rule
+      const response = await votingService.createVoteRule(ruleData);
+      if (response.ok) {
+        toast.success('Vote rule created successfully');
+        voteRule.value = response.data;
+      } else {
+        toast.error(response.message || 'Error creating vote rule');
+      }
+    }
+  } catch (error: any) {
+    console.error('Error saving vote rule:', error);
+    toast.error(error.response?.data?.message || error.message || 'Error saving vote rule');
+  }
+};
+
 const saveAllSettings = () => {
   // Handle save all settings logic here
+  if (activeTab.value === 'voting-logic') {
+    saveVoteRule();
+    return;
+  }
   console.log('Saving all settings:', {
     profile: profileForm.value,
     preferences: preferencesForm.value,
