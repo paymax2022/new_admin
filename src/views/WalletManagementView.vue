@@ -264,110 +264,146 @@
       <div v-if="loadingWallets" class="flex justify-center items-center py-10">
         <span class="text-blue-600 font-semibold">Loading...</span>
       </div>
+      <div v-else-if="wallets.length === 0" class="rounded-lg border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No wallets found</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters or refresh the page.</p>
+      </div>
+      <div v-else-if="filteredWallets.length === 0" class="rounded-lg border border-gray-200 dark:border-gray-700 p-10 text-center">
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No wallets match your search</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your search query.</p>
+      </div>
       <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-900/50">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">ID</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32">User</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-24">Type</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">Currency</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-28">Balance</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">Status</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-24">Tier</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32">Created At</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-20">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="wallet in wallets" :key="wallet.id" class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.id }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.name || '-' }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.wallet_type }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.currency }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ formatCurrency(wallet.balance) }}</td>
-              <td class="px-4 py-4 whitespace-nowrap">
-                <span :class="[
-                  'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                  wallet.active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
-                ]">
-                  {{ wallet.active ? 'Active' : 'Frozen' }}
-                </span>
-              </td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ wallet.tier?.name || 'No Tier' }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ new Date(wallet.created_at).toLocaleString() }}</td>
-              <td class="px-4 py-4 whitespace-nowrap text-right text-sm font-medium" @click.stop>
-                <div class="relative">
-                  <button 
-                    @click="handleActionClick($event, wallet)"
-                    data-dropdown="action"
-                    class="text-gray-400 hover:text-gray-500"
-                  >
-                    <EllipsisVerticalIcon class="h-5 w-5" />
-                  </button>
-                  <!-- Actions Dropdown -->
-                  <div v-if="activeActionDropdown === wallet.id" 
-                       class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div class="py-1 divide-y divide-gray-100 dark:divide-gray-700">
-                      <div class="px-4 py-3">
-                        <p class="text-base font-semibold text-gray-900 dark:text-white">Actions</p>
-                      </div>
-                      <div class="py-1">
-                        <a 
-                          href="#" 
-                          @click.prevent="handleWalletAction('view', wallet)"
-                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                        >
-                          <EyeIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                          View Details
-                        </a>
-                        <a 
-                          href="#" 
-                          @click.prevent="handleWalletAction('credit', wallet)"
-                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                        >
-                          <PlusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                          Credit Funds
-                        </a>
-                        <a 
-                          href="#" 
-                          @click.prevent="handleWalletAction('debit', wallet)"
-                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                        >
-                          <MinusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                          Debit Funds
-                        </a>
-                        <a 
-                          href="#" 
-                          @click.prevent="handleWalletAction('freeze', wallet)"
-                          class="group flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <NoSymbolIcon class="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500 dark:text-red-400 dark:group-hover:text-red-300" />
-                          {{ wallet.active ? 'Freeze Wallet' : 'Unfreeze Wallet' }}
-                        </a>
-                        <a 
-                          href="#" 
-                          @click.prevent="handleWalletAction('remark', wallet)"
-                          class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                        >
-                          <ChatBubbleLeftIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
-                          Add Remark
-                        </a>
-                      </div>
+        <Vue3Datatable
+          v-if="filteredWallets.length > 0 && walletColumns.length > 0"
+          :rows="filteredWallets"
+          :columns="walletColumns"
+          :totalRows="filteredWallets.length"
+          :sortable="true"
+          :searchable="false"
+          :pageSize="Math.max(filteredWallets.length, walletsPerPage)"
+          :pageSizeOptions="[]"
+          skin="bh-table-compact"
+          :loading="loadingWallets"
+          :classes="{
+            table: 'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
+            thead: 'bg-gray-50 dark:bg-gray-800',
+            tbody: 'bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700',
+            tr: 'hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer',
+            th: 'px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300',
+            td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100',
+          }"
+          @row-clicked="onWalletRowClick"
+        >
+          <!-- Custom status column -->
+          <template #status="data">
+            <span v-if="data && data.value" :class="[
+              'inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold',
+              data.value.active ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800'
+            ]">
+              {{ data.value.active ? 'Active' : 'Frozen' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom balance column -->
+          <template #balance="data">
+            <span v-if="data && data.value" class="font-medium text-gray-900 dark:text-white">
+              {{ formatCurrency(data.value.balance, data.value.currency || 'NGN') }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom tier column -->
+          <template #tier="data">
+            <span v-if="data && data.value" class="text-gray-900 dark:text-white">
+              {{ data.value.tier?.name || 'No Tier' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom created_at column -->
+          <template #created_at="data">
+            <span v-if="data && data.value && data.value.created_at" class="text-gray-900 dark:text-white">
+              {{ new Date(data.value.created_at).toLocaleString() }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom actions column -->
+          <template #actions="data">
+            <div v-if="data && data.value" class="flex items-center justify-center gap-2" @click.stop>
+              <div class="relative">
+                <button 
+                  @click="handleActionClick($event, data.value)"
+                  data-dropdown="action"
+                  class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <EllipsisVerticalIcon class="h-5 w-5" />
+                </button>
+                <!-- Actions Dropdown -->
+                <div v-if="activeActionDropdown === data.value.id" 
+                     class="absolute right-0 z-50 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div class="py-1 divide-y divide-gray-100 dark:divide-gray-700">
+                    <div class="px-4 py-3">
+                      <p class="text-base font-semibold text-gray-900 dark:text-white">Actions</p>
+                    </div>
+                    <div class="py-1">
+                      <a 
+                        href="#" 
+                        @click.prevent="handleWalletAction('view', data.value); activeActionDropdown = null"
+                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      >
+                        <EyeIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                        View Details
+                      </a>
+                      <a 
+                        href="#" 
+                        @click.prevent="handleWalletAction('credit', data.value); activeActionDropdown = null"
+                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      >
+                        <PlusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                        Credit Funds
+                      </a>
+                      <a 
+                        href="#" 
+                        @click.prevent="handleWalletAction('debit', data.value); activeActionDropdown = null"
+                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      >
+                        <MinusCircleIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                        Debit Funds
+                      </a>
+                      <a 
+                        href="#" 
+                        @click.prevent="handleWalletAction('freeze', data.value); activeActionDropdown = null"
+                        class="group flex items-center px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      >
+                        <NoSymbolIcon class="mr-3 h-5 w-5 text-red-400 group-hover:text-red-500 dark:text-red-400 dark:group-hover:text-red-300" />
+                        {{ data.value.active ? 'Freeze Wallet' : 'Unfreeze Wallet' }}
+                      </a>
+                      <a 
+                        href="#" 
+                        @click.prevent="handleWalletAction('remark', data.value); activeActionDropdown = null"
+                        class="group flex items-center px-4 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      >
+                        <ChatBubbleLeftIcon class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" />
+                        Add Remark
+                      </a>
                     </div>
                   </div>
                 </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </Vue3Datatable>
       </div>
       
       <!-- Pagination Controls -->
       <div class="bg-white dark:bg-gray-800 px-6 py-3 border-t border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between">
           <div class="text-sm text-gray-500 dark:text-gray-400">
-            Showing {{ ((currentPage - 1) * walletsPerPage) + 1 }} to {{ Math.min(currentPage * walletsPerPage, totalWallets) }} of {{ totalWallets }} wallets
+            Showing {{ searchQuery ? filteredWallets.length : ((currentPage - 1) * walletsPerPage) + 1 }} to {{ searchQuery ? filteredWallets.length : Math.min(currentPage * walletsPerPage, totalWallets) }} of {{ searchQuery ? filteredWallets.length : totalWallets }} wallets
+            <span v-if="searchQuery" class="ml-2 text-gray-400">(filtered from {{ totalWallets }} total)</span>
           </div>
           <div class="flex items-center space-x-2">
             <button
@@ -1412,7 +1448,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import {
   CurrencyDollarIcon,
@@ -1441,6 +1477,8 @@ import {
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js'
 import { Line, Doughnut } from 'vue-chartjs'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import Vue3Datatable from '@bhplugin/vue3-datatable'
+import '@bhplugin/vue3-datatable/dist/style.css'
 import walletService from '@/services/walletService';
 
 // Initialize toast
@@ -1508,12 +1546,6 @@ const distributionData = ref({
 
 // Function to update chart data with real data
 const updateChartData = () => {
-  console.log('Updating chart data with:', {
-    wallets: wallets.value.length,
-    walletStats: walletStats.value,
-    activeWallets: wallets.value.filter(w => w.active).length
-  })
-  
   // Update activity trends with real data
   if (walletStats.value.entry) {
     const deposits = walletStats.value.entry.deposits || 0
@@ -1542,8 +1574,6 @@ const updateChartData = () => {
     
     activityTrendsData.value.datasets[0].data = trendData
     activityTrendsData.value.datasets[1].data = withdrawalTrend
-    
-    console.log('Activity trends updated:', { trendData, withdrawalTrend })
   }
   
   // Update distribution data with real wallet data
@@ -1564,13 +1594,6 @@ const updateChartData = () => {
       `Inactive (${inactiveWallets})`, 
       `Frozen (${frozenWallets})`
     ]
-    
-    console.log('Distribution updated:', {
-      active: trulyActiveWallets,
-      inactive: inactiveWallets,
-      frozen: frozenWallets,
-      labels: distributionData.value.labels
-    })
   } else if (walletStats.value.active_wallets) {
     // Fallback to stats data if no wallet list
     const activeCount = walletStats.value.active_wallets.count || 0
@@ -1584,12 +1607,6 @@ const updateChartData = () => {
       `Inactive (${inactiveCount})`, 
       `Frozen (${frozenCount})`
     ]
-    
-    console.log('Distribution updated (fallback):', {
-      active: activeCount,
-      inactive: inactiveCount,
-      frozen: frozenCount
-    })
   }
 }
 
@@ -1637,6 +1654,155 @@ const wallets = ref([])
 const loadingWallets = ref(false)
 const walletTiers = ref({}) // Cache for tier information
 
+// Table columns configuration
+const walletColumns = ref([
+  {
+    key: 'id',
+    title: 'ID',
+    field: 'id',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'name',
+    title: 'User',
+    field: 'name',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '200px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'wallet_type',
+    title: 'Type',
+    field: 'wallet_type',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '120px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'currency',
+    title: 'Currency',
+    field: 'currency',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '100px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'balance',
+    title: 'Balance',
+    field: 'balance',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    field: 'active',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '120px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'tier',
+    title: 'Tier',
+    field: 'tier',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '120px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'created_at',
+    title: 'Created At',
+    field: 'created_at',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '180px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'actions',
+    title: 'Actions',
+    field: 'actions',
+    sortable: false,
+    filterable: false,
+    visible: true,
+    width: '100px',
+    headerClass: 'font-semibold text-center',
+    cellClass: 'text-center',
+  },
+])
+
+// Handle wallet row click
+const onWalletRowClick = (row) => {
+  // Optional: Add row click functionality if needed
+}
+
+// Search query for filtering wallets
+const searchQuery = ref('')
+
+// Filtered wallets based on search query - searches across all columns
+const filteredWallets = computed(() => {
+  if (!searchQuery.value || searchQuery.value.trim() === '') {
+    return wallets.value
+  }
+
+  const query = searchQuery.value.toLowerCase().trim()
+  
+  return wallets.value.filter(wallet => {
+    // Search in ID
+    if (wallet.id && wallet.id.toLowerCase().includes(query)) return true
+    
+    // Search in User name
+    if (wallet.name && wallet.name.toLowerCase().includes(query)) return true
+    
+    // Search in wallet type
+    if (wallet.wallet_type && wallet.wallet_type.toLowerCase().includes(query)) return true
+    
+    // Search in currency
+    if (wallet.currency && wallet.currency.toLowerCase().includes(query)) return true
+    
+    // Search in balance (convert to string)
+    if (wallet.balance !== undefined && wallet.balance !== null) {
+      const balanceStr = formatCurrency(wallet.balance, wallet.currency || 'NGN').toLowerCase()
+      if (balanceStr.includes(query)) return true
+      // Also search in numeric balance
+      if (String(wallet.balance).includes(query)) return true
+    }
+    
+    // Search in status (Active/Frozen)
+    const statusStr = wallet.active ? 'active' : 'frozen'
+    if (statusStr.includes(query)) return true
+    
+    // Search in tier name
+    if (wallet.tier?.name && wallet.tier.name.toLowerCase().includes(query)) return true
+    
+    // Search in created_at date
+    if (wallet.created_at) {
+      const dateStr = new Date(wallet.created_at).toLocaleString().toLowerCase()
+      if (dateStr.includes(query)) return true
+    }
+    
+    return false
+  })
+})
+
 // Function to fetch tier information
 const fetchTierInfo = async (tierId) => {
   if (!tierId) return null
@@ -1653,7 +1819,7 @@ const fetchTierInfo = async (tierId) => {
       return res.data.data
     }
   } catch (error) {
-    console.error('Error fetching tier info:', error)
+    // Error fetching tier info - will use fallback
   }
   
   // Fallback tier mapping for common tier IDs
@@ -1691,18 +1857,12 @@ const fetchTierInfo = async (tierId) => {
 const processWalletData = async (walletList) => {
   const processedWallets = []
   
-  console.log('Processing wallet data:', walletList.length, 'wallets')
-  
   for (const wallet of walletList) {
     let tierInfo = null
     
     // If wallet has tier_id, fetch tier information
     if (wallet.tier_id) {
-      console.log('Fetching tier info for wallet:', wallet.id, 'tier_id:', wallet.tier_id)
       tierInfo = await fetchTierInfo(wallet.tier_id)
-      console.log('Tier info fetched:', tierInfo)
-    } else {
-      console.log('No tier_id found for wallet:', wallet.id)
     }
     
     // Create processed wallet object
@@ -1718,12 +1878,6 @@ const processWalletData = async (walletList) => {
     
     processedWallets.push(processedWallet)
   }
-  
-  console.log('Processed wallets with tier info:', processedWallets.map(w => ({
-    id: w.id,
-    name: w.name,
-    tier: w.tier?.name || 'No Tier'
-  })))
   
   return processedWallets
 }
@@ -1760,7 +1914,7 @@ const walletStats = ref({
 const loadingStats = ref(false)
 
 // Search and filter parameters
-const searchQuery = ref('')
+// Note: searchQuery is defined earlier (before filteredWallets computed)
 const sortOrder = ref('desc')
 
 // Function to fetch wallets with parameters
@@ -1831,7 +1985,6 @@ const fetchWallets = async (params = {}) => {
     // Update chart data with the fetched wallets
     updateChartData()
   } catch (e) {
-    console.error('Error fetching wallets:', e)
     wallets.value = []
   } finally {
     loadingWallets.value = false
@@ -1850,8 +2003,11 @@ onMounted(async () => {
 
 // Search handler
 const handleSearchInput = () => {
+  // Client-side search - no need to refetch from API
+  // The filteredWallets computed property will handle the filtering
   currentPage.value = 1
-  fetchWallets()
+  // Optionally, you can still trigger API search if needed for server-side search
+  // fetchWallets()
 }
 
 // Filter handlers
@@ -1923,8 +2079,6 @@ const toggleActionDropdown = (walletId) => {
 }
 
 const handleWalletAction = async (action, wallet) => {
-  console.log('handleWalletAction called:', { action, wallet })
-  
   if (action === 'view') {
     // Fetch detailed wallet information from API
     loadingWalletDetails.value = true
@@ -1934,10 +2088,9 @@ const handleWalletAction = async (action, wallet) => {
         selectedWallet.value = res.data.data
       } else {
         // Fallback to the wallet data we have
-    selectedWallet.value = wallet
+        selectedWallet.value = wallet
       }
     } catch (error) {
-      console.error('Error fetching wallet details:', error)
       // Fallback to the wallet data we have
       selectedWallet.value = wallet
     } finally {
@@ -1948,16 +2101,12 @@ const handleWalletAction = async (action, wallet) => {
     showFreezeWalletModal.value = true
     activeActionDropdown.value = null
   } else if (action === 'credit') {
-    console.log('Credit action triggered')
     selectedWalletForCredit.value = wallet
     showCreditFundsModal.value = true
-    console.log('showCreditFundsModal set to:', showCreditFundsModal.value)
     activeActionDropdown.value = null
   } else if (action === 'debit') {
-    console.log('Debit action triggered')
     selectedWalletForDebit.value = wallet
     showDebitFundsModal.value = true
-    console.log('showDebitFundsModal set to:', showDebitFundsModal.value)
     activeActionDropdown.value = null
   } else if (action === 'remark') {
     selectedWalletForRemark.value = wallet
@@ -2055,13 +2204,6 @@ const handleCreditFunds = async () => {
       return
     }
     
-    console.log('Crediting wallet:', {
-      id: walletId,
-      amount: parseFloat(creditFundsData.value.amount),
-      type: 'add',
-      reason: creditFundsData.value.description
-    })
-    
     // Call API to credit wallet
     const res = await walletService.adjustWalletBalance({
       id: walletId,
@@ -2069,8 +2211,6 @@ const handleCreditFunds = async () => {
       type: 'add',
       reason: creditFundsData.value.description
     })
-    
-    console.log('Credit API response:', res)
     
     if (res.data?.ok) {
       // Update the wallet in the local list
@@ -2096,7 +2236,6 @@ const handleCreditFunds = async () => {
       toast.error(res.data?.message || 'Failed to credit wallet')
     }
   } catch (error) {
-    console.error('Error crediting wallet:', error)
     toast.error('Failed to credit wallet. Please try again.')
   } finally {
     loadingCreditAction.value = false
@@ -2131,13 +2270,6 @@ const handleDebitFunds = async () => {
       return
     }
     
-    console.log('Debiting wallet:', {
-      id: walletId,
-      amount: parseFloat(debitFundsData.value.amount),
-      type: 'subtract',
-      reason: debitFundsData.value.description
-    })
-    
     // Call API to debit wallet
     const res = await walletService.adjustWalletBalance({
       id: walletId,
@@ -2145,8 +2277,6 @@ const handleDebitFunds = async () => {
       type: 'subtract',
       reason: debitFundsData.value.description
     })
-    
-    console.log('Debit API response:', res)
     
     if (res.data?.ok) {
       // Update the wallet in the local list
@@ -2172,7 +2302,6 @@ const handleDebitFunds = async () => {
       toast.error(res.data?.message || 'Failed to debit wallet')
     }
   } catch (error) {
-    console.error('Error debiting wallet:', error)
     toast.error('Failed to debit wallet. Please try again.')
   } finally {
     loadingDebitAction.value = false
@@ -2196,9 +2325,6 @@ const handleFreezeWallet = async () => {
   
   loadingFreezeAction.value = true
   try {
-    // Debug: Log the wallet data
-    console.log('Freezing wallet:', selectedWalletForFreeze.value)
-    
     // Determine new status based on current status
     const currentStatus = selectedWalletForFreeze.value.active ? 'active' : 'frozen'
     const newStatus = currentStatus === 'active' ? 'frozen' : 'active'
@@ -2211,12 +2337,8 @@ const handleFreezeWallet = async () => {
       return
     }
     
-    console.log('Sending API request:', { walletid: walletId, status: newStatus })
-    
     // Call API to update wallet status
     const res = await walletService.updateWalletStatus(walletId, newStatus)
-    
-    console.log('API response:', res)
     
     if (res.data?.ok) {
       // Update the wallet in the local list
@@ -2242,7 +2364,6 @@ const handleFreezeWallet = async () => {
       toast.error(res.data?.message || 'Failed to update wallet status')
     }
   } catch (error) {
-    console.error('Error updating wallet status:', error)
     toast.error('Failed to update wallet status. Please try again.')
   } finally {
     loadingFreezeAction.value = false
@@ -2257,11 +2378,6 @@ const selectedWalletForRemark = ref(null)
 const remarkText = ref('')
 
 const handleAddRemark = () => {
-  console.log('Add remark:', {
-    walletId: selectedWalletForRemark.value?.id,
-    user: selectedWalletForRemark.value?.user,
-    remark: remarkText.value
-  })
   showAddRemarkModal.value = false
   selectedWalletForRemark.value = null
   remarkText.value = ''
@@ -2293,7 +2409,6 @@ const reconcileOptions = ref({
 })
 
 const handleStartReconciliation = () => {
-  console.log('Start reconciliation with options:', reconcileOptions.value)
   showReconcileModal.value = false
   // Reset options if needed
   reconcileOptions.value = { auditOnly: false, autoFix: false, notifyUsers: false }
@@ -2321,7 +2436,6 @@ const statusOptions = [
 ]
 
 const handleAddCurrency = () => {
-  console.log('Add new currency:', newCurrency.value)
   showAddCurrencyModal.value = false
   // Reset form
   newCurrency.value = { code: '', name: '', symbol: '', decimalPrecision: '0', decimalPlaces: '', status: 'active' }
@@ -2345,7 +2459,6 @@ const openEditCurrencyModal = (currency) => {
 }
 
 const handleUpdateCurrency = () => {
-  console.log('Update currency:', editCurrency.value)
   showEditCurrencyModal.value = false
 }
 
@@ -2379,7 +2492,6 @@ const currencyOptions = [
 ]
 
 const handleAddRate = () => {
-  console.log('Add new exchange rate:', newRate.value)
   showAddRateModal.value = false
   // Reset form
   newRate.value = { from: '', to: '', rate: '', fee: '' }
@@ -2420,7 +2532,6 @@ const fetchWalletStats = async () => {
       updateChartData()
     }
   } catch (e) {
-    console.error('Error fetching wallet stats:', e)
     walletStats.value = {
       active_wallets: {
         count: 0,

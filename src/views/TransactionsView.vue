@@ -342,8 +342,8 @@
                     <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
                       Transaction Details
                     </DialogTitle>
-                    <button 
-                      @click="showTransactionModal = false" 
+                    <button
+                      @click="showTransactionModal = false"
                       class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
                     >
                       <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

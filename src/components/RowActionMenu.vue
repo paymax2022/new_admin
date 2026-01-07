@@ -1,8 +1,8 @@
 <template>
   <div class="relative inline-block text-left" @click.stop data-action-menu>
-    <button 
+    <button
       ref="buttonRef"
-      @click="show = !show" 
+      @click="show = !show"
       class="text-gray-500 hover:text-black dark:hover:text-white p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
       data-action-menu
     >
