@@ -148,7 +148,7 @@
                   Edit Election
                 </button>
                 <button
-                  v-if="election.status === 'ongoing'"
+                  v-if="election.status === 'ongoing' || election.status === 'active'"
                   type="button"
                   class="flex w-full items-center gap-3 px-4 py-2 text-sm font-semibold text-[#475569] transition hover:bg-[#f8fafc]"
                   @click="pauseElection(election)"
@@ -157,7 +157,7 @@
                   Pause Election
                 </button>
                 <button
-                  v-if="election.status === 'ongoing'"
+                  v-if="election.status === 'ongoing' || election.status === 'active'"
                   type="button"
                   class="flex w-full items-center gap-3 px-4 py-2 text-sm font-semibold text-[#475569] transition hover:bg-[#f8fafc]"
                   @click="endElection(election)"
@@ -223,6 +223,8 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
 import IconPlus from '@/components/icon/icon-plus.vue';
 import IconPlayCircle from '@/components/icon/icon-play-circle.vue';
 import IconClock from '@/components/icon/icon-clock.vue';
@@ -242,6 +244,10 @@ import ElectionDetailsModal from './components/ElectionDetailsModal.vue';
 import EditElectionModal from './components/EditElectionModal.vue';
 import PauseElectionModal from './components/PauseElectionModal.vue';
 import EndElectionModal from './components/EndElectionModal.vue';
+import electionService from '@/services/electionService';
+
+const toast = useToast();
+const router = useRouter();
 
 const showCreateElectionModal = ref(false);
 const searchQuery = ref('');
@@ -299,66 +305,94 @@ const endElectionModal = ref<{
   data: null,
 });
 
-const statistics = [
+const statistics = ref([
   {
     label: 'Active Elections',
-    value: '2',
+    value: '0',
     icon: IconPlayCircle,
     iconBg: '#e0f2fe',
     iconColor: '#0ea5e9',
   },
   {
     label: 'Upcoming',
-    value: '1',
+    value: '0',
     icon: IconClock,
     iconBg: '#f1f5f9',
     iconColor: '#64748b',
   },
   {
     label: 'Completed',
-    value: '1',
+    value: '0',
     icon: IconCircleCheck,
     iconBg: '#dcfce7',
     iconColor: '#16a34a',
   },
   {
     label: 'Drafts',
-    value: '1',
+    value: '0',
     icon: IconEdit,
     iconBg: '#fef3c7',
     iconColor: '#f59e0b',
   },
-];
+]);
 
-const elections = [
-  {
-    id: 1,
-    title: 'Student Union President 2024',
-    description: 'Annual election for Student Union leadership positions.',
-    status: 'ongoing',
-    dateRange: '12/1/2024 - 12/3/2024',
-    voters: '2847 voters',
-    positions: '3 positions',
-    votesCast: '1509',
-    turnout: '53%',
-    candidates: '8',
-  },
-  {
-    id: 2,
-    title: 'Student Union President 2024',
-    description: 'Annual election for Student Union leadership positions.',
-    status: 'upcoming',
-    dateRange: '12/1/2024 - 12/3/2024',
-    voters: '2847 voters',
-    positions: '3 positions',
-    votesCast: '1509',
-    turnout: '53%',
-    candidates: '8',
-  },
-];
+const elections = ref<any[]>([]);
+const loading = ref(false);
+
+// Format date helper
+const formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
+};
+
+// Load elections from API
+const loadElections = async () => {
+  loading.value = true;
+  try {
+    const response = await electionService.getAllElectionsAdmin({ limit: 100 });
+    if (response?.data && Array.isArray(response.data)) {
+      elections.value = response.data.map((election: any) => {
+        const startDate = formatDate(election.start_date || election.startDate || '');
+        const endDate = formatDate(election.end_date || election.endDate || '');
+        const votes = election.total_votes || election.votes || 0;
+        const eligibleVoters = election.eligible_voters || election.total_voters || 0;
+        const turnout = eligibleVoters > 0 ? Math.round((votes / eligibleVoters) * 100) : 0;
+        
+        return {
+          id: election.id || election._id,
+          title: election.title || election.name || 'Untitled Election',
+          description: election.description || '',
+          status: election.status === 'active' ? 'ongoing' : 
+                  election.status === 'pending' ? 'upcoming' : 
+                  election.status === 'completed' ? 'completed' : 
+                  election.status === 'draft' ? 'draft' : election.status || 'draft',
+          dateRange: startDate && endDate ? `${startDate} - ${endDate}` : 'N/A',
+          voters: `${eligibleVoters.toLocaleString()} voters`,
+          positions: `${election.positions?.length || election.positions_count || 0} positions`,
+          votesCast: votes.toLocaleString(),
+          turnout: `${turnout}%`,
+          candidates: (election.candidates?.length || election.candidates_count || 0).toString(),
+          originalData: election, // Keep original for API calls
+        };
+      });
+
+      // Update statistics
+      statistics.value[0].value = elections.value.filter(e => e.status === 'ongoing').length.toString();
+      statistics.value[1].value = elections.value.filter(e => e.status === 'upcoming').length.toString();
+      statistics.value[2].value = elections.value.filter(e => e.status === 'completed').length.toString();
+      statistics.value[3].value = elections.value.filter(e => e.status === 'draft').length.toString();
+    }
+  } catch (error: any) {
+    console.error('Error loading elections:', error);
+    toast.error('Failed to load elections');
+  } finally {
+    loading.value = false;
+  }
+};
 
 const filteredElections = computed(() => {
-  let filtered = elections;
+  let filtered = [...elections.value];
 
   // Filter by search query
   if (searchQuery.value) {
@@ -390,58 +424,62 @@ const closeCreateElectionModal = () => {
   showCreateElectionModal.value = false;
 };
 
-const handleNextStep = (formData: unknown) => {
-  console.log('Form data:', formData);
-  closeCreateElectionModal();
+const handleNextStep = async (formData: unknown) => {
+  try {
+    const data = formData as any;
+    if (data) {
+      await electionService.createElection(data);
+      toast.success('Election created successfully');
+      await loadElections();
+      closeCreateElectionModal();
+    }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to create election');
+  }
 };
 
-const viewDetails = (election: typeof elections[0]) => {
+const viewDetails = async (election: any) => {
   activeActionMenu.value = null;
   
-  // Parse date range (format: "12/1/2024 - 12/3/2024")
-  const dateParts = election.dateRange.split(' - ');
-  const startDateStr = dateParts[0] || '';
-  const endDateStr = dateParts[1] || '';
-  
-  // Convert to ISO format for the modal
-  const parseDate = (dateStr: string) => {
-    if (!dateStr) return '';
-    const [month, day, year] = dateStr.split('/');
-    return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`).toISOString();
-  };
-  
-  // Extract voters count
-  const votersMatch = election.voters.match(/(\d+)/);
-  const votersCount = votersMatch ? votersMatch[1] : '0';
-  
-  // Calculate votes from turnout percentage
-  const turnoutPercent = parseInt(election.turnout.replace('%', '')) || 0;
-  const totalVoters = parseInt(votersCount);
-  const currentVotes = Math.round((totalVoters * turnoutPercent) / 100);
-  
-  // Map status
-  let status = election.status;
-  if (status === 'ongoing') {
-    status = 'Live';
-  } else if (status === 'completed') {
-    status = 'Completed';
-  } else if (status === 'upcoming') {
-    status = 'Upcoming';
+  try {
+    // Fetch full election details
+    const response = await electionService.getElectionDetailsAdmin(election.id);
+    const electionData = response?.data || election.originalData || election;
+    
+    const startDate = electionData.start_date || electionData.startDate || '';
+    const endDate = electionData.end_date || electionData.endDate || '';
+    const votes = electionData.total_votes || electionData.votes || 0;
+    const eligibleVoters = electionData.eligible_voters || electionData.total_voters || 0;
+    
+    // Map status
+    let status = electionData.status;
+    if (status === 'active' || status === 'ongoing') {
+      status = 'Live';
+    } else if (status === 'completed') {
+      status = 'Completed';
+    } else if (status === 'pending' || status === 'upcoming') {
+      status = 'Upcoming';
+    }
+    
+    electionDetailsModal.value = {
+      open: true,
+      data: {
+        id: election.id,
+        title: electionData.title || election.title,
+        description: electionData.description || election.description,
+        startDate: startDate,
+        endDate: endDate,
+        status,
+        positions: `${electionData.positions?.length || electionData.positions_count || 0} positions`,
+        eligibleVoters: `${eligibleVoters.toLocaleString()} eligible voters`,
+        votes: `${votes.toLocaleString()} votes`,
+        originalData: electionData,
+      },
+    };
+  } catch (error: any) {
+    toast.error('Failed to load election details');
+    console.error('Error loading election details:', error);
   }
-  
-  electionDetailsModal.value = {
-    open: true,
-    data: {
-      title: election.title,
-      description: election.description,
-      startDate: parseDate(startDateStr),
-      endDate: parseDate(endDateStr),
-      status,
-      positions: election.positions,
-      eligibleVoters: `${votersCount} eligible voters`,
-      votes: `${currentVotes} votes`,
-    },
-  };
 };
 
 const closeElectionDetailsModal = () => {
@@ -459,42 +497,43 @@ const handleEditElection = () => {
   }
 };
 
-const editElection = (election: typeof elections[0]) => {
+const editElection = async (election: any) => {
   activeActionMenu.value = null;
   
-  // Parse date range (format: "12/1/2024 - 12/3/2024")
-  const dateParts = election.dateRange.split(' - ');
-  const startDateStr = dateParts[0] || '';
-  const endDateStr = dateParts[1] || '';
-  
-  // Convert to ISO format for the modal
-  const parseDate = (dateStr: string) => {
-    if (!dateStr) return '';
-    const [month, day, year] = dateStr.split('/');
-    return new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`).toISOString();
-  };
-  
-  // Extract voters count
-  const votersMatch = election.voters.match(/(\d+)/);
-  const votersCount = votersMatch ? votersMatch[1] : '0';
-  
-  openEditElectionModal({
-    title: election.title,
-    description: election.description,
-    startDate: parseDate(startDateStr),
-    endDate: parseDate(endDateStr),
-    positions: election.positions,
-    eligibleVoters: `${votersCount} eligible voters`,
-  });
+  try {
+    // Fetch full election details
+    const response = await electionService.getElectionDetailsAdmin(election.id);
+    const electionData = response?.data || election.originalData || election;
+    
+    const startDate = electionData.start_date || electionData.startDate || '';
+    const endDate = electionData.end_date || electionData.endDate || '';
+    const eligibleVoters = electionData.eligible_voters || electionData.total_voters || 0;
+    
+    openEditElectionModal({
+      id: election.id,
+      title: electionData.title || election.title,
+      description: electionData.description || election.description,
+      startDate: startDate,
+      endDate: endDate,
+      positions: `${electionData.positions?.length || electionData.positions_count || 0} positions`,
+      eligibleVoters: `${eligibleVoters.toLocaleString()} eligible voters`,
+      originalData: electionData,
+    });
+  } catch (error: any) {
+    toast.error('Failed to load election details');
+    console.error('Error loading election details:', error);
+  }
 };
 
 const openEditElectionModal = (electionData: {
+  id?: string;
   title?: string;
   description?: string;
   startDate?: string;
   endDate?: string;
   positions?: string;
   eligibleVoters?: string;
+  originalData?: any;
 }) => {
   editElectionModal.value = {
     open: true,
@@ -509,17 +548,26 @@ const closeEditElectionModal = () => {
   };
 };
 
-const handleSaveElection = (formData: unknown) => {
-  console.log('Save election:', formData);
-  // TODO: Save election changes
-  closeEditElectionModal();
+const handleSaveElection = async (formData: unknown) => {
+  try {
+    const data = formData as any;
+    if (data?.id) {
+      await electionService.updateElection(data.id, data);
+      toast.success('Election updated successfully');
+      await loadElections();
+      closeEditElectionModal();
+    }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to update election');
+  }
 };
 
-const pauseElection = (election: typeof elections[0]) => {
+const pauseElection = (election: any) => {
   activeActionMenu.value = null;
   pauseElectionModal.value = {
     open: true,
     data: {
+      id: election.id,
       title: election.title,
     },
   };
@@ -532,17 +580,25 @@ const closePauseElectionModal = () => {
   };
 };
 
-const handleConfirmPause = (election: { title?: string }) => {
-  console.log('Pause election confirmed:', election);
-  // TODO: Implement pause election logic
-  closePauseElectionModal();
+const handleConfirmPause = async (election: { id?: string; title?: string }) => {
+  try {
+    if (election.id) {
+      await electionService.updateElectionStatus(election.id, 'cancelled');
+      toast.success('Election paused successfully');
+      await loadElections();
+      closePauseElectionModal();
+    }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to pause election');
+  }
 };
 
-const endElection = (election: typeof elections[0]) => {
+const endElection = (election: any) => {
   activeActionMenu.value = null;
   endElectionModal.value = {
     open: true,
     data: {
+      id: election.id,
       title: election.title,
     },
   };
@@ -555,15 +611,22 @@ const closeEndElectionModal = () => {
   };
 };
 
-const handleConfirmEnd = (election: { title?: string }) => {
-  console.log('End election confirmed:', election);
-  // TODO: Implement end election logic
-  closeEndElectionModal();
+const handleConfirmEnd = async (election: { id?: string; title?: string }) => {
+  try {
+    if (election.id) {
+      await electionService.updateElectionStatus(election.id, 'completed');
+      toast.success('Election ended successfully');
+      await loadElections();
+      closeEndElectionModal();
+    }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to end election');
+  }
 };
 
-const viewResults = (election: typeof elections[0]) => {
-  console.log('View results:', election);
+const viewResults = (election: any) => {
   activeActionMenu.value = null;
+  router.push({ name: 'election-results', query: { electionId: election.id } });
 };
 
 // Close menu when clicking outside
@@ -577,6 +640,7 @@ const handleClickOutside = (event: MouseEvent) => {
 // Add click outside listener on mount
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
+  loadElections();
 });
 
 onUnmounted(() => {

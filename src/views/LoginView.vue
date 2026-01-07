@@ -60,7 +60,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useToast } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { ref } from 'vue'
@@ -80,18 +80,32 @@ const handleLogin = async () => {
   loading.value = true;
   try {
     const response = await authService.login({ email: email.value, password: password.value });
-    const access_token = response?.data?.data?.access_token;
+    const responseData = response?.data?.data || response?.data;
+    const access_token = responseData?.access_token || responseData?.token;
+    const userData = responseData?.user || responseData?.admin;
+    
     if (access_token) {
-      authStore.login(access_token);
-      console.log('login successful');
-      toast.success('Login successful!');
-      router.push('/dashboard');
+      // Store token and user in auth store
+      authStore.login(access_token, userData || null);
+      
+      // Verify token was stored
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        console.log('Login successful - Token stored:', storedToken.substring(0, 20) + '...');
+        toast.success('Login successful!');
+        router.push('/dashboard');
+      } else {
+        console.error('Login failed - Token was not stored in localStorage');
+        toast.error('Failed to store authentication token');
+      }
     } else {
-      toast.error('No token received.');
+      console.error('No token in response:', response?.data);
+      toast.error('No token received from server.');
     }
-  } catch (error) {
-    // toast.error(error?.response?.data?.message || 'Login failed');
-    console.error(error?.response?.data?.message || 'Login failed');
+  } catch (error: any) {
+    const errorMessage = error?.response?.data?.message || error?.message || 'Login failed';
+    console.error('Login error:', errorMessage, error);
+    toast.error(errorMessage);
   } finally {
     loading.value = false;
   }

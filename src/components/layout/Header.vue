@@ -760,7 +760,34 @@ const messages = ref([
 
 onMounted(async () => {
     setActiveDropdown();
-    // Fetch real admin details
+    // Fetch real admin details only if user is authenticated
+    // Check authentication status using the auth store
+    if (!authStore.isAuthenticated) {
+        // Only warn if we're definitely not authenticated (not just a token check failure)
+        const tokenInStorage = localStorage.getItem('token');
+        if (!tokenInStorage) {
+            // Silent return - don't log warning as it may just be a timing issue
+            // The router guard will handle authentication checks
+            return;
+        }
+    }
+    
+    // Check token from localStorage first (most reliable)
+    let token = localStorage.getItem('token') || '';
+    
+    // Fallback to auth store if localStorage is empty
+    if (!token && authStore.token) {
+        const storeToken = authStore.token;
+        token = (typeof storeToken === 'object' && 'value' in storeToken) 
+            ? storeToken.value 
+            : String(storeToken || '');
+    }
+    
+    // If still no token, skip the API call (router guard will handle auth)
+    if (!token) {
+        return;
+    }
+    
     try {
         const res = await authService.getCurrentAdmin();
         if (res && res.data && res.data.data) {
@@ -770,8 +797,13 @@ onMounted(async () => {
             profileData.value.role = d.role;
             profileData.value.lastLogin = d.last_login ? new Date(d.last_login).toLocaleString() : '';
         }
-    } catch (e) {
-        // fallback or error handling
+    } catch (e: any) {
+        // Handle error gracefully - don't log errors for 401s as they're expected
+        // when the token is invalid/expired - the router guard handles redirects
+        if (e?.response?.status !== 401) {
+            console.error('[Header] Error fetching admin profile:', e?.response?.data?.message || e?.message);
+        }
+        // Silently fail for 401 - router guard will handle redirect if needed
     }
 });
 

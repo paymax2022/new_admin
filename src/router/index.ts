@@ -26,19 +26,22 @@ router.beforeEach((to, from, next) => {
     } else {
         store.setMainLayout('app');
     }
+    
     // Protect all routes except those with meta.layout === 'auth' or name === 'login'
-    // const isAuthRoute = to?.meta?.layout === 'auth' || to.name === 'login' || to.name === 'authLogin' || to.path.startsWith('/auth');
+    const isAuthRoute = to.name === 'login' || to.name === 'authLogin';
 
-
-    const isAuthRoute = to.name === 'login' || to.name === 'authLogin' ;
+    // Check authentication - try both store and localStorage for reliability
+    const token = localStorage.getItem('token') || (authStore.token && (typeof authStore.token === 'object' && 'value' in authStore.token ? authStore.token.value : authStore.token)) || '';
+    const isAuthenticated = !!token || authStore.isAuthenticated;
 
     // If already logged in and trying to access login/auth page, redirect to dashboard
-    if (isAuthRoute && authStore.isAuthenticated) {
+    if (isAuthRoute && isAuthenticated) {
         return next({ name: 'dashboard' });
     }
 
     // If not authenticated and trying to access a protected route, redirect to login
-    if (!isAuthRoute && !authStore.isAuthenticated) {
+    if (!isAuthRoute && !isAuthenticated) {
+        console.warn(`[Router] Unauthenticated access attempt to: ${to.path}`);
         return next({ name: 'login' });
     }
     next(true);

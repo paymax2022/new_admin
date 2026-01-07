@@ -239,10 +239,12 @@
           </template>
 
           <template #amount="data">
-            <div v-if="data && data.value" class="text-right">
-              <span class="font-bold text-gray-900 dark:text-white text-base">{{ data.value.amount_formatted || formatCurrency(0) }}</span>
+            <div v-if="data && data.value" class="w-full">
+              <span class="font-bold text-gray-900 dark:text-white">{{ data.value.amount_formatted || formatCurrency(0) }}</span>
             </div>
-            <span v-else class="text-gray-400">-</span>
+            <div v-else class="w-full">
+              <span class="text-gray-400">-</span>
+            </div>
           </template>
 
           <template #category="data">
@@ -307,11 +309,116 @@
         </div>
       </div>
     </div>
+
+    <!-- Transaction Details Modal -->
+    <TransitionRoot appear :show="showTransactionModal" as="template">
+      <Dialog as="div" @close="showTransactionModal = false" class="relative z-[9999]">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div class="flex items-center justify-between">
+                    <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                      Transaction Details
+                    </DialogTitle>
+                    <button 
+                      @click="showTransactionModal = false" 
+                      class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300"
+                    >
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="px-6 py-4" v-if="selectedTransaction">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Transaction ID</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedTransaction.id }}</p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
+                      <p class="mt-1">
+                        <span :class="getStatusClass(selectedTransaction.status || 'UNKNOWN')" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold">
+                          {{ selectedTransaction.status || 'UNKNOWN' }}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Date & Time</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">
+                        {{ selectedTransaction.date_formatted || (selectedTransaction.created_at ? new Date(selectedTransaction.created_at).toLocaleString() : 'N/A') }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</p>
+                      <p class="mt-1 text-sm font-bold text-gray-900 dark:text-white text-lg">
+                        {{ selectedTransaction.amount_formatted || formatCurrency(selectedTransaction.amount || 0) }}
+                      </p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">User</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedTransaction.user_name || '-' }}</p>
+                      <p v-if="selectedTransaction.user_email" class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{{ selectedTransaction.user_email }}</p>
+                    </div>
+                    <div>
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Transaction Type</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedTransaction.category || 'N/A' }}</p>
+                    </div>
+                    <div v-if="selectedTransaction.payment_method">
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Payment Method</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedTransaction.payment_method }}</p>
+                    </div>
+                    <div v-if="selectedTransaction.currency">
+                      <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Currency</p>
+                      <p class="mt-1 text-sm text-gray-900 dark:text-white">{{ selectedTransaction.currency }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-end">
+                  <button
+                    @click="showTransactionModal = false"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    Close
+                  </button>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
 <script>
 import { ref, onMounted, computed, watch } from 'vue'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import '@bhplugin/vue3-datatable/dist/style.css'
 import {
@@ -331,6 +438,11 @@ export default {
   name: 'TransactionsView',
   components: {
     Vue3Datatable,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+    TransitionChild,
+    TransitionRoot,
     MagnifyingGlassIcon,
     ArrowPathIcon,
     FlagIcon,
@@ -365,6 +477,7 @@ export default {
     const endDate = ref('')
     const showExportDropdown = ref(false)
     const selectedTransaction = ref(null)
+    const showTransactionModal = ref(false)
 
     const showColumnMenu = ref(false)
 
@@ -419,8 +532,8 @@ export default {
         filterable: true,
         visible: true,
         width: '150px',
-        headerClass: 'font-semibold text-right',
-        cellClass: 'text-right',
+        headerClass: 'font-semibold',
+        cellClass: '',
       },
       {
         key: 'status',
@@ -719,9 +832,12 @@ export default {
     }
 
     const viewTransactionDetails = (transaction) => {
+      if (!transaction) {
+        console.error('No transaction data provided')
+        return
+      }
       selectedTransaction.value = transaction
-      // You can open a modal here
-      toast.info(`Viewing details for transaction ${transaction.id}`)
+      showTransactionModal.value = true
     }
 
     const getStatusClass = (status) => {
@@ -838,6 +954,7 @@ export default {
       visibleColumns,
       onRowClick,
       selectedTransaction,
+      showTransactionModal,
       showColumnMenu,
       toggleColumnVisibility,
       viewTransactionDetails

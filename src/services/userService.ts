@@ -112,4 +112,28 @@ export default {
     };
     return api.get('/api/v1/admin/users/count', { params: { ...defaultParams, ...params } });
   },
+  
+  // Get user activities/logs
+  // Endpoint: GET /api/v1/admin/activities?user_id={userId}&page=1&limit=10
+  getUserActivities(userId: string, params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    sort?: 'asc' | 'desc';
+    startDate?: string;
+    endDate?: string;
+    userType?: string;
+  }) {
+    const queryParams = {
+      user_id: userId,
+      page: params?.page || 1,
+      limit: params?.limit || 50,
+      ...(params?.search && { search: params.search }),
+      ...(params?.sort && { sort: params.sort }),
+      ...(params?.startDate && { startDate: params.startDate }),
+      ...(params?.endDate && { endDate: params.endDate }),
+      ...(params?.userType && { userType: params.userType }),
+    };
+    return api.get('/api/v1/admin/activities', { params: queryParams });
+  },
 };

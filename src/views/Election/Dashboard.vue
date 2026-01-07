@@ -66,7 +66,15 @@
                 <h3 class="text-base font-semibold text-[#111827]">{{ election.title }}</h3>
                 <span
                   class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide"
-                  :class="election.status === 'Live' ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]' : 'border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]'"
+                  :class="
+                    election.status === 'Live' || election.status === 'active' 
+                      ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]' 
+                      : election.status === 'Upcoming' || election.status === 'pending'
+                      ? 'border-[#2563eb] bg-[#dbeafe] text-[#2563eb]'
+                      : election.status === 'Completed' || election.status === 'completed'
+                      ? 'border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]'
+                      : 'border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]'
+                  "
                 >
                   {{ election.status }}
                 </span>
@@ -75,11 +83,11 @@
               <div class="flex flex-wrap items-center gap-6 text-sm text-[#475569]">
                 <div>
                   <span class="font-semibold text-[#111827]">Start:</span>
-                  <span class="ml-2">{{ election.startDate }}</span>
+                  <span class="ml-2">{{ election.startDate || 'N/A' }}</span>
                 </div>
                 <div>
                   <span class="font-semibold text-[#111827]">End:</span>
-                  <span class="ml-2">{{ election.endDate }}</span>
+                  <span class="ml-2">{{ election.endDate || 'N/A' }}</span>
                 </div>
                 <div v-if="election.voterTurnout">
                   <span class="font-semibold text-[#111827]">Voter Turnout:</span>
@@ -87,21 +95,21 @@
                 </div>
                 <div v-if="election.votes && election.eligibleVoters">
                   <span class="font-semibold text-[#111827]">Details:</span>
-                  <span class="ml-2">{{ election.votes }} out of {{ election.eligibleVoters }}</span>
+                  <span class="ml-2">{{ typeof election.votes === 'number' ? election.votes.toLocaleString() : election.votes }} out of {{ typeof election.eligibleVoters === 'number' ? election.eligibleVoters.toLocaleString() : election.eligibleVoters }}</span>
                 </div>
                 <div>
                   <span class="font-semibold text-[#111827]">Positions:</span>
-                  <span class="ml-2">{{ election.positions }}</span>
+                  <span class="ml-2">{{ election.positions }} {{ election.positions === 1 ? 'position' : 'positions' }}</span>
                 </div>
                 <div v-if="election.votes && !election.eligibleVoters">
                   <span class="font-semibold text-[#111827]">Votes:</span>
-                  <span class="ml-2">{{ election.votes }}</span>
+                  <span class="ml-2">{{ typeof election.votes === 'number' ? election.votes.toLocaleString() : election.votes }}</span>
                 </div>
               </div>
             </div>
             <div class="flex items-center gap-2 ml-4">
               <button
-                v-if="election.status === 'Live'"
+                v-if="election.status === 'Live' || election.status === 'active'"
                 type="button"
                 class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#475569] transition hover:border-[#cbd5f5] hover:text-[#1e293b]"
                 @click="openLiveMonitoringModal(election)"
@@ -109,7 +117,7 @@
                 Monitor
               </button>
               <button
-                v-if="election.status === 'Live'"
+                v-if="election.status === 'Live' || election.status === 'active'"
                 type="button"
                 class="rounded-full bg-[#111827] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
                 @click="openElectionDetailsModal(election)"
@@ -205,7 +213,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed, markRaw } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconUsersGroup from '@/components/icon/icon-users-group.vue';
 import IconUserCircle from '@/components/icon/icon-user-circle.vue';
 import IconInfoTriangle from '@/components/icon/icon-info-triangle.vue';
@@ -218,6 +227,19 @@ import CreateElectionModal from './components/CreateElectionModal.vue';
 import LiveMonitoringModal from './components/LiveMonitoringModal.vue';
 import ElectionDetailsModal from './components/ElectionDetailsModal.vue';
 import EditElectionModal from './components/EditElectionModal.vue';
+import electionService from '@/services/electionService';
+
+const toast = useToast();
+
+// Mark icon components as raw to prevent reactivity warnings
+const IconUsersGroupRaw = markRaw(IconUsersGroup);
+const IconUserCircleRaw = markRaw(IconUserCircle);
+const IconInfoTriangleRaw = markRaw(IconInfoTriangle);
+const IconCircleCheckRaw = markRaw(IconCircleCheck);
+const IconPlusRaw = markRaw(IconPlus);
+const IconUserPlusRaw = markRaw(IconUserPlus);
+const IconBoxRaw = markRaw(IconBox);
+const IconChecksRaw = markRaw(IconChecks);
 
 const showCreateElectionModal = ref(false);
 const liveMonitoringModal = ref<{ open: boolean; data: typeof elections[0] | null }>({
@@ -239,12 +261,6 @@ const openCreateElectionModal = () => {
 
 const closeCreateElectionModal = () => {
   showCreateElectionModal.value = false;
-};
-
-const handleNextStep = (formData: unknown) => {
-  console.log('Form data:', formData);
-  // Handle form submission here when all steps are completed
-  closeCreateElectionModal();
 };
 
 const openLiveMonitoringModal = (election: typeof elections[0]) => {
@@ -271,19 +287,28 @@ const closeEditElectionModal = () => {
   editElectionModal.value = { open: false, data: null };
 };
 
-const handleSaveElection = (updatedData: unknown) => {
-  console.log('Updated election data:', updatedData);
-  // Handle saving the updated election data here
-  closeEditElectionModal();
+const handleSaveElection = async (updatedData: unknown) => {
+  try {
+    const data = updatedData as { id: string; [key: string]: any };
+    if (data.id) {
+      await electionService.updateElection(data.id, data);
+      toast.success('Election updated successfully');
+      await loadElections();
+      closeEditElectionModal();
+    }
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to update election');
+  }
 };
 
-const statistics = [
+// Statistics from API
+const statistics = ref([
   {
     label: 'Total Voters',
-    value: '2,847',
-    delta: '+12% from last election',
+    value: '0',
+    delta: '',
     deltaColor: 'text-[#16a34a]',
-    icon: IconUsersGroup,
+    icon: IconUsersGroupRaw,
     iconBg: '#e0f2fe',
     iconColor: '#0ea5e9',
     tag: null,
@@ -291,10 +316,10 @@ const statistics = [
   },
   {
     label: 'Active Elections',
-    value: '3',
+    value: '0',
     delta: '',
     deltaColor: '',
-    icon: IconUserCircle,
+    icon: IconUserCircleRaw,
     iconBg: '#dcfce7',
     iconColor: '#16a34a',
     tag: 'Live',
@@ -302,10 +327,10 @@ const statistics = [
   },
   {
     label: 'Pending Complaints',
-    value: '8,946',
-    delta: '-2 from yesterday',
+    value: '0',
+    delta: '',
     deltaColor: 'text-[#dc2626]',
-    icon: IconInfoTriangle,
+    icon: IconInfoTriangleRaw,
     iconBg: '#fef3c7',
     iconColor: '#f59e0b',
     tag: 'Review Required',
@@ -313,106 +338,199 @@ const statistics = [
   },
   {
     label: 'Completed Elections',
-    value: '15',
-    delta: '+1 this month',
+    value: '0',
+    delta: '',
     deltaColor: 'text-[#16a34a]',
-    icon: IconCircleCheck,
+    icon: IconCircleCheckRaw,
     iconBg: '#dcfce7',
     iconColor: '#16a34a',
     tag: null,
     tagClass: '',
   },
-];
+]);
 
-const elections = [
-  {
-    id: 1,
-    title: 'Student Union President 2024',
-    description: 'Annual election for Student Union leadership positions',
-    status: 'Live',
-    startDate: 'Dec 1, 2024',
-    endDate: 'Dec 3, 2024',
-    voterTurnout: '53%',
-    votes: '1509 votes',
-    eligibleVoters: '2847 eligible voters',
-    positions: '3 positions',
-  },
-  {
-    id: 2,
-    title: 'Class Representative Elections',
-    description: 'Selecting representatives for each academic class',
-    status: 'Live',
-    startDate: 'Dec 2, 2024',
-    endDate: 'Dec 4, 2024',
-    voterTurnout: '53%',
-    votes: '1509 votes',
-    eligibleVoters: '2847 eligible voters',
-    positions: '3 positions',
-  },
-  {
-    id: 3,
-    title: 'Graduate Student Council',
-    description: 'Elections for graduate student representatives',
-    status: 'Upcoming',
-    startDate: 'Dec 1, 2024',
-    endDate: 'Dec 3, 2024',
-    positions: '5 positions',
-    votes: '1509 votes',
-  },
-];
-
-const recentActivities = [
-  {
-    id: 1,
-    title: 'New complaint submitted',
-    description: 'Voter eligibility dispute for Student Union election',
-    time: '2 minutes ago',
-  },
-  {
-    id: 2,
-    title: 'Candidate approved',
-    description: 'Sarah Johnson approved for Student Union President',
-    time: '2 minutes ago',
-  },
-  {
-    id: 3,
-    title: 'Election started',
-    description: 'Class Representative Elections went live',
-    time: '2 minutes ago',
-  },
-  {
-    id: 4,
-    title: 'Bulk voter import',
-    description: '1,247 new voters added to database',
-    time: '2 hours ago',
-  },
-];
+const elections = ref<any[]>([]);
+const recentActivities = ref<any[]>([]);
+const loading = ref(false);
 
 const quickActions = [
   {
     id: 1,
     label: 'Import New Voters',
-    icon: IconUserPlus,
+    icon: IconUserPlusRaw,
     badge: null,
   },
   {
     id: 2,
     label: 'Create Election',
-    icon: IconBox,
+    icon: IconBoxRaw,
     badge: null,
   },
   {
     id: 3,
     label: 'Review Candidates',
-    icon: IconChecks,
+    icon: IconChecksRaw,
     badge: null,
   },
   {
     id: 4,
     label: 'Handle Complaints',
-    icon: IconInfoTriangle,
-    badge: '4',
+    icon: IconInfoTriangleRaw,
+    badge: computed(() => {
+      const pendingCount = statistics.value[2]?.value || '0';
+      return pendingCount !== '0' ? pendingCount : null;
+    }),
   },
 ];
+
+// Format date helper
+const formatDate = (dateString: string) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+// Format time ago helper
+const formatTimeAgo = (dateString: string) => {
+  if (!dateString) return 'Just now';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+};
+
+// Load dashboard data
+const loadDashboardData = async () => {
+  loading.value = true;
+  try {
+    // Load dashboard stats
+    const [statsResponse, activeElectionsResponse, recentActivitiesResponse] = await Promise.allSettled([
+      electionService.getDashboardStats(),
+      electionService.getActiveElections(),
+      electionService.getRecentActivities(),
+    ]);
+
+    // Update statistics
+    if (statsResponse.status === 'fulfilled' && statsResponse.value?.data) {
+      const stats = statsResponse.value.data;
+      statistics.value[0].value = (stats.total_voters || stats.totalVoters || 0).toLocaleString();
+      statistics.value[1].value = (stats.active_elections || stats.activeElections || 0).toString();
+      statistics.value[3].value = (stats.completed_elections || stats.completedElections || 0).toString();
+    }
+
+    // Update active elections count
+    if (activeElectionsResponse.status === 'fulfilled' && activeElectionsResponse.value?.data) {
+      const activeElections = Array.isArray(activeElectionsResponse.value.data) 
+        ? activeElectionsResponse.value.data 
+        : [];
+      statistics.value[1].value = activeElections.length.toString();
+    }
+
+    // Load all elections for display
+    await loadElections();
+
+    // Update recent activities
+    if (recentActivitiesResponse.status === 'fulfilled' && recentActivitiesResponse.value?.data) {
+      const activities = Array.isArray(recentActivitiesResponse.value.data)
+        ? recentActivitiesResponse.value.data
+        : [];
+      
+      recentActivities.value = activities.slice(0, 10).map((activity: any) => ({
+        id: activity.id || activity._id || Math.random().toString(),
+        title: activity.title || activity.type || 'Activity',
+        description: activity.description || activity.message || activity.details || '',
+        time: formatTimeAgo(activity.created_at || activity.timestamp || activity.createdAt || new Date().toISOString()),
+      }));
+    }
+
+    // Load pending complaints count
+    try {
+      const allElections = Array.isArray(elections.value) ? elections.value : [];
+      let totalPendingComplaints = 0;
+      
+      for (const election of allElections.slice(0, 5)) {
+        try {
+          const complaintsResponse = await electionService.getAllComplaintsAdmin(election.id || election._id);
+          if (complaintsResponse?.data && Array.isArray(complaintsResponse.data)) {
+            const pending = complaintsResponse.data.filter((c: any) => 
+              c.status === 'pending' || c.status === 'under_investigation'
+            );
+            totalPendingComplaints += pending.length;
+          }
+        } catch (error) {
+          // Skip failed requests
+        }
+      }
+      
+      statistics.value[2].value = totalPendingComplaints.toString();
+    } catch (error) {
+      console.error('Error loading complaints:', error);
+    }
+
+  } catch (error: any) {
+    console.error('Error loading dashboard data:', error);
+    toast.error('Failed to load dashboard data');
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Load elections
+const loadElections = async () => {
+  try {
+    const response = await electionService.getAllElectionsAdmin({ limit: 50 });
+    if (response?.data && Array.isArray(response.data)) {
+      elections.value = response.data.map((election: any) => ({
+        id: election.id || election._id,
+        title: election.title || election.name || 'Untitled Election',
+        description: election.description || '',
+        status: election.status === 'active' ? 'Live' : 
+                election.status === 'pending' ? 'Upcoming' : 
+                election.status === 'completed' ? 'Completed' : 
+                election.status || 'Draft',
+        startDate: formatDate(election.start_date || election.startDate),
+        endDate: formatDate(election.end_date || election.endDate),
+        voterTurnout: election.voter_turnout 
+          ? `${Math.round(election.voter_turnout * 100)}%`
+          : election.votes && election.eligible_voters
+          ? `${Math.round((election.votes / election.eligible_voters) * 100)}%`
+          : null,
+        votes: election.total_votes || election.votes || 0,
+        eligibleVoters: election.eligible_voters || election.total_voters || 0,
+        positions: election.positions?.length || election.positions_count || 0,
+      }));
+    }
+  } catch (error: any) {
+    console.error('Error loading elections:', error);
+    toast.error('Failed to load elections');
+  }
+};
+
+// Refresh after modal actions
+const handleNextStep = async (formData: unknown) => {
+  try {
+    const data = formData as any;
+    if (data) {
+      await electionService.createElection(data);
+      toast.success('Election created successfully');
+      await loadElections();
+      await loadDashboardData();
+    }
+    closeCreateElectionModal();
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Failed to create election');
+  }
+};
+
+onMounted(() => {
+  loadDashboardData();
+});
 </script>
 

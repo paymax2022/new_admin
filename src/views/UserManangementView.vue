@@ -2,7 +2,12 @@
   <div class="p-6">
     <!-- Search & Filters -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <input v-model="search" type="text" placeholder="Search name/email" class="input w-full md:w-64" />
+      <input 
+        v-model="search" 
+        type="text" 
+        placeholder="Search name/email" 
+        class="w-full md:w-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder:text-gray-500 dark:placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      />
 
       <div class="flex gap-2 flex-wrap">
         <DropdownFilter
@@ -65,72 +70,92 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto rounded border bg-white dark:bg-gray-900">
-      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-        <thead class="bg-gray-50 dark:bg-gray-800">
-          <tr>
-            <th class="px-4 py-2">
-              <input type="checkbox" @change="toggleSelectAll" :checked="allSelected" />
-            </th>
-            <th class="px-4 py-2">ID</th>
-            <th class="px-4 py-2">Name</th>
-            <th class="px-4 py-2">Email</th>
-            <th class="px-4 py-2">Role</th>
-            <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Registration</th>
-            <th class="px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="user in paginatedUsers"
-            :key="user.id"
-            class="hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-            @click="showUserDetails(user)"
-          >
-            <td class="px-4 py-2" @click.stop>
-              <input type="checkbox" v-model="selectedRows" :value="user.id" />
-            </td>
-            <td class="px-4 py-2">{{ user.id }}</td>
-            <td class="px-4 py-2">{{ user.name }}</td>
-            <td class="px-4 py-2">{{ user.email }}</td>
-            <td class="px-4 py-2">{{ user.role }}</td>
-            <td class="px-4 py-2">
-              <span :class="statusBadgeClass(user.status)">
-                {{ user.status }}
-              </span>
-            </td>
-            <td class="px-4 py-2">{{ user.registration }}</td>
-            <td class="px-4 py-2" @click.stop>
+    <div v-if="isLoading" class="flex justify-center items-center py-10">
+      <span class="text-blue-600 font-semibold">Loading users...</span>
+    </div>
+    <div v-else-if="filteredUsers.length === 0" class="rounded-lg border border-gray-200 dark:border-gray-700 p-10 text-center">
+      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No users found</h3>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Try adjusting your filters or refresh the page.</p>
+    </div>
+    <div v-else class="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-900">
+      <!-- Enhanced Table Container -->
+      <div class="overflow-x-auto">
+        <Vue3Datatable
+          v-if="filteredUsers.length > 0 && visibleColumns.length > 0"
+          :rows="filteredUsers"
+          :columns="visibleColumns"
+          :totalRows="filteredUsers.length"
+          :sortable="true"
+          :searchable="false"
+          :pageSize="Math.max(filteredUsers.length, 10)"
+          :pageSizeOptions="[]"
+          skin="bh-table-compact"
+          :loading="isLoading"
+          :classes="{
+            table: 'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
+            thead: 'bg-gray-50 dark:bg-gray-800',
+            tbody: 'bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700',
+            tr: 'hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer',
+            th: 'px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300',
+            td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100',
+          }"
+          @row-clicked="onRowClick"
+        >
+          <!-- Custom checkbox column -->
+          <template #checkbox="data">
+            <div v-if="data && data.value" class="flex items-center" @click.stop>
+              <input 
+                type="checkbox" 
+                :checked="selectedRows.includes(data.value.id)" 
+                @change="toggleUserSelection(data.value.id)"
+                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+            </div>
+          </template>
+
+          <!-- Custom status column -->
+          <template #status="data">
+            <span v-if="data && data.value" :class="statusBadgeClass(data.value.status)" class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold">
+              {{ data.value.status }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom actions column -->
+          <template #actions="data">
+            <div v-if="data && data.value" class="flex items-center justify-center gap-2" @click.stop>
               <RowActionMenu 
-                :user="user" 
-                @view="showUserDetails(user)"
-                @edit="handleEditUser(user)"
-                @adjust-balance="handleAdjustBalance(user)"
-                @change-role="handleChangeRole(user)"
+                :user="data.value" 
+                @view="showUserDetails(data.value)"
+                @edit="handleEditUser(data.value)"
+                @adjust-balance="handleAdjustBalance(data.value)"
+                @change-role="handleChangeRole(data.value)"
                 @delete="handleDeleteUser"
               />
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </Vue3Datatable>
+      </div>
 
-      <!-- Pagination -->
-      <div class="flex justify-between items-center px-4 py-3 border-t text-sm dark:text-white">
-        <span v-if="isLoading">Loading users...</span>
-        <span v-else-if="totalUsers === 0">No users found</span>
-        <span v-else>Showing {{ totalUsers > 0 ? startIndex + 1 : 0 }} - {{ endIndex }} of {{ totalUsers }}</span>
-        <div class="flex gap-2">
+      <!-- Custom Pagination -->
+      <div class="flex justify-between items-center px-6 py-4 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-sm">
+        <span class="text-gray-700 dark:text-gray-300">
+          Showing {{ totalUsers > 0 ? startIndex + 1 : 0 }} - {{ endIndex }} of {{ totalUsers }} users
+        </span>
+        <div class="flex gap-2 items-center">
           <button 
-            class="btn" 
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="!hasPreviousPage || isLoading" 
             @click="currentPage = Math.max(1, currentPage - 1); fetchUsers()"
           >
             Previous
           </button>
-          <span class="flex items-center px-2">{{ currentPage }} / {{ Math.max(1, totalPages) }}</span>
+          <span class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ currentPage }} / {{ Math.max(1, totalPages) }}
+          </span>
           <button 
-            class="btn" 
+            class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed" 
             :disabled="!hasNextPage || isLoading" 
             @click="currentPage = Math.min(totalPages || Infinity, currentPage + 1); fetchUsers()"
           >
@@ -545,9 +570,30 @@
                           <h4 class="text-base font-medium text-gray-900 dark:text-white">Activity Log</h4>
                           <p class="text-sm text-gray-500 dark:text-gray-400">Recent activities and login history</p>
                         </div>
+
+                        <!-- Loading State -->
+                        <div v-if="loadingActivities" class="text-center py-8 text-gray-500">
+                          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                          Loading activities...
+                        </div>
+
+                        <!-- Error State -->
+                        <div v-else-if="activitiesError" class="text-center py-8 text-red-500">
+                          {{ activitiesError }}
+                        </div>
+
+                        <!-- Empty State -->
+                        <div v-else-if="activities.length === 0" class="text-center py-8 text-gray-500">
+                          <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <p class="text-sm">No activities found</p>
+                          <p class="text-xs text-gray-400">This user has no activity logs yet</p>
+                        </div>
                         
-                        <div class="space-y-6">
-                          <div v-for="(activity, index) in activities" :key="index" class="flex items-start gap-4">
+                        <!-- Activities List -->
+                        <div v-else class="space-y-6">
+                          <div v-for="(activity, index) in activities" :key="activity.title + '-' + index" class="flex items-start gap-4">
                             <div class="flex-shrink-0">
                               <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                                 <icon-info-circle class="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -557,10 +603,10 @@
                               <div class="flex justify-between items-start">
                                 <div>
                                   <p class="text-sm font-medium text-gray-900 dark:text-white">{{ activity.title }}</p>
-                                  <p class="text-sm text-gray-500 dark:text-gray-400">{{ activity.description }}</p>
-                                  <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">IP: {{ activity.ip }}</p>
+                                  <p v-if="activity.description" class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ activity.description }}</p>
+                                  <p v-if="activity.ip && activity.ip !== 'N/A'" class="text-xs text-gray-400 dark:text-gray-500 mt-1">IP: {{ activity.ip }}</p>
                                 </div>
-                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ activity.time }}</span>
+                                <span class="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap ml-4">{{ activity.time }}</span>
                               </div>
                             </div>
                           </div>
@@ -573,11 +619,32 @@
                           <h4 class="text-base font-medium text-gray-900 dark:text-white">Transaction History</h4>
                           <p class="text-sm text-gray-500 dark:text-gray-400">Financial activities and wallet transactions</p>
                         </div>
+
+                        <!-- Loading State -->
+                        <div v-if="loadingTransactions" class="text-center py-8 text-gray-500">
+                          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                          Loading transactions...
+                        </div>
+
+                        <!-- Error State -->
+                        <div v-else-if="transactionError" class="text-center py-8 text-red-500">
+                          {{ transactionError }}
+                        </div>
+
+                        <!-- Empty State -->
+                        <div v-else-if="transactions.length === 0" class="text-center py-8 text-gray-500">
+                          <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <p class="text-sm">No transactions found</p>
+                          <p class="text-xs text-gray-400">This user has no transactions yet</p>
+                        </div>
                         
-                        <div class="space-y-4">
-                          <div v-for="(transaction, index) in transactions" :key="index" 
-                            class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg">
-                            <div class="flex items-start gap-3">
+                        <!-- Transactions List -->
+                        <div v-else class="space-y-4">
+                          <div v-for="(transaction, index) in transactions" :key="transaction.id || index" 
+                            class="flex items-center justify-between gap-4 p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-lg">
+                            <div class="flex items-start gap-3 flex-1 min-w-0">
                               <div class="flex-shrink-0">
                                 <div :class="[
                                   'w-8 h-8 rounded-full flex items-center justify-center',
@@ -599,29 +666,46 @@
                                   </svg>
                                 </div>
                               </div>
-                              <div>
+                              <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2">
                                   <p class="text-sm font-medium text-gray-900 dark:text-white">
                                     {{ transaction.title }}
                                   </p>
-                                  <span class="text-xs text-gray-500">- {{ transaction.id }}</span>
+                                  <span class="text-xs text-gray-500">- {{ transaction.id.substring(0, 8) }}...</span>
                                 </div>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">Method: {{ transaction.method }}</p>
+                                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ transaction.time }}</p>
                               </div>
                             </div>
-                            <div class="text-right">
-                              <p :class="[
-                                'text-sm font-medium',
-                                transaction.type === 'deposit' ? 'text-green-600' : 'text-red-600'
-                              ]">
-                                {{ transaction.type === 'deposit' ? '+' : '-' }}₦{{ transaction.amount }}
-                              </p>
-                              <span :class="[
-                                'inline-flex items-center px-2 py-1 rounded text-xs font-medium',
-                                transaction.status === 'Completed' ? 'bg-blue-600 text-white' : 'bg-red-600 text-white'
-                              ]">
-                                {{ transaction.status }}
-                              </span>
+                            <div class="flex items-center gap-3 flex-shrink-0">
+                              <div class="text-right">
+                                <p :class="[
+                                  'text-sm font-medium whitespace-nowrap',
+                                  transaction.type === 'deposit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                                ]">
+                                  {{ transaction.type === 'deposit' ? '+' : '-' }}₦{{ transaction.amount }}
+                                </p>
+                                <span :class="[
+                                  'inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1 whitespace-nowrap',
+                                  transaction.status === 'Completed' || transaction.status === 'SUCCESSFUL' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
+                                    : transaction.status === 'Failed' || transaction.status === 'FAILED'
+                                    ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                ]">
+                                  {{ transaction.status }}
+                                </span>
+                              </div>
+                              <button
+                                @click="viewTransactionDetails(transaction)"
+                                class="p-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors flex-shrink-0"
+                                title="View Details"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                  <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1206,6 +1290,121 @@
         </div>
       </Dialog>
     </TransitionRoot>
+
+    <!-- Transaction Details Modal -->
+    <TransitionRoot appear :show="showTransactionModal" as="template">
+      <Dialog as="div" @close="closeTransactionModal" class="relative z-50">
+        <TransitionChild
+          as="template"
+          enter="duration-300 ease-out"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="duration-200 ease-in"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
+          <div class="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 overflow-y-auto">
+          <div class="flex min-h-full items-center justify-center p-4">
+            <TransitionChild
+              as="template"
+              enter="duration-300 ease-out"
+              enter-from="opacity-0 scale-95"
+              enter-to="opacity-100 scale-100"
+              leave="duration-200 ease-in"
+              leave-from="opacity-100 scale-100"
+              leave-to="opacity-0 scale-95"
+            >
+              <DialogPanel class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 shadow-xl transition-all">
+                <div class="p-6">
+                  <div class="flex items-center justify-between mb-5">
+                    <DialogTitle class="text-xl font-semibold text-gray-900 dark:text-white">
+                      Transaction Details
+                    </DialogTitle>
+                    <button @click="closeTransactionModal" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                      <XMarkIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <div v-if="selectedTransaction" class="space-y-6">
+                    <!-- Transaction ID -->
+                    <div>
+                      <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Transaction ID</h4>
+                      <p class="text-base font-semibold text-gray-900 dark:text-white font-mono">{{ selectedTransaction.id || 'N/A' }}</p>
+                    </div>
+
+                    <!-- Grid of Details -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Date & Time</h4>
+                        <p class="text-base text-gray-900 dark:text-white">
+                          {{ selectedTransaction.created_at ? new Date(selectedTransaction.created_at).toLocaleString() : 'N/A' }}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Amount</h4>
+                        <p class="text-base font-semibold text-gray-900 dark:text-white">
+                          ₦{{ formatCurrency(selectedTransaction.amount || 0) }}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Category</h4>
+                        <p class="text-base text-gray-900 dark:text-white">
+                          {{ selectedTransaction.category || selectedTransaction.service_type || 'N/A' }}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Status</h4>
+                        <span :class="[
+                          'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold',
+                          selectedTransaction.status === 'SUCCESSFUL' || selectedTransaction.status === 'Completed'
+                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                            : selectedTransaction.status === 'FAILED' || selectedTransaction.status === 'Failed'
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+                        ]">
+                          {{ selectedTransaction.status || 'Pending' }}
+                        </span>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Method</h4>
+                        <p class="text-base text-gray-900 dark:text-white">
+                          {{ selectedTransaction.payment_method || selectedTransaction.method || 'N/A' }}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Entry Type</h4>
+                        <p class="text-base text-gray-900 dark:text-white">
+                          {{ selectedTransaction.entry || 'N/A' }}
+                        </p>
+                      </div>
+                      <div v-if="selectedTransaction.receiver">
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Receiver</h4>
+                        <p class="text-base text-gray-900 dark:text-white">{{ selectedTransaction.receiver }}</p>
+                      </div>
+                      <div v-if="selectedTransaction.network">
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Network</h4>
+                        <p class="text-base text-gray-900 dark:text-white">{{ selectedTransaction.network }}</p>
+                      </div>
+                      <div v-if="selectedTransaction.provider">
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Provider</h4>
+                        <p class="text-base text-gray-900 dark:text-white">{{ selectedTransaction.provider }}</p>
+                      </div>
+                      <div v-if="selectedTransaction.paymentReference">
+                        <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Payment Reference</h4>
+                        <p class="text-base text-gray-900 dark:text-white font-mono text-sm">{{ selectedTransaction.paymentReference }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </DialogPanel>
+            </TransitionChild>
+          </div>
+        </div>
+      </Dialog>
+    </TransitionRoot>
   </div>
 </template>
 
@@ -1213,6 +1412,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
+import Vue3Datatable from '@bhplugin/vue3-datatable'
+import '@bhplugin/vue3-datatable/dist/style.css'
 import DropdownFilter from '@/components/DropdownFilter.vue'
 import DropdownAction from '@/components/DropdownAction.vue'
 import RowActionMenu from '@/components/RowActionMenu.vue'
@@ -1223,6 +1424,7 @@ import IconUserCircle from '@/components/icon/icon-user-circle.vue'
 import IconBan from '@/components/icon/icon-ban.vue'
 import IconInfoCircle from '@/components/icon/icon-info-circle.vue'
 import userService from '@/services/userService'
+import transactionService from '@/services/transactionService'
 import { useToast } from 'vue-toastification'
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -1419,6 +1621,97 @@ onMounted(() => {
 const currentPage = ref(1)
 const perPage = 10
 
+// Table columns configuration
+const columns = ref([
+  {
+    key: 'checkbox',
+    title: '',
+    field: 'checkbox',
+    sortable: false,
+    filterable: false,
+    visible: true,
+    width: '50px',
+    headerClass: 'text-center',
+    cellClass: 'text-center',
+  },
+  {
+    key: 'id',
+    title: 'ID',
+    field: 'id',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'name',
+    title: 'Name',
+    field: 'name',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '200px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'email',
+    title: 'Email',
+    field: 'email',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '250px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'role',
+    title: 'Role',
+    field: 'role',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    field: 'status',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '130px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'registration',
+    title: 'Registration',
+    field: 'registration',
+    sortable: true,
+    filterable: true,
+    visible: true,
+    width: '150px',
+    headerClass: 'font-semibold',
+  },
+  {
+    key: 'actions',
+    title: 'Actions',
+    field: 'actions',
+    sortable: false,
+    filterable: false,
+    visible: true,
+    width: '100px',
+    headerClass: 'font-semibold text-center',
+    cellClass: 'text-center',
+  },
+])
+
+// Computed property for visible columns
+const visibleColumns = computed(() => {
+  return columns.value.filter(col => col.visible !== false)
+})
+
 // With API pagination, we don't need to compute these locally
 // Instead, we'll use the API's pagination
 const paginatedUsers = computed(() => users.value)
@@ -1483,13 +1776,35 @@ function toggleSelectAll() {
   selectedRows.value = allSelected.value ? [] : users.value.map(u => u.id)
 }
 
+function toggleUserSelection(userId) {
+  const index = selectedRows.value.indexOf(userId)
+  if (index === -1) {
+    selectedRows.value.push(userId)
+  } else {
+    selectedRows.value.splice(index, 1)
+  }
+}
+
+const onRowClick = (row) => {
+  showUserDetails(row)
+}
+
 function statusBadgeClass(status) {
-  const base = 'px-2 py-1 rounded text-xs font-medium'
-  switch (status) {
-    case 'Active': return `${base} bg-green-100 text-green-800`
-    case 'Suspended': return `${base} bg-yellow-100 text-yellow-800`
-    case 'Inactive': return `${base} bg-red-100 text-red-800`
-    default: return base
+  const base = 'px-3 py-1 rounded-full text-xs font-semibold'
+  const statusUpper = String(status || '').toUpperCase()
+  switch (statusUpper) {
+    case 'ACTIVE': 
+      return `${base} bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800`
+    case 'SUSPENDED': 
+      return `${base} bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800`
+    case 'INACTIVE': 
+      return `${base} bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800`
+    case 'BLOCKED':
+      return `${base} bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800`
+    case 'DEACTIVATED':
+      return `${base} bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-700`
+    default: 
+      return `${base} bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400 border border-gray-200 dark:border-gray-700`
   }
 }
 
@@ -1539,80 +1854,15 @@ const handleAddUser = async () => {
   }
 }
 
-const activities = [
-  {
-    title: 'Login',
-    description: 'Successful login from Chrome/Windows',
-    ip: '192.168.1.1',
-    time: '4/8/2023, 9:00:00 AM'
-  },
-  {
-    title: 'Profile Update',
-    description: 'Updated phone number',
-    ip: '192.168.1.1',
-    time: '4/7/2023, 2:50:00 PM'
-  },
-  {
-    title: 'Login Failed',
-    description: 'Failed login attempt from unknown device',
-    ip: '192.168.0.2',
-    time: '3/25/2023, 8:00:00 AM'
-  },
-  {
-    title: 'Password Changed',
-    description: 'Password successfully changed',
-    ip: '192.168.1.1',
-    time: '4/1/2023, 11:20:00 AM'
-  }
-]
+const activities = ref([])
+const loadingActivities = ref(false)
+const activitiesError = ref(null)
 
-const transactions = [
-  {
-    id: 'TRX001',
-    title: 'Deposit',
-    type: 'deposit',
-    amount: '500.00',
-    method: 'Credit Card',
-    status: 'Completed',
-    time: '4/5/2023, 10:30:00 AM'
-  },
-  {
-    id: 'TRX002',
-    title: 'Withdrawal',
-    type: 'withdrawal',
-    amount: '200.00',
-    method: 'Bank Transfer',
-    status: 'Completed',
-    time: '4/2/2023, 3:45:00 PM'
-  },
-  {
-    id: 'TRX003',
-    title: 'Commission',
-    type: 'deposit',
-    amount: '15.25',
-    method: 'Referral',
-    status: 'Completed',
-    time: '3/28/2023, 9:15:00 AM'
-  },
-  {
-    id: 'TRX004',
-    title: 'Withdrawal',
-    type: 'withdrawal',
-    amount: '150.00',
-    method: 'PayPal',
-    status: 'Failed',
-    time: '3/20/2023, 2:30:00 PM'
-  },
-  {
-    id: 'TRX001',
-    title: 'Deposit',
-    type: 'deposit',
-    amount: '25.00',
-    method: 'Promotion',
-    status: 'Completed',
-    time: '3/15/2023, 11:20:00 AM'
-  }
-]
+const transactions = ref([])
+const loadingTransactions = ref(false)
+const transactionError = ref(null)
+const showTransactionModal = ref(false)
+const selectedTransaction = ref(null)
 
 const referredUsers = [
   {
@@ -1662,6 +1912,13 @@ const showUserDetails = async (user) => {
     // First set basic user info from the list
     selectedUser.value = user
     showUserDetailsModal.value = true
+    activeTab.value = 'Activities' // Reset to Activities tab
+    
+    // Reset transactions and activities when opening modal
+    transactions.value = []
+    transactionError.value = null
+    activities.value = []
+    activitiesError.value = null
     
     // Then fetch detailed user information
     const response = await userService.getUserById(user.id)
@@ -1685,8 +1942,14 @@ const showUserDetails = async (user) => {
         shippingAddress: userData.shippingAddress,
         homeAddress: userData.homeAddress,
         workAddress: userData.workAddress,
-        notificationPreferences: userData.notificationPreferences
+        notificationPreferences: userData.notificationPreferences,
+        email: userData.email || user.email
       }
+    }
+    
+    // Fetch activities since Activities tab is the default
+    if (activeTab.value === 'Activities' && selectedUser.value?.id) {
+      fetchUserActivities(selectedUser.value.id)
     }
   } catch (error) {
     console.error('Error fetching user details:', error)
@@ -1918,24 +2181,182 @@ const fetchReferralData = async (userId) => {
   }
 }
 
-// Handle tab change to fetch referral data when referrals tab is clicked
+// Transform transaction data for display
+const transformUserTransactionData = (rawTransactions) => {
+  if (!Array.isArray(rawTransactions)) {
+    console.warn('transformUserTransactionData: rawTransactions is not an array', rawTransactions)
+    return []
+  }
+
+  return rawTransactions.map(t => {
+    if (!t || typeof t !== 'object') {
+      return null
+    }
+
+    try {
+      const amount = typeof t.amount === 'number' ? t.amount : (parseFloat(t.amount) || 0)
+      const entry = (t.entry || '').toUpperCase()
+      const isDeposit = entry === 'CREDIT' || entry === 'DEPOSIT'
+      
+      return {
+        id: t.id || t.transaction_id || `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        title: t.category || t.service_type || t.type || 'Transaction',
+        type: isDeposit ? 'deposit' : 'withdrawal',
+        amount: formatCurrency(amount),
+        method: t.payment_method || t.provider || t.network || 'N/A',
+        status: t.status === 'SUCCESSFUL' ? 'Completed' : (t.status || 'Pending'),
+        time: t.created_at ? new Date(t.created_at).toLocaleString() : 'N/A',
+        rawData: t
+      }
+    } catch (error) {
+      console.error('Error transforming transaction:', error, t)
+      return null
+    }
+  }).filter(t => t !== null)
+}
+
+// Fetch user transactions
+const fetchUserTransactions = async (userId) => {
+  if (!userId) return
+  
+  loadingTransactions.value = true
+  transactionError.value = null
+  
+  try {
+    // Fetch transactions and filter by user email or ID
+    // Since the API might not have a direct user_id filter, we'll fetch and filter client-side
+    // or use the search query parameter if it supports user filtering
+    const response = await transactionService.getTransactions({
+      limit: 100, // Fetch more to ensure we get user's transactions
+      page: 1
+    })
+    
+    const data = response.data
+    let rawTransactions = data.data || data || []
+    
+    // Filter transactions by user ID (check both user_id and user.id)
+    if (selectedUser.value?.id || selectedUser.value?.rawData?.id) {
+      const userIdToMatch = selectedUser.value.id || selectedUser.value.rawData?.id
+      rawTransactions = rawTransactions.filter(t => {
+        return t.user_id === userIdToMatch || 
+               t.user?.id === userIdToMatch ||
+               (t.user?.email && selectedUser.value?.email && t.user.email === selectedUser.value.email)
+      })
+    }
+    
+    if (rawTransactions.length > 0) {
+      transactions.value = transformUserTransactionData(rawTransactions)
+      console.log('Loaded', transactions.value.length, 'transactions for user')
+    } else {
+      transactions.value = []
+      console.log('No transactions found for this user')
+    }
+  } catch (error) {
+    console.error('Error fetching user transactions:', error)
+    transactionError.value = error.message || 'Failed to load transactions'
+    transactions.value = []
+  } finally {
+    loadingTransactions.value = false
+  }
+}
+
+// Transform activity data for display
+const transformActivityData = (rawActivities) => {
+  if (!Array.isArray(rawActivities)) {
+    console.warn('transformActivityData: rawActivities is not an array', rawActivities)
+    return []
+  }
+
+  return rawActivities.map(activity => {
+    if (!activity || typeof activity !== 'object') {
+      return null
+    }
+
+    try {
+      return {
+        title: activity.action || activity.type || activity.title || 'Activity',
+        description: activity.description || activity.message || activity.details || '',
+        ip: activity.ip || activity.ip_address || activity.ipAddress || 'N/A',
+        time: activity.created_at ? new Date(activity.created_at).toLocaleString() : 
+              activity.timestamp ? new Date(activity.timestamp).toLocaleString() :
+              activity.date ? new Date(activity.date).toLocaleString() : 'N/A',
+        rawData: activity
+      }
+    } catch (error) {
+      console.error('Error transforming activity:', error, activity)
+      return null
+    }
+  }).filter(a => a !== null)
+}
+
+// Fetch user activities
+const fetchUserActivities = async (userId) => {
+  if (!userId) return
+  
+  loadingActivities.value = true
+  activitiesError.value = null
+  
+  try {
+    // Fetch activities using the correct endpoint: /api/v1/admin/activities?user_id={userId}
+    const response = await userService.getUserActivities(userId, { 
+      limit: 50,
+      sort: 'desc' // Most recent first
+    })
+    
+    const data = response.data
+    // Handle different response structures
+    let rawActivities = []
+    if (data.data && Array.isArray(data.data)) {
+      rawActivities = data.data
+    } else if (data.activities && Array.isArray(data.activities)) {
+      rawActivities = data.activities
+    } else if (Array.isArray(data)) {
+      rawActivities = data
+    }
+    
+    if (rawActivities.length > 0) {
+      activities.value = transformActivityData(rawActivities)
+      console.log('Loaded', activities.value.length, 'activities for user')
+    } else {
+      activities.value = []
+      console.log('No activities found for this user')
+    }
+  } catch (error) {
+    console.error('Error fetching user activities:', error)
+    activitiesError.value = error?.response?.data?.message || error.message || 'Failed to load activities'
+    activities.value = []
+  } finally {
+    loadingActivities.value = false
+  }
+}
+
+// Handle tab change to fetch data when tabs are clicked
 const handleTabChange = (tabName) => {
   activeTab.value = tabName
   if (tabName === 'Referrals' && selectedUser.value?.id) {
     fetchReferralData(selectedUser.value.id)
+  } else if (tabName === 'Transactions' && selectedUser.value?.id) {
+    fetchUserTransactions(selectedUser.value.id)
+  } else if (tabName === 'Activities' && selectedUser.value?.id) {
+    fetchUserActivities(selectedUser.value.id)
   }
+}
+
+// View transaction details
+const viewTransactionDetails = (transaction) => {
+  selectedTransaction.value = transaction.rawData || transaction
+  showTransactionModal.value = true
+}
+
+// Close transaction modal
+const closeTransactionModal = () => {
+  showTransactionModal.value = false
+  selectedTransaction.value = null
 }
 
 </script>
 
 <style scoped>
-.input {
-  padding: 0.75rem 0.75rem;
-  border-width: 1px;
-  border-radius: 0.375rem;
-  background-color: #1f2937;
-  color: #fff;
-}
 .btn {
   padding: 0.75rem 0.75rem;
   font-size: 0.875rem;
