@@ -244,8 +244,7 @@
                             <button type="button" @click="imageInput?.click()"
                                 class="px-3 py-2 border rounded-md shadow-sm text-sm bg-white hover:bg-gray-50">Choose
                                 file</button>
-                            <span class="ml-2 text-sm text-gray-500">{{ formData.restaurantImage?.name || 'No file
-                                chosen' }}</span>
+                            <span class="ml-2 text-sm text-gray-500">{{ formData.restaurantImage?.name || 'No file chosen' }}</span>
                         </div>
                     </div>
 

@@ -42,19 +42,33 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAME</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUSTOMER ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RESTAURANT NAME</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RATING</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">REVIEW</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DATE</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="rating in paginatedRatings" :key="rating.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ rating.name }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ rating.restaurantName }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ rating.ratings }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ rating.review }}</td>
+            <tr v-if="loading">
+              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading ratings...</td>
+            </tr>
+            <tr v-else-if="filteredRatings.length === 0">
+              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No ratings found</td>
+            </tr>
+            <tr v-else v-for="rating in paginatedRatings" :key="rating.id" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ rating.customer_id || 'N/A' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ rating.restaurantName || 'Loading...' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <div class="flex items-center gap-1">
+                  <span>{{ rating.rating }}</span>
+                  <span class="text-yellow-500">★</span>
+                </div>
+                <div class="text-xs text-gray-400 mt-1">
+                  Food: {{ rating.food_quality }} | Service: {{ rating.service_speed }} | Value: {{ rating.value_for_money }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(rating.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <button class="text-red-500 hover:text-red-700" title="Delete">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,9 +77,6 @@
                   </svg>
                 </button>
               </td>
-            </tr>
-            <tr v-if="filteredRatings.length === 0">
-              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No ratings found</td>
             </tr>
           </tbody>
         </table>
@@ -105,26 +116,131 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
+import { restaurantService } from '@/services/restaurantService';
 
-// Sample data
-const Ratings = ref([
-  { id: 1, name: 'Burger Man', restaurantName: 'Burger King', ratings: 5, review: 'Great food!' },
-  { id: 2, name: 'Jane Doe', restaurantName: 'Mama Put', ratings: 4, review: 'Tasty meals!' },
-  { id: 3, name: 'John Smith', restaurantName: 'Chicken Republic', ratings: 3, review: 'Decent experience.' },
-  { id: 4, name: 'Mary Lou', restaurantName: 'The Dome', ratings: 5, review: 'Excellent!' },
-  { id: 5, name: 'Luke Sky', restaurantName: 'Space Diner', ratings: 2, review: 'Could be better.' },
-  { id: 6, name: 'Tony Stark', restaurantName: 'Shawarma Spot', ratings: 4, review: 'Pretty good.' },
-  { id: 7, name: 'Bruce Wayne', restaurantName: 'Dark Kitchen', ratings: 5, review: 'Top notch!' },
-  { id: 8, name: 'Clark Kent', restaurantName: 'Super Subs', ratings: 3, review: 'Okay-ish.' },
-  { id: 9, name: 'Diana Prince', restaurantName: 'Amazon Grill', ratings: 5, review: 'Amazing flavor!' },
-  { id: 10, name: 'Peter Parker', restaurantName: 'Web Cafe', ratings: 4, review: 'Nice atmosphere.' },
-]);
+const toast = useToast();
+const loading = ref(false);
+
+interface Rating {
+    id: string;
+    restaurant_id: string;
+    customer_id: string;
+    order_id: string;
+    rating: number;
+    food_quality: number;
+    service_speed: number;
+    value_for_money: number;
+    created_at: string;
+    updated_at: string;
+    restaurantName?: string;
+}
+
+const Ratings = ref<Rating[]>([]);
+const restaurantNames = ref<Record<string, string>>({});
 
 const searchQuery = ref('');
 const perPage = ref(5);
 const currentPage = ref(1);
+
+// Fetch restaurant name for a rating
+const fetchRestaurantName = async (restaurantId: string) => {
+    if (restaurantNames.value[restaurantId]) {
+        return restaurantNames.value[restaurantId];
+    }
+
+    try {
+        const response = await restaurantService.getRestaurantById(restaurantId);
+        let restaurantData;
+        
+        if (response?.data) {
+            restaurantData = response.data;
+        } else if (response?._id) {
+            restaurantData = response;
+        }
+        
+        if (restaurantData && restaurantData.name) {
+            restaurantNames.value[restaurantId] = restaurantData.name;
+            // Update the rating in the list
+            const rating = Ratings.value.find(r => r.restaurant_id === restaurantId);
+            if (rating) {
+                rating.restaurantName = restaurantData.name;
+            }
+            return restaurantData.name;
+        }
+    } catch (error) {
+        console.error(`Error fetching restaurant ${restaurantId}:`, error);
+        restaurantNames.value[restaurantId] = 'Unknown Restaurant';
+        return 'Unknown Restaurant';
+    }
+    
+    return 'Loading...';
+};
+
+// Fetch all ratings from all restaurants
+const fetchAllRatings = async () => {
+    try {
+        loading.value = true;
+        
+        // First, get all restaurants
+        const restaurantsResponse = await restaurantService.getAllRestaurants(100, 1);
+        let restaurantsList = [];
+        
+        if (restaurantsResponse?.data?.data?.data && Array.isArray(restaurantsResponse.data.data.data)) {
+            restaurantsList = restaurantsResponse.data.data.data;
+        } else if (restaurantsResponse?.data?.data && Array.isArray(restaurantsResponse.data.data)) {
+            restaurantsList = restaurantsResponse.data.data;
+        } else if (Array.isArray(restaurantsResponse?.data)) {
+            restaurantsList = restaurantsResponse.data;
+        }
+        
+        // Fetch ratings for each restaurant
+        const allRatings: Rating[] = [];
+        
+        for (const restaurant of restaurantsList) {
+            try {
+                const ratingsResponse = await restaurantService.getRestaurantRatings(restaurant._id, 20, 0);
+                
+                if (ratingsResponse?.data && Array.isArray(ratingsResponse.data)) {
+                    const ratings = ratingsResponse.data.map((rating: any) => ({
+                        ...rating,
+                        restaurantName: restaurant.name // Set restaurant name immediately
+                    }));
+                    allRatings.push(...ratings);
+                }
+            } catch (error) {
+                console.error(`Error fetching ratings for restaurant ${restaurant._id}:`, error);
+                // Continue with other restaurants
+            }
+        }
+        
+        Ratings.value = allRatings;
+        toast.success(`Loaded ${allRatings.length} ratings`);
+    } catch (error: any) {
+        console.error('Error fetching ratings:', error);
+        toast.error('Failed to load ratings');
+    } finally {
+        loading.value = false;
+    }
+};
+
+const formatDate = (dateString: string) => {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch {
+        return dateString;
+    }
+};
 
 // Filtered list
 const filteredRatings = computed(() => {
@@ -132,9 +248,9 @@ const filteredRatings = computed(() => {
   const query = searchQuery.value.toLowerCase();
   return Ratings.value.filter(
     (item) =>
-      item.name.toLowerCase().includes(query) ||
-      item.restaurantName.toLowerCase().includes(query) ||
-      item.review.toLowerCase().includes(query)
+      (item.customer_id || '').toLowerCase().includes(query) ||
+      (item.restaurantName || '').toLowerCase().includes(query) ||
+      item.rating.toString().includes(query)
   );
 });
 
@@ -192,5 +308,9 @@ const handleSearch = () => {
 
 watch([searchQuery, perPage], () => {
   currentPage.value = 1;
+});
+
+onMounted(() => {
+  fetchAllRatings();
 });
 </script>

@@ -54,12 +54,12 @@ const restaurantRoutes = [
                 component: () => import('../../views/Restaurant/CreateMenuItem.vue'),
             },
             {
-                path: 'edit-menu',
+                path: 'edit-menu/:id',
                 name: 'editMenu',
                 component: () => import('../../views/Restaurant/EditMenuItem.vue'),
             },
             {
-                path: 'view-menu',
+                path: 'view-menu/:id',
                 name: 'viewMenu',
                 component: () => import('../../views/Restaurant/ViewMenu.vue'),
             },
@@ -79,7 +79,7 @@ const restaurantRoutes = [
                 component: () => import('../../views/Restaurant/CreateCuisine.vue'),
             },
             {
-                path: 'edit-cuisines',
+                path: 'edit-cuisines/:id',
                 name: 'editCuisines',
                 component: () => import('../../views/Restaurant/EditCuisine.vue'),
             },

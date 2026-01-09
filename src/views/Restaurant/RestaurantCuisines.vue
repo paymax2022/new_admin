@@ -69,7 +69,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
-                                    <button   @click="goToEdit"  class="text-green-500 hover:text-green-700" title="Edit">
+                                    <button   @click="goToEdit(cuisine.id)"  class="text-green-500 hover:text-green-700" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -147,8 +147,8 @@
     const goToCreate = () => {
         router.push({ name: 'createCuisines' });
     };
-    const goToEdit =  () => {
-        router.push({ name: 'editCuisines' });
+    const goToEdit = (cuisineId) => {
+        router.push({ name: 'editCuisines', params: { id: String(cuisineId) } });
     };
 
     const cuisines = ref([

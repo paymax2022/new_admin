@@ -28,6 +28,7 @@ export const restaurantService = {
     async getAllRestaurants(limit: number = 20, page: number = 1): Promise<any> {
         try {
             const response = await api.get(`/api/v1/restaurants/all?page=${page}&limit=${limit}`);
+            // Handle nested response structure: data.data.data contains the restaurants array
             return response.data;
         } catch (error) {
             console.error('Error fetching restaurants:', error);
@@ -98,6 +99,19 @@ export const restaurantService = {
         }
     },
 
+    // Create menu item
+    async createMenu(restaurantId: string, menuData: FormData): Promise<any> {
+        try {
+            const response = await api.post(`/api/v1/restaurants/${restaurantId}/menu`, menuData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error creating menu item:', error);
+            throw error;
+        }
+    },
+
     // Get restaurant menu items
     async getRestaurantMenus(id: string): Promise<any> {
         try {
@@ -109,10 +123,22 @@ export const restaurantService = {
         }
     },
 
-    // Get menu item by ID
-    async getMenuById(id: string): Promise<any> {
+    // Get all menus
+    async getAllMenus(): Promise<any> {
         try {
-            const response = await api.get(`/api/v1/menus/${id}`);
+            const response = await api.get('/api/v1/menus');
+            // Response structure: { data: [...], message: string, ok: boolean }
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching menus:', error);
+            throw error;
+        }
+    },
+
+    // Get menu item by ID
+    async getMenuById(menuId: string): Promise<any> {
+        try {
+            const response = await api.get(`/api/v1/menus/${menuId}`);
             return response.data;
         } catch (error) {
             console.error('Error fetching menu item:', error);
@@ -121,9 +147,10 @@ export const restaurantService = {
     },
 
     // Update menu item
-    async updateMenu(restaurantId: string, menuId: string, menuData: any): Promise<any> {
+    async updateMenu(restaurantId: string, menuId: string, menuData: FormData | any): Promise<any> {
         try {
-            const response = await api.put(`/api/v1/restaurants/${restaurantId}/menu/${menuId}`, menuData);
+            const config = menuData instanceof FormData ? { headers: { 'Content-Type': 'multipart/form-data' } } : {};
+            const response = await api.put(`/api/v1/restaurants/${restaurantId}/menu/${menuId}`, menuData, config);
             return response.data;
         } catch (error) {
             console.error('Error updating menu item:', error);
@@ -169,6 +196,77 @@ export const restaurantService = {
             await api.delete(`/api/v1/restaurants/${id}`);
         } catch (error) {
             console.error('Error deleting restaurant:', error);
+            throw error;
+        }
+    },
+
+    // Create cuisine for a restaurant
+    async createCuisine(restaurantId: string, cuisineData: FormData | { name: string }): Promise<any> {
+        try {
+            if (cuisineData instanceof FormData) {
+                const response = await api.post(`/api/v1/restaurants/${restaurantId}/cuisines`, cuisineData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                return response.data;
+            } else {
+                // Send as JSON
+                const response = await api.post(`/api/v1/restaurants/${restaurantId}/cuisines`, cuisineData);
+                return response.data;
+            }
+        } catch (error) {
+            console.error('Error creating cuisine:', error);
+            throw error;
+        }
+    },
+
+    // Update cuisine
+    async updateCuisine(cuisineId: string, cuisineData: FormData | { name: string }): Promise<any> {
+        try {
+            if (cuisineData instanceof FormData) {
+                const response = await api.put(`/api/v1/restaurants/cuisines/${cuisineId}`, cuisineData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                return response.data;
+            } else {
+                // Send as JSON
+                const response = await api.put(`/api/v1/restaurants/cuisines/${cuisineId}`, cuisineData);
+                return response.data;
+            }
+        } catch (error) {
+            console.error('Error updating cuisine:', error);
+            throw error;
+        }
+    },
+
+    // Get cuisine by ID
+    async getCuisineById(cuisineId: string): Promise<any> {
+        try {
+            const response = await api.get(`/api/v1/restaurants/cuisines/${cuisineId}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching cuisine:', error);
+            throw error;
+        }
+    },
+
+    // Update restaurant working hours
+    async updateWorkingHours(restaurantId: string, workingHoursData: any): Promise<any> {
+        try {
+            const response = await api.put(`/api/v1/restaurants/${restaurantId}/working-hours`, workingHoursData);
+            return response.data;
+        } catch (error) {
+            console.error('Error updating working hours:', error);
+            throw error;
+        }
+    },
+
+    // Get restaurant ratings
+    async getRestaurantRatings(restaurantId: string, limit: number = 20, offset: number = 0): Promise<any> {
+        try {
+            const response = await api.get(`/api/v1/restaurants/${restaurantId}/ratings?limit=${limit}&offset=${offset}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching restaurant ratings:', error);
             throw error;
         }
     },

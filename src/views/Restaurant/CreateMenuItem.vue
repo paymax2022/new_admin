@@ -13,7 +13,8 @@
                     class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     <option value="" disabled>Select Restaurant</option>
-                    <option v-for="restaurant in restaurants" :key="restaurant.id" :value="restaurant.id">
+                    <option v-if="loading" disabled>Loading restaurants...</option>
+                    <option v-for="restaurant in restaurants" :key="restaurant._id" :value="restaurant._id">
                         {{ restaurant.name }}
                     </option>
                 </select>
@@ -65,22 +66,56 @@
                 </div>
             </div>
 
-            <!-- Discount Price Field -->
+            <!-- Discount Type Field -->
             <div>
-                <label for="discountPrice" class="block text-sm font-medium text-gray-700"> DISCOUNT PRICE </label>
-                <div class="mt-1 relative rounded-md shadow-sm">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span class="text-gray-500 sm:text-sm">$</span>
-                    </div>
-                    <input
-                        type="number"
-                        id="discountPrice"
-                        v-model="formData.discountPrice"
-                        min="0"
-                        step="0.01"
-                        class="block w-full pl-7 pr-12 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                </div>
+                <label for="menuDiscountType" class="block text-sm font-medium text-gray-700"> MENU DISCOUNT TYPE </label>
+                <select
+                    id="menuDiscountType"
+                    v-model="formData.menuDiscountType"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                    <option value="percentage">Percentage</option>
+                    <option value="fixed">Fixed</option>
+                </select>
+            </div>
+
+            <!-- Menu Discount Amount Field -->
+            <div>
+                <label for="menuDiscountAmount" class="block text-sm font-medium text-gray-700"> MENU DISCOUNT AMOUNT </label>
+                <input
+                    type="number"
+                    id="menuDiscountAmount"
+                    v-model="formData.menuDiscountAmount"
+                    min="0"
+                    step="0.01"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
+            </div>
+
+            <!-- Discount Type Field -->
+            <div>
+                <label for="discountType" class="block text-sm font-medium text-gray-700"> DISCOUNT TYPE </label>
+                <select
+                    id="discountType"
+                    v-model="formData.discountType"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                    <option value="fixed">Fixed</option>
+                    <option value="percentage">Percentage</option>
+                </select>
+            </div>
+
+            <!-- Discount Amount Field -->
+            <div>
+                <label for="discountAmount" class="block text-sm font-medium text-gray-700"> DISCOUNT AMOUNT </label>
+                <input
+                    type="number"
+                    id="discountAmount"
+                    v-model="formData.discountAmount"
+                    min="0"
+                    step="0.01"
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                />
             </div>
 
             <!-- Status Field -->
@@ -142,9 +177,10 @@
             <div class="pt-4">
                 <button
                     type="submit"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    :disabled="isSubmitting"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Save Menu Item
+                    {{ isSubmitting ? 'Creating...' : 'Save Menu Item' }}
                 </button>
             </div>
         </form>
@@ -152,10 +188,14 @@
 </template>
 
 <script lang="ts" setup>
-    import { ref } from 'vue';
+    import { ref, onMounted } from 'vue';
+    import { useToast } from 'vue-toastification';
+    import { restaurantService } from '@/services/restaurantService';
+
+    const toast = useToast();
 
     interface Restaurant {
-        id: string;
+        _id: string;
         name: string;
     }
 
@@ -169,18 +209,41 @@
         name: string;
         category: string;
         unitPrice: number;
-        discountPrice: number;
+        menuDiscountType: string;
+        menuDiscountAmount: number;
+        discountType: string;
+        discountAmount: number;
         status: string;
         image: File | null;
         description: string;
     }
 
-    // Sample data - replace with your actual data or API calls
-    const restaurants = ref<Restaurant[]>([
-        { id: '1', name: 'Main Restaurant' },
-        { id: '2', name: 'Downtown Cafe' },
-        { id: '3', name: 'Seaside Bistro' },
-    ]);
+    const restaurants = ref<Restaurant[]>([]);
+    const loading = ref(false);
+
+    // Fetch restaurants from API
+    const fetchRestaurants = async () => {
+        try {
+            loading.value = true;
+            const response = await restaurantService.getAllRestaurants(100, 1);
+            // Handle nested response structure: response.data.data.data contains the restaurants array
+            if (response?.data?.data?.data && Array.isArray(response.data.data.data)) {
+                restaurants.value = response.data.data.data;
+            } else if (response?.data?.data && Array.isArray(response.data.data)) {
+                restaurants.value = response.data.data;
+            } else if (Array.isArray(response?.data)) {
+                restaurants.value = response.data;
+            }
+        } catch (error) {
+            console.error('Error fetching restaurants:', error);
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    onMounted(() => {
+        fetchRestaurants();
+    });
 
     const categories = ref<Category[]>([
         { id: '1', name: 'Appetizers' },
@@ -194,7 +257,10 @@
         name: '',
         category: '',
         unitPrice: 0,
-        discountPrice: 0,
+        menuDiscountType: 'percentage',
+        menuDiscountAmount: 0,
+        discountType: 'fixed',
+        discountAmount: 0,
         status: 'active',
         image: null,
         description: '',
@@ -209,30 +275,72 @@
         }
     };
 
-    const submitForm = () => {
-        console.log('Form submitted:', formData.value);
+    const isSubmitting = ref(false);
 
-        // Create FormData for file upload
-        const fd = new FormData();
-        fd.append('restaurant', formData.value.restaurant);
-        fd.append('name', formData.value.name);
-        fd.append('category', formData.value.category);
-        fd.append('unitPrice', formData.value.unitPrice.toString());
-        fd.append('discountPrice', formData.value.discountPrice.toString());
-        fd.append('status', formData.value.status);
-        if (formData.value.image) {
-            fd.append('image', formData.value.image);
+    const submitForm = async () => {
+        if (!formData.value.restaurant) {
+            toast.error('Please select a restaurant');
+            return;
         }
 
-        // Example API call:
-        // axios.post('/api/menu-items', fd, {
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data'
-        //   }
-        // }).then(response => {
-        //   console.log('Success:', response);
-        // }).catch(error => {
-        //   console.error('Error:', error);
-        // });
+        if (!formData.value.name) {
+            toast.error('Please enter a menu item name');
+            return;
+        }
+
+        try {
+            isSubmitting.value = true;
+            
+            // Create FormData for file upload
+            const fd = new FormData();
+            fd.append('name', formData.value.name);
+            fd.append('description', formData.value.description || '');
+            fd.append('category', formData.value.category || '');
+            fd.append('menu_item[menu_product_name]', formData.value.name);
+            fd.append('menu_item[menu_is_combo]', 'false');
+            
+            if (formData.value.menuDiscountType && formData.value.menuDiscountAmount > 0) {
+                fd.append('menu_item[menu_discount][discount_type]', formData.value.menuDiscountType);
+                fd.append('menu_item[menu_discount][discount_amount]', formData.value.menuDiscountAmount.toString());
+            }
+            
+            if (formData.value.discountType && formData.value.discountAmount > 0) {
+                fd.append('discount[discount_type]', formData.value.discountType);
+                fd.append('discount[discount_amount]', formData.value.discountAmount.toString());
+            }
+            
+            if (formData.value.image) {
+                fd.append('image', formData.value.image);
+            }
+
+            const response = await restaurantService.createMenu(formData.value.restaurant, fd);
+            console.log('Menu item created successfully:', response);
+            toast.success('Menu item created successfully!');
+            
+            // Reset form
+            formData.value = {
+                restaurant: formData.value.restaurant,
+                name: '',
+                category: '',
+                unitPrice: 0,
+                menuDiscountType: 'percentage',
+                menuDiscountAmount: 0,
+                discountType: 'fixed',
+                discountAmount: 0,
+                status: 'active',
+                image: null,
+                description: '',
+            };
+            
+            // Reset file input
+            if (imageInput.value) {
+                imageInput.value.value = '';
+            }
+        } catch (error: any) {
+            console.error('Error creating menu item:', error);
+            toast.error(error.response?.data?.message || 'Error creating menu item. Please try again.');
+        } finally {
+            isSubmitting.value = false;
+        }
     };
 </script>

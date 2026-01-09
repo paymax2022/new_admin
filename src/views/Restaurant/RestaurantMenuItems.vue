@@ -56,7 +56,13 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="menuItem in paginatedMenuItems" :key="menuItem.id" class="hover:bg-gray-50">
+                        <tr v-if="loading" class="hover:bg-gray-50">
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">Loading menu items...</td>
+                        </tr>
+                        <tr v-else-if="menuItems.length === 0" class="hover:bg-gray-50">
+                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No menu items found</td>
+                        </tr>
+                        <tr v-else v-for="menuItem in paginatedMenuItems" :key="menuItem._id || menuItem.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ menuItem.name }}</div>
                             </td>
@@ -64,18 +70,18 @@
                                 <div class="text-sm text-gray-500 capitalize">{{ menuItem.category }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ menuItem.status }}
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getStatusClass(menuItem)">
+                                    {{ getStatus(menuItem) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-500 capitalize">
-                                    {{ menuItem.unit_price }}
+                                    {{ formatPrice(menuItem.price || menuItem.unit_price) }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class="flex items-center space-x-3">
-                                    <button @click="goToView" class="text-blue-500 hover:text-blue-700" title="View">
+                                    <button @click="goToView(menuItem)" class="text-blue-500 hover:text-blue-700" title="View">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                             <path
@@ -86,7 +92,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <button @click="goToEdit" class="text-green-500 hover:text-green-700" title="Edit">
+                                    <button @click="goToEdit(menuItem)" class="text-green-500 hover:text-green-700" title="Edit">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -106,7 +112,7 @@
                                             />
                                         </svg>
                                     </button>
-                                    <button class="text-red-500 hover:text-red-700" title="Delete">
+                                    <button @click="handleDelete(menuItem)" class="text-red-500 hover:text-red-700" title="Delete">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path
                                                 stroke-linecap="round"
@@ -118,9 +124,6 @@
                                     </button>
                                 </div>
                             </td>
-                        </tr>
-                        <tr v-if="filteredMenuItems.length === 0">
-                            <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">No menu items found</td>
                         </tr>
                     </tbody>
                 </table>
@@ -167,41 +170,91 @@
     </div>
 </template>
 
-<script setup>
-    import { ref, computed, watch } from 'vue';
+<script setup lang="ts">
+    import { ref, computed, watch, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
+    import { useToast } from 'vue-toastification';
+    import { restaurantService } from '@/services/restaurantService';
+
     const router = useRouter();
+    const toast = useToast();
+    const loading = ref(false);
+
     const goToCreate = () => {
         router.push({ name: 'createMenu' });
     };
-    const goToView = () => {
-        router.push({ name: 'viewMenu' });
+    const goToView = (menuItem: any) => {
+        router.push({ name: 'viewMenu', params: { id: menuItem._id || menuItem.id } });
     };
-    const goToEdit = () => {
-        router.push({ name: 'editMenu' });
+    const goToEdit = (menuItem: any) => {
+        router.push({ name: 'editMenu', params: { id: menuItem._id || menuItem.id } });
     };
     const goToVariant = () => {
         router.push({ name: 'variantMenu' });
     };
 
-    const menuItems = ref([
-        { id: 1, name: 'The Salad God', category: 'Beverages', status: 'Active', unit_price: '50,000.00' },
-        { id: 2, name: 'Wham! Bam! Burrito', category: 'Sweet', status: 'Active', unit_price: '10,000.00' },
-        { id: 3, name: 'Gustosa Pasta', category: 'Beef', status: 'Active', unit_price: '3,000.00' },
-        { id: 4, name: 'Burger King', category: 'Fast Food', status: 'Active', unit_price: '1,000.00' },
-        { id: 5, name: 'McDonalds', category: 'Fast Food', status: 'Active', unit_price: '9,000.00' },
-        { id: 6, name: 'Starbucks', category: 'Beverages', status: 'Active', unit_price: '1,000.00' },
-        { id: 7, name: 'Mr Beast Burger', category: 'Burgers', status: 'Active', unit_price: '1,000.00' },
-        { id: 8, name: "Sultan's Dine", category: 'Asian', status: 'Active', unit_price: '1,000.00' },
-        // Add more sample data to test pagination
-        ...Array.from({ length: 12 }, (_, i) => ({
-            id: i + 9,
-            name: `Menu Item ${i + 9}`,
-            category: ['Beverages', 'Sweet', 'Beef', 'Fast Food'][i % 4],
-            status: 'Active',
-            unit_price: `${(i + 1) * 1000}.00`,
-        })),
-    ]);
+    const menuItems = ref([]);
+
+    // Fetch menus from API
+    const fetchMenus = async () => {
+        try {
+            loading.value = true;
+            const response = await restaurantService.getAllMenus();
+            console.log('Menus response:', response);
+            
+            // Handle response structure: { data: [...], message: string, ok: boolean }
+            if (response?.data && Array.isArray(response.data)) {
+                // Filter out deleted items (deleted_at !== "0001-01-01T00:00:00Z")
+                menuItems.value = response.data.filter(item => 
+                    !item.deleted_at || item.deleted_at === "0001-01-01T00:00:00Z"
+                );
+                toast.success('Menu items loaded successfully');
+            } else if (Array.isArray(response)) {
+                menuItems.value = response.filter(item => 
+                    !item.deleted_at || item.deleted_at === "0001-01-01T00:00:00Z"
+                );
+            } else {
+                menuItems.value = [];
+                console.warn('Unexpected response structure:', response);
+            }
+        } catch (error) {
+            console.error('Error fetching menus:', error);
+            toast.error('Failed to load menu items');
+            menuItems.value = [];
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    // Format price for display
+    const formatPrice = (price) => {
+        if (!price && price !== 0) return '0.00';
+        const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+        return new Intl.NumberFormat('en-NG', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(numPrice);
+    };
+
+    // Get status based on deleted_at
+    const getStatus = (item) => {
+        if (item.deleted_at && item.deleted_at !== "0001-01-01T00:00:00Z") {
+            return 'Deleted';
+        }
+        return 'Active';
+    };
+
+    // Get status class for styling
+    const getStatusClass = (item) => {
+        if (item.deleted_at && item.deleted_at !== "0001-01-01T00:00:00Z") {
+            return 'bg-red-100 text-red-800';
+        }
+        return 'bg-green-100 text-green-800';
+    };
+
+    onMounted(() => {
+        fetchMenus();
+    });
 
     const searchQuery = ref('');
     const perPage = ref(10);
@@ -214,10 +267,10 @@
         const query = searchQuery.value.toLowerCase();
         return menuItems.value.filter(
             (item) =>
-                item.name.toLowerCase().includes(query) ||
-                item.category.toLowerCase().includes(query) ||
-                item.status.toLowerCase().includes(query) ||
-                item.unit_price.toLowerCase().includes(query),
+                (item.name || '').toLowerCase().includes(query) ||
+                (item.category || '').toLowerCase().includes(query) ||
+                getStatus(item).toLowerCase().includes(query) ||
+                formatPrice(item.price || item.unit_price).toLowerCase().includes(query),
         );
     });
 
@@ -277,6 +330,29 @@
 
     const handleSearch = () => {
         currentPage.value = 1;
+    };
+
+    const handleDelete = async (menuItem: any) => {
+        if (!confirm(`Are you sure you want to delete "${menuItem.name}"?`)) {
+            return;
+        }
+
+        const menuId = menuItem._id || menuItem.id;
+        const restaurantId = menuItem.restaurant_id;
+
+        if (!menuId || !restaurantId) {
+            toast.error('Missing menu or restaurant ID');
+            return;
+        }
+
+        try {
+            await restaurantService.deleteMenu(restaurantId, menuId);
+            toast.success('Menu item deleted successfully');
+            fetchMenus(); // Refresh the list
+        } catch (error: any) {
+            console.error('Error deleting menu:', error);
+            toast.error(error.response?.data?.message || 'Failed to delete menu item');
+        }
     };
 
     // Reset to page 1 when search or perPage changes
