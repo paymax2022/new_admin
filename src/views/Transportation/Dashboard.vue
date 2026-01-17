@@ -192,7 +192,7 @@ declare global {
 }
 
 // Google Maps API Key
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCxK0c-UDughTkIOKtBhacBDEClUgZWGmI';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyABaUOSZbdkQ8iT2U4bcKg9Surc2cX9Tbw';
 
 // Load Google Maps script
 const loadGoogleMaps = (): Promise<void> => {

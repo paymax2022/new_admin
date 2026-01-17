@@ -2,12 +2,12 @@
     <div class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
         <!-- Header Section -->
         <div class="flex items-center justify-between mb-6">
-            <div>
+    <div>
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Dashboard Overview</h1>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Overview of delivery performance and activity</p>
             </div>
             <div class="relative" ref="dateDropdownRef">
-                <button 
+                <button
                     @click.stop="toggleDateDropdown"
                     class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2"
                 >
@@ -16,9 +16,9 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                
+
                 <!-- Dropdown Menu -->
-                <div 
+                <div
                     v-if="showDateDropdown"
                     @click.stop
                     class="absolute right-0 mt-2 w-40 rounded-lg shadow-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
@@ -49,8 +49,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Trips</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">323</p>
-                            <p class="text-xs font-semibold text-green-600 dark:text-green-400">↑ 12.5% vs last week</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : stats.totalTrips.toLocaleString() }}</p>
+                            <p :class="['text-xs font-semibold', totalTripsChange.isIncrease ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">{{ totalTripsChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900">
@@ -65,8 +65,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Active Drivers</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">23</p>
-                            <p class="text-xs font-semibold text-green-600 dark:text-green-400">↑ 8.3% vs last week</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : stats.activeDrivers }}</p>
+                            <p :class="['text-xs font-semibold', activeDriversChange.isIncrease ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">{{ activeDriversChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900">
@@ -81,8 +81,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Revenue Today</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">$53,000</p>
-                            <p class="text-xs font-semibold text-green-600 dark:text-green-400">↑ 15.2% vs yesterday</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : `₦${stats.revenueToday.toLocaleString()}` }}</p>
+                            <p :class="['text-xs font-semibold', revenueChange.isIncrease ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">{{ revenueChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-yellow-100 dark:bg-yellow-900">
@@ -97,8 +97,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Average Delivery Time</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">20 mins</p>
-                            <p class="text-xs font-semibold text-red-600 dark:text-red-400">↓ 4.8% vs last week</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : `${Math.round(stats.averageDeliveryTime)} mins` }}</p>
+                            <p :class="['text-xs font-semibold', averageDeliveryTimeChange.isIncrease ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400']">{{ averageDeliveryTimeChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-gray-100 dark:bg-gray-700">
@@ -116,8 +116,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Pending Deliveries</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">00.00</p>
-                            <p class="text-xs font-semibold text-green-600 dark:text-green-400">↑ 0 vs last week</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : stats.pendingDeliveries }}</p>
+                            <p :class="['text-xs font-semibold', pendingDeliveriesChange.isIncrease ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400']">{{ pendingDeliveriesChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-orange-100 dark:bg-orange-900">
@@ -148,8 +148,8 @@
                     <div class="flex items-center justify-between">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Cancellations</p>
-                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">00.00</p>
-                            <p class="text-xs font-semibold text-red-600 dark:text-red-400">↓ 4.8% vs last week</p>
+                            <p class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">{{ loading ? '...' : stats.cancellations }}</p>
+                            <p :class="['text-xs font-semibold', cancellationsChange.isIncrease ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400']">{{ cancellationsChange.label }}</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
                             <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-red-100 dark:bg-red-900">
@@ -204,16 +204,16 @@
             </div>
             <div class="relative bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden" style="height: 500px;">
                 <div ref="mapContainer" class="w-full h-full rounded-lg"></div>
-                
+
                 <!-- Legend -->
                 <div class="absolute bottom-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 flex items-center gap-4 z-10">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                        <span class="text-xs text-gray-700 dark:text-gray-300">Available (10)</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300">Available ({{ availableCount }})</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                        <span class="text-xs text-gray-700 dark:text-gray-300">Busy (3)</span>
+                        <span class="text-xs text-gray-700 dark:text-gray-300">Busy ({{ busyCount }})</span>
                     </div>
                 </div>
             </div>
@@ -222,18 +222,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { 
-    TruckIcon, 
-    UserGroupIcon, 
-    BanknotesIcon, 
-    ClockIcon, 
-    BellIcon, 
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useToast } from 'vue-toastification'
+import {
+    TruckIcon,
+    UserGroupIcon,
+    BanknotesIcon,
+    ClockIcon,
+    BellIcon,
     ExclamationTriangleIcon,
     XCircleIcon
 } from '@heroicons/vue/24/outline'
 import LineChart from '@/components/charts/LineChart.vue'
 import BarChart from '@/components/charts/BarChart.vue'
+import deliveryService from '@/services/deliveryService'
 
 // Date range dropdown
 const showDateDropdown = ref(false)
@@ -255,15 +257,255 @@ const closeDateDropdown = () => {
     showDateDropdown.value = false
 }
 
-const selectDateRange = (value: string) => {
+// Dashboard stats
+const stats = ref({
+    totalTrips: 0,
+    activeDrivers: 0,
+    revenueToday: 0,
+    averageDeliveryTime: 0,
+    pendingDeliveries: 0,
+    openDisputes: 0,
+    cancellations: 0
+})
+
+// Comparison stats (for percentage calculations)
+const comparisonStats = ref({
+    totalTripsLastWeek: 0,
+    activeDriversLastWeek: 0,
+    revenueYesterday: 0,
+    averageDeliveryTimeLastWeek: 0,
+    pendingDeliveriesLastWeek: 0,
+    openDisputesLastWeek: 0,
+    cancellationsLastWeek: 0
+})
+
+const loading = ref(false)
+const toast = useToast()
+const availableCount = ref(0)
+const busyCount = ref(0)
+
+// Get date range for API calls
+const getDateRange = () => {
+    const today = new Date()
+    const ranges = {
+        today: {
+            start: new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '7days': {
+            start: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '30days': {
+            start: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '60days': {
+            start: new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        }
+    }
+    const selected = dateRangeOptions.find(opt => opt.label === selectedDateRange.value)
+    return ranges[selected?.value as keyof typeof ranges] || ranges.today
+}
+
+// Helper function to calculate percentage change
+const calculatePercentageChange = (current: number, previous: number): { value: number; isIncrease: boolean } => {
+    if (previous === 0) {
+        return { value: current > 0 ? 100 : 0, isIncrease: current > 0 }
+    }
+    const change = ((current - previous) / previous) * 100
+    return { value: Math.abs(change), isIncrease: change > 0 }
+}
+
+// Fetch dashboard data
+const fetchDashboardData = async () => {
+    loading.value = true
+    try {
+        const dateRange = getDateRange()
+        const today = new Date()
+
+        // Calculate comparison date ranges
+        const lastWeekStart = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        const lastWeekEnd = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        const yesterdayStart = new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+        const yesterdayEnd = yesterdayStart
+
+        // Fetch current metrics, comparison metrics, orders, and riders in parallel
+        const [metricsRes, lastWeekMetricsRes, yesterdayMetricsRes, ordersRes, ridersRes] = await Promise.all([
+            deliveryService.getDeliveryMetrics({
+                start_date: dateRange.start,
+                end_date: dateRange.end
+            }).catch((err) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('[DeliveryHome] Error fetching metrics:', err)
+                }
+                return null
+            }),
+            deliveryService.getDeliveryMetrics({
+                start_date: lastWeekStart,
+                end_date: lastWeekEnd
+            }).catch((err) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('[DeliveryHome] Error fetching last week metrics:', err)
+                }
+                return null
+            }),
+            deliveryService.getDeliveryMetrics({
+                start_date: yesterdayStart,
+                end_date: yesterdayEnd
+            }).catch((err) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('[DeliveryHome] Error fetching yesterday metrics:', err)
+                }
+                return null
+            }),
+            deliveryService.getAllOrders({
+                page: 1,
+                limit: 1000
+            }).catch((err) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('[DeliveryHome] Error fetching orders:', err)
+                }
+                return null
+            }),
+            // Try fetching all riders first, then filter client-side for active ones
+            deliveryService.getAllRiders({
+                page: 1,
+                limit: 1000
+            }).catch((err) => {
+                if (process.env.NODE_ENV === 'development') {
+                    console.error('[DeliveryHome] Error fetching riders:', err)
+                }
+                return null
+            })
+        ])
+
+        // Helper function to extract metrics from response
+        const extractMetrics = (res: any) => {
+            if (!res?.data) return {}
+            if (res.data.data && typeof res.data.data === 'object') {
+                return res.data.data
+            } else if (res.data.ok && res.data.data) {
+                return res.data.data
+            }
+            return res.data
+        }
+
+        const metrics = extractMetrics(metricsRes)
+        const lastWeekMetrics = extractMetrics(lastWeekMetricsRes)
+        const yesterdayMetrics = extractMetrics(yesterdayMetricsRes)
+
+        const ordersData = ordersRes?.data?.data || {}
+        const orders: any[] = Array.isArray(ordersData) ? ordersData : ((ordersData as any).data || [])
+        const ridersData = ridersRes?.data?.data || {}
+        const allRiders: any[] = Array.isArray(ridersData) ? ridersData : ((ridersData as any).data || (ridersData as any).riders || [])
+
+        // Filter active riders client-side based on status field
+        const activeRiders = allRiders.filter((rider: any) => {
+            const status = (rider.status || '').toLowerCase()
+            const availability = (rider.availability_status || '').toLowerCase()
+            // Consider riders active if status is 'active' or availability is 'available'
+            return status === 'active' || availability === 'available' || status === 'online'
+        })
+
+        // Update stats - using correct field names from API response
+        stats.value.totalTrips = metrics.total_orders || orders.length || 0
+        stats.value.activeDrivers = metrics.active_riders || activeRiders.length || 0
+        stats.value.revenueToday = metrics.total_revenue || 0
+        stats.value.averageDeliveryTime = metrics.average_delivery_time_minutes || metrics.average_delivery_time || 0
+        stats.value.pendingDeliveries = orders.filter((o: any) => {
+            const status = (o.status || '').toLowerCase()
+            return status === 'pending' || status === 'assigned'
+        }).length || 0
+        stats.value.cancellations = metrics.cancelled_orders || orders.filter((o: any) => {
+            const status = (o.status || '').toLowerCase()
+            return status === 'cancelled'
+        }).length || 0
+
+        // Update comparison stats from last week and yesterday metrics
+        comparisonStats.value.totalTripsLastWeek = lastWeekMetrics.total_orders || 0
+        comparisonStats.value.activeDriversLastWeek = lastWeekMetrics.active_riders || 0
+        comparisonStats.value.revenueYesterday = yesterdayMetrics.total_revenue || 0
+        comparisonStats.value.averageDeliveryTimeLastWeek = lastWeekMetrics.average_delivery_time_minutes || lastWeekMetrics.average_delivery_time || 0
+        comparisonStats.value.pendingDeliveriesLastWeek = lastWeekMetrics.orders_by_status?.pending || 0
+        comparisonStats.value.cancellationsLastWeek = lastWeekMetrics.cancelled_orders || 0
+        // Note: Disputes would come from a separate disputes endpoint if available
+
+    } catch (error: any) {
+        const errorMessage = error?.response?.data?.message || error?.message || 'Failed to load dashboard data'
+        toast.error(errorMessage)
+        if (process.env.NODE_ENV === 'development') {
+            console.error('[DeliveryHome] fetchDashboardData error:', error)
+        }
+    } finally {
+        loading.value = false
+    }
+}
+
+const selectDateRange = async (value: string) => {
     const option = dateRangeOptions.find(opt => opt.value === value)
     if (option) {
         selectedDateRange.value = option.label
-        // Here you can add logic to filter data based on selected date range
-        console.log('Selected date range:', value)
+        await fetchDashboardData()
     }
     closeDateDropdown()
 }
+
+// Computed properties for percentage changes
+const totalTripsChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.totalTrips, comparisonStats.value.totalTripsLastWeek)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs last week`
+    }
+})
+
+const activeDriversChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.activeDrivers, comparisonStats.value.activeDriversLastWeek)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs last week`
+    }
+})
+
+const revenueChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.revenueToday, comparisonStats.value.revenueYesterday)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs yesterday`
+    }
+})
+
+const averageDeliveryTimeChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.averageDeliveryTime, comparisonStats.value.averageDeliveryTimeLastWeek)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs last week`
+    }
+})
+
+const pendingDeliveriesChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.pendingDeliveries, comparisonStats.value.pendingDeliveriesLastWeek)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs last week`
+    }
+})
+
+const cancellationsChange = computed(() => {
+    const change = calculatePercentageChange(stats.value.cancellations, comparisonStats.value.cancellationsLastWeek)
+    return {
+        value: change.value.toFixed(1),
+        isIncrease: change.isIncrease,
+        label: `${change.isIncrease ? '↑' : '↓'} ${change.value.toFixed(1)}% vs last week`
+    }
+})
 
 
 // Extend Window interface for Google Maps
@@ -274,7 +516,7 @@ declare global {
 }
 
 // Google Maps API Key
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCxK0c-UDughTkIOKtBhacBDEClUgZWGmI';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyABaUOSZbdkQ8iT2U4bcKg9Surc2cX9Tbw';
 
 const mapContainer = ref<HTMLDivElement | null>(null);
 let map: google.maps.Map | null = null;
@@ -299,18 +541,60 @@ const loadGoogleMaps = (): Promise<void> => {
   });
 };
 
-// Initialize map
+// Initialize map with real rider locations
 const initMap = async () => {
   if (!mapContainer.value) return;
 
   try {
     await loadGoogleMaps();
 
-    // San Francisco area coordinates (matching the image)
-    const sfCenter = { lat: 37.7749, lng: -122.4194 };
+    // Fetch riders from the riders endpoint
+    let allRiders: any[] = []
+    let riderLocations: any[] = []
+
+    try {
+      const ridersRes = await deliveryService.getAllRiders({
+        page: 1,
+        limit: 1000
+      })
+      const ridersData: any = ridersRes?.data?.data || {}
+      allRiders = Array.isArray(ridersData) ? ridersData : (ridersData.data || ridersData.riders || [])
+
+      // Try to fetch rider locations if available
+      try {
+        const locationsRes = await deliveryService.getAllRiderLocations()
+        riderLocations = locationsRes?.data?.data || []
+      } catch (error) {
+        // Location fetch failed, will use default locations
+      }
+    } catch (error) {
+      console.error('Error fetching riders:', error)
+    }
+
+    // Create a map of rider locations by rider_id
+    const locationsMap = new Map()
+    riderLocations.forEach((loc: any) => {
+      const riderId = loc.rider_id || loc._id
+      if (riderId) {
+        locationsMap.set(riderId, loc)
+      }
+    })
+
+    // Use first rider location as center, or default to Lagos, Nigeria (based on user's data showing Nigeria)
+    let mapCenter = { lat: 6.5244, lng: 3.3792 } // Lagos, Nigeria
+    if (riderLocations.length > 0 && riderLocations[0].latitude && riderLocations[0].longitude) {
+      mapCenter = { lat: riderLocations[0].latitude, lng: riderLocations[0].longitude }
+    } else if (allRiders.length > 0) {
+      // Use first rider's location if available in location map
+      const firstRiderId = allRiders[0]._id || allRiders[0].rider_id || allRiders[0].id
+      const firstRiderLocation = locationsMap.get(firstRiderId)
+      if (firstRiderLocation && firstRiderLocation.latitude && firstRiderLocation.longitude) {
+        mapCenter = { lat: firstRiderLocation.latitude, lng: firstRiderLocation.longitude }
+      }
+    }
 
     map = new google.maps.Map(mapContainer.value, {
-      center: sfCenter,
+      center: mapCenter,
       zoom: 15,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       styles: [
@@ -368,62 +652,74 @@ const initMap = async () => {
       poiMarkers.push(marker);
     });
 
-    // Available Drivers - Green markers (10 drivers)
-    const availableDrivers = [
-      { lat: 37.7760, lng: -122.4175, title: 'Driver Available #1' },
-      { lat: 37.7758, lng: -122.4185, title: 'Driver Available #2' },
-      { lat: 37.7756, lng: -122.4195, title: 'Driver Available #3' },
-      { lat: 37.7754, lng: -122.4205, title: 'Driver Available #4' },
-      { lat: 37.7752, lng: -122.4215, title: 'Driver Available #5' },
-      { lat: 37.7750, lng: -122.4225, title: 'Driver Available #6' },
-      { lat: 37.7748, lng: -122.4170, title: 'Driver Available #7' },
-      { lat: 37.7746, lng: -122.4180, title: 'Driver Available #8' },
-      { lat: 37.7744, lng: -122.4190, title: 'Driver Available #9' },
-      { lat: 37.7742, lng: -122.4200, title: 'Driver Available #10' },
-    ];
+    // Add real riders to map using riders from getAllRiders endpoint
+    let localAvailableCount = 0
+    let localBusyCount = 0
 
-    availableDrivers.forEach((driver) => {
+    allRiders.forEach((rider: any, index: number) => {
+      const riderId = rider._id || rider.rider_id || rider.id
+      const riderLocation = locationsMap.get(riderId)
+
+      // Get location from location map if available, otherwise use default location with small offset
+      let lat: number
+      let lng: number
+
+      if (riderLocation && riderLocation.latitude && riderLocation.longitude) {
+        lat = riderLocation.latitude
+        lng = riderLocation.longitude
+      } else {
+        // Use default location with small offset per rider if no location data
+        const offset = (index % 10) * 0.01 // Small offset to spread markers
+        lat = mapCenter.lat + offset
+        lng = mapCenter.lng + offset
+      }
+
+      const status = (rider.status || '').toLowerCase()
+      const availability = (rider.availability_status || '').toLowerCase()
+      const isAvailable = status === 'online' || status === 'active' || availability === 'available'
+
+      const riderName = `${rider.first_name || ''} ${rider.last_name || ''}`.trim() || rider.name || `Rider ${index + 1}`
+      const riderPhone = rider.phone_number || rider.phone || 'N/A'
+      const riderVehicle = rider.vehicle_type || rider.transport_mode || 'N/A'
+
       const marker = new google.maps.Marker({
-        position: { lat: driver.lat, lng: driver.lng },
+        position: { lat, lng },
         map: map,
-        title: driver.title,
+        title: riderName,
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 8,
-          fillColor: '#10b981',
+          fillColor: isAvailable ? '#10b981' : '#ef4444',
           fillOpacity: 1,
           strokeColor: '#ffffff',
           strokeWeight: 2,
         },
       });
 
-      markers.push(marker);
-    });
+      if (isAvailable) localAvailableCount++
+      else localBusyCount++
 
-    // Busy Drivers - Red markers (3 drivers)
-    const busyDrivers = [
-      { lat: 37.7757, lng: -122.4182, title: 'Driver Busy #1' },
-      { lat: 37.7753, lng: -122.4198, title: 'Driver Busy #2' },
-      { lat: 37.7749, lng: -122.4212, title: 'Driver Busy #3' },
-    ];
+      const infoWindow = new google.maps.InfoWindow({
+        content: `
+          <div style="padding: 8px; min-width: 150px;">
+            <strong style="color: #111827; font-size: 14px;">${riderName}</strong><br/>
+            <span style="color: #6b7280; font-size: 12px;">Status: ${status || 'Unknown'}</span><br/>
+            <span style="color: #6b7280; font-size: 12px;">Phone: ${riderPhone}</span><br/>
+            <span style="color: #6b7280; font-size: 12px;">Vehicle: ${riderVehicle}</span>
+          </div>
+        `,
+      });
 
-    busyDrivers.forEach((driver) => {
-      const marker = new google.maps.Marker({
-        position: { lat: driver.lat, lng: driver.lng },
-        map: map,
-        title: driver.title,
-        icon: {
-          path: google.maps.SymbolPath.CIRCLE,
-          scale: 8,
-          fillColor: '#ef4444',
-          fillOpacity: 1,
-          strokeColor: '#ffffff',
-          strokeWeight: 2,
-        },
+      marker.addListener('click', () => {
+        infoWindow.open(map, marker);
       });
 
       markers.push(marker);
     });
+
+    // Update reactive counts for legend
+    availableCount.value = localAvailableCount
+    busyCount.value = localBusyCount
   } catch (error) {
     console.error('Error initializing map:', error);
     if (mapContainer.value) {
@@ -499,7 +795,12 @@ const revenueChartOptions = ref({
             display: false
         },
         tooltip: {
-            enabled: true
+            enabled: true,
+            callbacks: {
+                label: function(context: any) {
+                    return `₦${context.parsed.y.toLocaleString()}`
+                }
+            }
         }
     },
     scales: {
@@ -507,7 +808,10 @@ const revenueChartOptions = ref({
             beginAtZero: true,
             max: 4000,
             ticks: {
-                stepSize: 1000
+                stepSize: 1000,
+                callback: function(value: any) {
+                    return `₦${value.toLocaleString()}`
+                }
             },
             grid: {
                 color: '#e5e7eb'
@@ -524,9 +828,10 @@ const revenueChartOptions = ref({
 // Click outside handler for date dropdown
 let handleClickOutside: ((event: MouseEvent) => void) | null = null;
 
-onMounted(() => {
-  initMap();
-  
+onMounted(async () => {
+  await fetchDashboardData()
+  await initMap()
+
   // Close date dropdown when clicking outside
   handleClickOutside = (event: MouseEvent) => {
     if (dateDropdownRef.value && !dateDropdownRef.value.contains(event.target as Node)) {
@@ -541,7 +846,7 @@ onBeforeUnmount(() => {
   if (handleClickOutside) {
     document.removeEventListener('click', handleClickOutside)
   }
-  
+
   // Clean up markers
   markers.forEach((marker) => {
     marker.setMap(null);

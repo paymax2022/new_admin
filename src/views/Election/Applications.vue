@@ -44,39 +44,53 @@
     <section class="rounded-3xl bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.05)] space-y-4">
       <h2 class="text-sm font-semibold uppercase tracking-wide text-[#94a3b8]">Filter Applications</h2>
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center">
-        <div class="flex-1 rounded-full border border-[#e2e8f0] bg-[#f8fafc] px-4 py-2 text-sm text-[#6b7280]">
-          <span class="text-[#cbd5f5]">Search candidates, positions, or parties…</span>
-        </div>
+        <select
+          v-model="selectedElectionId"
+          class="flex-1 rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#111827]"
+          @change="loadApplications"
+        >
+          <option value="">Select Election</option>
+          <option v-for="election in elections" :key="election.id" :value="election.id">
+            {{ election.title }}
+          </option>
+        </select>
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search candidates, positions..."
+          class="flex-1 rounded-full border border-[#e2e8f0] bg-[#f8fafc] px-4 py-2 text-sm text-[#111827] placeholder-[#cbd5f5] focus:outline-none focus:ring-2 focus:ring-[#111827]"
+        />
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <button
-            type="button"
-            class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#6b7280]"
+          <select
+            v-model="statusFilter"
+            class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#111827]"
+            @change="loadApplications"
           >
-            All Status
-          </button>
-          <button
-            type="button"
-            class="inline-flex items-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#6b7280]"
-          >
-            All Positions
-            <IconCaretDown class="h-4 w-4 text-[#94a3b8]" />
-          </button>
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_review">In Review</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
         </div>
       </div>
     </section>
 
     <!-- Applications List -->
     <section class="rounded-3xl bg-white p-5 shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
-      <ul class="space-y-6">
+      <div v-if="loading" class="text-center py-8 text-[#6b7280]">Loading applications...</div>
+      <div v-else-if="!selectedElectionId" class="text-center py-8 text-[#6b7280]">Please select an election to view applications</div>
+      <div v-else-if="applications.length === 0" class="text-center py-8 text-[#6b7280]">No applications found</div>
+      <ul v-else class="space-y-6">
         <li
-          v-for="application in applications"
+          v-for="application in filteredApplications"
           :key="application.id"
           class="flex flex-col gap-3 border-b border-[#f1f5f9] pb-5 last:border-0 last:pb-0"
         >
           <div class="flex flex-col gap-1 text-sm text-[#111827]">
             <p class="text-base font-semibold text-[#111827]">{{ application.name }}</p>
             <p class="text-[#6b7280]">
-              {{ application.position }} &middot; {{ application.party }} &middot; {{ application.district }}
+              {{ application.position }} &middot; {{ application.party || 'Independent' }} &middot; {{ application.district || 'N/A' }}
             </p>
             <p class="text-[#94a3b8]">Applied: {{ application.applied }}</p>
           </div>
@@ -109,7 +123,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted, markRaw } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconClipboardText from '@/components/icon/icon-clipboard-text.vue';
 import IconCalendar from '@/components/icon/icon-calendar.vue';
 import IconCircleCheck from '@/components/icon/icon-circle-check.vue';
@@ -118,131 +133,186 @@ import IconDownload from '@/components/icon/icon-download.vue';
 import IconCaretDown from '@/components/icon/icon-caret-down.vue';
 import IconArrowForward from '@/components/icon/icon-arrow-forward.vue';
 import ApplicationReviewModal from './components/ApplicationReviewModal.vue';
+import electionService from '@/services/electionService';
 
-const stats = [
+const toast = useToast();
+
+// Mark icons as raw
+const IconClipboardTextRaw = markRaw(IconClipboardText);
+const IconCalendarRaw = markRaw(IconCalendar);
+const IconCircleCheckRaw = markRaw(IconCircleCheck);
+const IconEyeRaw = markRaw(IconEye);
+
+const loading = ref(false);
+const selectedElectionId = ref('');
+const searchQuery = ref('');
+const statusFilter = ref('');
+const elections = ref<any[]>([]);
+const applications = ref<any[]>([]);
+
+const stats = ref([
   {
     label: 'Total Applications',
-    value: '4',
-    icon: IconClipboardText,
+    value: '0',
+    icon: IconClipboardTextRaw,
     iconBg: '#fef9c3',
     iconColor: '#f59e0b',
   },
   {
     label: 'Pending Review',
-    value: '1',
-    icon: IconCalendar,
+    value: '0',
+    icon: IconCalendarRaw,
     iconBg: '#e0f2fe',
     iconColor: '#0284c7',
   },
   {
     label: 'Approved',
-    value: '1',
-    icon: IconCircleCheck,
+    value: '0',
+    icon: IconCircleCheckRaw,
     iconBg: '#dcfce7',
     iconColor: '#16a34a',
   },
   {
     label: 'Under Review',
-    value: '1',
-    icon: IconEye,
+    value: '0',
+    icon: IconEyeRaw,
     iconBg: '#ede9fe',
     iconColor: '#7c3aed',
   },
-];
+]);
 
-const applications = [
-  {
-    id: 1,
-    candidateId: 'SJU001',
-    name: 'Sarah Johnson',
-    position: 'Mayor',
-    party: 'Progressive Alliance',
-    district: 'District 1',
-    applied: 'Jan 14, 2024',
-    status: 'Pending',
-    badgeClass: 'bg-[#fef3c7] text-[#b45309]',
-    email: 'sarah.johnson@email.com',
-    phone: '(555) 123-4567',
-    education: 'MBA, Harvard Business School',
-    experience: 'City Council Member (2020-2024)',
-    statement: 'Focus on sustainable development, affordable housing, and public transportation improvements.',
-    documents: [
-      { name: 'Resume.pdf' },
-      { name: 'Platform_Statement.pdf' },
-      { name: 'Endorsements.pdf' },
-    ],
-  },
-  {
-    id: 2,
-    candidateId: 'MCH318',
-    name: 'Michael Chen',
-    position: 'City Council',
-    party: 'Independent',
-    district: 'District 3',
-    applied: 'Jan 14, 2024',
-    status: 'Approved',
-    badgeClass: 'bg-[#dcfce7] text-[#15803d]',
-    email: 'michael.chen@email.com',
-    phone: '(555) 555-1212',
-    education: 'MPA, Stanford University',
-    experience: 'Community Organizer (2018-2023)',
-    statement: 'Empowering local communities through transparent governance and participatory budgeting.',
-    documents: [
-      { name: 'Resume.pdf' },
-      { name: 'Community_Support_Letters.pdf' },
-    ],
-  },
-  {
-    id: 3,
-    candidateId: 'SJU001-B',
-    name: 'Sarah Johnson',
-    position: 'Mayor',
-    party: 'Progressive Alliance',
-    district: 'District 1',
-    applied: 'Jan 14, 2024',
-    status: 'In Review',
-    badgeClass: 'bg-[#ede9fe] text-[#6d28d9]',
-    email: 'sarah.johnson@email.com',
-    phone: '(555) 123-4567',
-    education: 'MBA, Harvard Business School',
-    experience: 'City Council Member (2020-2024)',
-    statement: 'Building collaborative partnerships between city officials, educators, and local businesses.',
-    documents: [
-      { name: 'Resume.pdf' },
-      { name: 'Platform_Statement.pdf' },
-    ],
-  },
-  {
-    id: 4,
-    candidateId: 'SJU001-C',
-    name: 'Sarah Johnson',
-    position: 'Mayor',
-    party: 'Progressive Alliance',
-    district: 'District 1',
-    applied: 'Jan 14, 2024',
-    status: 'Rejected',
-    badgeClass: 'bg-[#fee2e2] text-[#b91c1c]',
-    email: 'sarah.johnson@email.com',
-    phone: '(555) 123-4567',
-    education: 'MBA, Harvard Business School',
-    experience: 'Community Advisor (2016-2020)',
-    statement: 'Prioritizing responsible fiscal policy and neighborhood safety initiatives.',
-    documents: [{ name: 'Resume.pdf' }],
-  },
-];
+const getStatusBadgeClass = (status: string) => {
+  const statusLower = (status || '').toLowerCase();
+  if (statusLower === 'approved') return 'bg-[#dcfce7] text-[#15803d]';
+  if (statusLower === 'pending') return 'bg-[#fef3c7] text-[#b45309]';
+  if (statusLower === 'in_review' || statusLower === 'in review') return 'bg-[#ede9fe] text-[#6d28d9]';
+  if (statusLower === 'rejected') return 'bg-[#fee2e2] text-[#b91c1c]';
+  return 'bg-[#f1f5f9] text-[#64748b]';
+};
 
-const reviewModal = ref<{ open: boolean; application: (typeof applications)[0] | null }>({
+const formatDate = (dateString: string) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const filteredApplications = computed(() => {
+  let filtered = applications.value;
+  
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter((app: any) =>
+      app.name?.toLowerCase().includes(query) ||
+      app.position?.toLowerCase().includes(query) ||
+      app.party?.toLowerCase().includes(query)
+    );
+  }
+  
+  return filtered;
+});
+
+const loadElections = async () => {
+  try {
+    const response = await electionService.getAllElectionsAdmin({ limit: 50 });
+    if (response?.data && Array.isArray(response.data)) {
+      elections.value = response.data.map((e: any) => ({
+        id: e.id || e._id,
+        title: e.title || e.name || 'Untitled Election',
+      }));
+      
+      // Auto-select first election if available
+      if (elections.value.length > 0 && !selectedElectionId.value) {
+        selectedElectionId.value = elections.value[0].id;
+        await loadApplications();
+      }
+    }
+  } catch (error: any) {
+    console.error('Error loading elections:', error);
+    toast.error('Failed to load elections');
+  }
+};
+
+const loadApplications = async () => {
+  if (!selectedElectionId.value) {
+    applications.value = [];
+    updateStats();
+    return;
+  }
+  
+  loading.value = true;
+  try {
+    const params: any = { limit: 100 };
+    if (statusFilter.value) {
+      params.status = statusFilter.value;
+    }
+    
+    const response = await electionService.getApplicationsByElection(selectedElectionId.value, params);
+    const apps = Array.isArray(response?.data) ? response.data : [];
+    
+    applications.value = apps.map((app: any) => ({
+      id: app.id || app._id || app.application_id,
+      candidateId: app.candidate_id || app.participant_id || app.identifier || 'N/A',
+      name: app.candidate_name || app.full_name || app.name || 'Unknown Candidate',
+      position: app.position_name || app.position?.name || app.position || 'N/A',
+      party: app.party || app.political_party || null,
+      district: app.district || app.constituency || null,
+      applied: formatDate(app.created_at || app.applied_at || app.submitted_at),
+      status: app.status || 'pending',
+      badgeClass: getStatusBadgeClass(app.status || 'pending'),
+      email: app.email || app.candidate_email || '',
+      phone: app.phone || app.phone_number || '',
+      education: app.education || app.qualifications || '',
+      experience: app.experience || app.work_experience || '',
+      statement: app.manifesto || app.statement || app.bio || '',
+      documents: app.documents || app.attachments || [],
+      original: app,
+    }));
+    
+    updateStats();
+  } catch (error: any) {
+    console.error('Error loading applications:', error);
+    toast.error('Failed to load applications');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const updateStats = () => {
+  const total = applications.value.length;
+  const pending = applications.value.filter((app: any) => 
+    (app.status || '').toLowerCase() === 'pending'
+  ).length;
+  const approved = applications.value.filter((app: any) => 
+    (app.status || '').toLowerCase() === 'approved'
+  ).length;
+  const inReview = applications.value.filter((app: any) => 
+    (app.status || '').toLowerCase() === 'in_review' || 
+    (app.status || '').toLowerCase() === 'in review'
+  ).length;
+  
+  stats.value[0].value = total.toString();
+  stats.value[1].value = pending.toString();
+  stats.value[2].value = approved.toString();
+  stats.value[3].value = inReview.toString();
+};
+
+const reviewModal = ref<{ open: boolean; application: any | null }>({
   open: false,
   application: null,
 });
 
-const openReviewModal = (application: (typeof applications)[0]) => {
+const openReviewModal = (application: any) => {
   reviewModal.value = { open: true, application };
 };
 
 const closeReviewModal = () => {
   reviewModal.value = { open: false, application: null };
+  loadApplications(); // Refresh after review
 };
+
+onMounted(() => {
+  loadElections();
+});
 </script>
 
 

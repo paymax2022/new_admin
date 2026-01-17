@@ -259,17 +259,63 @@ class ElectionService {
     page?: number;
     limit?: number;
     status?: string;
+    type?: string;
     institution_id?: string;
   } = {}): Promise<ApiResponse<any[]>> {
-    const queryParams = new URLSearchParams();
-    if (params.page) queryParams.append('page', params.page.toString());
-    if (params.limit) queryParams.append('limit', params.limit.toString());
-    if (params.status) queryParams.append('status', params.status);
-    if (params.institution_id) queryParams.append('institution_id', params.institution_id);
+    // Use axios params instead of manual query string construction
+    // This ensures proper encoding and header attachment
+    const requestParams: Record<string, string> = {};
+    if (params.page) requestParams.page = params.page.toString();
+    if (params.limit) requestParams.limit = params.limit.toString();
+    if (params.status) requestParams.status = params.status;
+    if (params.type) requestParams.type = params.type;
+    if (params.institution_id) requestParams.institution_id = params.institution_id;
 
-    const url = `${BASE_PATH}/admin/elections/${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await api.get(url);
-    return response.data;
+    // Debug: Verify token exists before request
+    const token = localStorage.getItem('token');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[ElectionService] getAllElectionsAdmin - Token check:', {
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+        tokenStart: token?.substring(0, 20) || 'none',
+        params: requestParams,
+      });
+    }
+
+    try {
+      const response = await api.get(`${BASE_PATH}/admin/elections`, {
+        params: requestParams,
+      });
+      return response.data;
+    } catch (error: any) {
+      // Handle 301 redirect - might need to follow redirect or use different URL
+      if (error?.response?.status === 301 || error?.code === 'ERR_FAILED') {
+        console.error('[ElectionService] getAllElectionsAdmin - Redirect or CORS error', {
+          url: `${BASE_PATH}/admin/elections`,
+          params: requestParams,
+          tokenInStorage: !!token,
+          errorMessage: error?.message,
+          responseStatus: error?.response?.status,
+        });
+        
+        // If it's a network error (CORS), provide helpful message
+        if (error?.message === 'Network Error' || error?.code === 'ERR_NETWORK') {
+          const errorMsg = new Error('CORS error: Backend server must allow requests from http://localhost:5173. This is a server configuration issue.');
+          (errorMsg as any).isCorsError = true;
+          throw errorMsg;
+        }
+      }
+      
+      if (error?.response?.status === 401) {
+        console.error('[ElectionService] getAllElectionsAdmin - 401 Unauthorized', {
+          url: `${BASE_PATH}/admin/elections`,
+          params: requestParams,
+          tokenInStorage: !!token,
+          responseData: error?.response?.data,
+        });
+      }
+      throw error;
+    }
   }
 
   async getElectionDetailsAdmin(electionId: string): Promise<ApiResponse<any>> {
@@ -293,7 +339,7 @@ class ElectionService {
     return response.data;
   }
 
-  async updateElectionStatus(electionId: string, status: 'pending' | 'active' | 'completed' | 'cancelled'): Promise<ApiResponse<any>> {
+  async updateElectionStatus(electionId: string, status: 'draft' | 'upcoming' | 'active' | 'completed' | 'paused'): Promise<ApiResponse<any>> {
     const response = await api.put(`${BASE_PATH}/admin/elections/${electionId}/status`, { status });
     return response.data;
   }
@@ -308,8 +354,18 @@ class ElectionService {
   }
 
   // ========== ADMIN - CANDIDATE APPLICATIONS ==========
-  async getApplicationsByElection(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/applications`);
+  async getApplicationsByElection(electionId: string, params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/applications${query ? `?${query}` : ''}`);
     return response.data;
   }
 
@@ -319,7 +375,7 @@ class ElectionService {
   }
 
   async reviewApplication(electionId: string, applicationId: string, data: {
-    status: 'approved' | 'rejected';
+    status: 'approved' | 'rejected' | 'in_review';
     admin_notes?: string;
   }): Promise<ApiResponse<any>> {
     const response = await api.put(`${BASE_PATH}/admin/elections/${electionId}/applications/${applicationId}/review`, data);
@@ -366,23 +422,43 @@ class ElectionService {
   }
 
   // ========== ADMIN - COMPLAINT MANAGEMENT ==========
-  async getAllComplaintsAdmin(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/complaints`);
+  async getAllComplaintsAdmin(electionId: string, params?: {
+    status?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.status) queryParams.append('status', params.status);
+    if (params?.page) queryParams.append('page', params.page.toString());
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/complaints${query ? `?${query}` : ''}`);
     return response.data;
   }
 
-  async updateComplaintStatus(complaintId: string, status: string): Promise<ApiResponse<any>> {
-    const response = await api.put(`${BASE_PATH}/admin/elections/complaints/${complaintId}/status`, { status });
+  async getComplaintDetailsAdmin(complaintId: string): Promise<ApiResponse<any>> {
+    const response = await api.get(`${BASE_PATH}/election/elections/complaints/${complaintId}`);
     return response.data;
   }
 
-  async resolveComplaint(complaintId: string, resolution: string): Promise<ApiResponse<any>> {
-    const response = await api.put(`${BASE_PATH}/admin/elections/complaints/${complaintId}/resolve`, { resolution });
+  async updateComplaintStatus(complaintId: string, status: 'pending' | 'in_review' | 'resolved' | 'closed'): Promise<ApiResponse<any>> {
+    const response = await api.put(`${BASE_PATH}/admin/complaints/${complaintId}/status`, { status });
     return response.data;
   }
 
-  async closeComplaint(complaintId: string): Promise<ApiResponse<any>> {
-    const response = await api.put(`${BASE_PATH}/admin/elections/complaints/${complaintId}/close`);
+  async resolveComplaint(complaintId: string, data: {
+    admin_response: string;
+    resolution: string;
+  }): Promise<ApiResponse<any>> {
+    const response = await api.put(`${BASE_PATH}/admin/complaints/${complaintId}/resolve`, data);
+    return response.data;
+  }
+
+  async closeComplaint(complaintId: string, data: {
+    closing_notes: string;
+  }): Promise<ApiResponse<any>> {
+    const response = await api.put(`${BASE_PATH}/admin/complaints/${complaintId}/close`, data);
     return response.data;
   }
 
@@ -418,13 +494,33 @@ class ElectionService {
   }
 
   // ========== ADMIN - ACTIVITY FEED ==========
-  async getActivityStream(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/events`);
+  async getActivityStream(electionId: string, params?: {
+    limit?: number;
+    offset?: number;
+    include_names?: boolean;
+    anonymize?: boolean;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    if (params?.include_names !== undefined) queryParams.append('include_names', params.include_names.toString());
+    if (params?.anonymize !== undefined) queryParams.append('anonymize', params.anonymize.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/events${query ? `?${query}` : ''}`);
     return response.data;
   }
 
-  async getLiveActivities(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/live`);
+  async getLiveActivities(electionId: string, params?: {
+    limit?: number;
+    include_names?: boolean;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.include_names !== undefined) queryParams.append('include_names', params.include_names.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/live${query ? `?${query}` : ''}`);
     return response.data;
   }
 
@@ -433,8 +529,8 @@ class ElectionService {
     return response.data;
   }
 
-  async getTurnoutGrowth(electionId: string): Promise<ApiResponse<any>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/turnout-growth`);
+  async getTurnoutGrowth(electionId: string, hours: number = 24): Promise<ApiResponse<any>> {
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/feed/turnout-growth?hours=${hours}`);
     return response.data;
   }
 
@@ -449,18 +545,66 @@ class ElectionService {
   }
 
   // ========== ADMIN - DIRECTORY ==========
-  async getSchoolDirectory(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/school`);
+  async getSchoolDirectory(electionId: string, params?: {
+    department?: string;
+    level?: string;
+    fee_status?: string;
+    eligibility_status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.department) queryParams.append('department', params.department);
+    if (params?.level) queryParams.append('level', params.level);
+    if (params?.fee_status) queryParams.append('fee_status', params.fee_status);
+    if (params?.eligibility_status) queryParams.append('eligibility_status', params.eligibility_status);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/school${query ? `?${query}` : ''}`);
     return response.data;
   }
 
-  async getEstateDirectory(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/estate`);
+  async getEstateDirectory(electionId: string, params?: {
+    block?: string;
+    house_type?: string;
+    dues_status?: string;
+    eligibility_status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.block) queryParams.append('block', params.block);
+    if (params?.house_type) queryParams.append('house_type', params.house_type);
+    if (params?.dues_status) queryParams.append('dues_status', params.dues_status);
+    if (params?.eligibility_status) queryParams.append('eligibility_status', params.eligibility_status);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/estate${query ? `?${query}` : ''}`);
     return response.data;
   }
 
-  async getGroupDirectory(electionId: string): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/group`);
+  async getGroupDirectory(electionId: string, params?: {
+    membership_type?: string;
+    zone?: string;
+    dues_status?: string;
+    eligibility_status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.membership_type) queryParams.append('membership_type', params.membership_type);
+    if (params?.zone) queryParams.append('zone', params.zone);
+    if (params?.dues_status) queryParams.append('dues_status', params.dues_status);
+    if (params?.eligibility_status) queryParams.append('eligibility_status', params.eligibility_status);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/directory/group${query ? `?${query}` : ''}`);
     return response.data;
   }
 
@@ -478,8 +622,8 @@ class ElectionService {
   }
 
   async flagParticipant(electionId: string, participantId: string, data: {
+    flag: string;
     reason: string;
-    severity: 'low' | 'medium' | 'high';
   }): Promise<ApiResponse<any>> {
     const response = await api.post(`${BASE_PATH}/admin/elections/${electionId}/directory/participant/${participantId}/flag`, data);
     return response.data;
@@ -519,8 +663,8 @@ class ElectionService {
     return response.data;
   }
 
-  async getActiveElections(): Promise<ApiResponse<any[]>> {
-    const response = await api.get(`${BASE_PATH}/admin/dashboard/elections/active`);
+  async getActiveElections(limit: number = 10): Promise<ApiResponse<any[]>> {
+    const response = await api.get(`${BASE_PATH}/admin/dashboard/elections/active?limit=${limit}`);
     return response.data;
   }
 
@@ -531,6 +675,38 @@ class ElectionService {
 
   async getElectionOverview(electionId: string): Promise<ApiResponse<any>> {
     const response = await api.get(`${BASE_PATH}/admin/dashboard/elections/${electionId}/overview`);
+    return response.data;
+  }
+
+  // ========== ADMIN - VOTER ELIGIBILITY ==========
+  async getVotersWithEligibility(electionId: string, params?: {
+    eligibility_status?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<ApiResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (params?.eligibility_status) queryParams.append('eligibility_status', params.eligibility_status);
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections/${electionId}/voters${query ? `?${query}` : ''}`);
+    return response.data;
+  }
+
+  async bulkUpdateEligibility(electionId: string, data: {
+    participant_ids: string[];
+    is_eligible: boolean;
+    reason: string;
+  }): Promise<ApiResponse<any>> {
+    const response = await api.put(`${BASE_PATH}/admin/elections/${electionId}/eligibility/bulk`, data);
+    return response.data;
+  }
+
+  async runEligibilityChecks(electionId: string): Promise<ApiResponse<any>> {
+    const response = await api.post(`${BASE_PATH}/admin/elections/${electionId}/eligibility/run-checks`, {});
     return response.data;
   }
 }

@@ -19,19 +19,19 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Scheduled</p>
-                <p class="text-2xl font-semibold text-gray-900 dark:text-white">3</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.totalScheduled }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Today</p>
-                <p class="text-2xl font-semibold text-gray-900 dark:text-white">2</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.today }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Pending Assignment</p>
-                <p class="text-2xl font-semibold text-gray-900 dark:text-white">2</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.pendingAssignment }}</p>
             </div>
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5">
                 <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Recurring</p>
-                <p class="text-2xl font-semibold text-gray-900 dark:text-white">1</p>
+                <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.recurring }}</p>
             </div>
         </div>
 
@@ -136,7 +136,7 @@
                             : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
                     ]"
                 >
-                    {{ tab.label }} ({{ tab.count }})
+                    {{ tab.label }} ({{ loading ? '...' : tab.count }})
                 </button>
             </div>
         </div>
@@ -591,6 +591,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useToast } from 'vue-toastification'
 import {
     ArrowDownTrayIcon,
     MapPinIcon,
@@ -608,14 +609,26 @@ import {
     XMarkIcon,
     CheckIcon
 } from '@heroicons/vue/24/outline'
+import deliveryService from '@/services/deliveryService'
 
-// Tabs
-const tabs = [
-    { id: 'upcoming', label: 'Upcoming', count: 3 },
-    { id: 'completed', label: 'Completed', count: 1 },
-    { id: 'cancelled', label: 'Cancelled', count: 1 },
-    { id: 'all', label: 'All', count: 5 }
-]
+const toast = useToast()
+const loading = ref(false)
+
+// Stats
+const stats = ref({
+    totalScheduled: 0,
+    today: 0,
+    pendingAssignment: 0,
+    recurring: 0
+})
+
+// Tabs - counts will be computed from data
+const tabs = computed(() => [
+    { id: 'upcoming', label: 'Upcoming', count: scheduledRides.value.filter(r => r.status === 'Confirmed' || r.status === 'Assigned').length },
+    { id: 'completed', label: 'Completed', count: scheduledRides.value.filter(r => r.status === 'Completed').length },
+    { id: 'cancelled', label: 'Cancelled', count: scheduledRides.value.filter(r => r.status === 'Cancelled').length },
+    { id: 'all', label: 'All', count: scheduledRides.value.length }
+])
 const activeTab = ref('upcoming')
 
 // Search and Filters
@@ -672,101 +685,155 @@ onBeforeUnmount(() => {
     document.removeEventListener('click', handleClickOutside)
 })
 
-// Sample Data
-const scheduledRides = ref([
-    {
-        id: '1',
-        bookingId: 'BK-20251019-001',
-        status: 'Confirmed',
-        dateTime: '2025-10-20 at 06:00',
-        serviceType: 'Standard',
-        passengers: '1 passenger',
-        passengerName: 'Robert Johnson',
-        passengerPhone: '+1 (555) 123-4567',
-        driver: null,
-        vehicle: null,
-        pickup: '123 Market Street, San Francisco, CA 94102',
-        dropoff: 'SFO International Airport, Terminal 2',
-        distance: '14.2 mi',
-        duration: '28 min',
-        price: '$45.00',
-        rating: null
-    },
-    {
-        id: '2',
-        bookingId: 'BK-20251019-002',
-        status: 'Assigned',
-        dateTime: '2025-10-20 at 08:30',
-        serviceType: 'Premium',
-        passengers: '2 passengers',
-        passengerName: 'Sarah Mitchell',
-        passengerPhone: '+1 (555) 234-5678',
-        driver: 'John Smith',
-        vehicle: '2022 Toyota Camry • ABC-1234',
-        pickup: '456 Pine Street, San Francisco, CA 94108',
-        dropoff: '789 Broadway, Oakland, CA 94612',
-        distance: '12.8 mi',
-        duration: '25 min',
-        price: '$68.50',
-        rating: '4.9'
-    },
-    {
-        id: '3',
-        bookingId: 'BK-20251019-003',
-        status: 'Confirmed',
-        dateTime: '2025-10-21 at 10:00',
-        serviceType: 'Standard',
-        passengers: '1 passenger',
-        passengerName: 'Michael Chen',
-        passengerPhone: '+1 (555) 345-6789',
-        driver: null,
-        vehicle: null,
-        pickup: '321 Elm Avenue, San Francisco, CA 94103',
-        dropoff: '555 Oak Boulevard, San Francisco, CA 94104',
-        distance: '8.5 mi',
-        duration: '18 min',
-        price: '$32.00',
-        rating: null
-    },
-    {
-        id: '4',
-        bookingId: 'BK-20251018-012',
-        status: 'Completed',
-        dateTime: '2025-10-19 at 09:00',
-        serviceType: 'Standard',
-        passengers: '1 passenger',
-        passengerName: 'Emily Davis',
-        passengerPhone: '+1 (555) 456-7890',
-        driver: 'Maria Garcia',
-        driverPhone: '+1 (555) 876-5432',
-        vehicle: '2023 Honda Accord • XYZ-5678',
-        pickup: '888 Geary Street, San Francisco, CA 94109',
-        dropoff: 'Ferry Building, San Francisco, CA 94111',
-        distance: '2.1 mi',
-        duration: '12 min',
-        price: '$18.50',
-        rating: '4.95',
-        bookedAt: '2025-10-17 16:20'
-    },
-    {
-        id: '5',
-        bookingId: 'BK-20251018-015',
-        status: 'Cancelled',
-        dateTime: '2025-10-19 at 10:30',
-        serviceType: 'Premium',
-        passengers: '2 passengers',
-        passengerName: 'David Wilson',
-        passengerPhone: '+1 (555) 567-8901',
-        driver: null,
-        vehicle: null,
-        pickup: '222 Castro Street, San Francisco, CA 94114',
-        dropoff: 'Golden Gate Park, San Francisco, CA 94122',
-        distance: '3.8 mi',
-        duration: '16 min',
-        price: '$28.75',
-        rating: null
+// Scheduled Rides - populated from API
+const scheduledRides = ref<any[]>([])
+
+// Transform order to scheduled ride format
+const transformOrderToScheduledRide = (order: any, rider?: any) => {
+    const pickupDate = order.pick_up_date ? new Date(order.pick_up_date) : null
+    const now = new Date()
+    const isFuture = pickupDate && pickupDate > now
+    
+    // Determine status based on order status and pickup date
+    let status = 'Confirmed'
+    if (order.status) {
+        const orderStatus = (order.status || '').toLowerCase()
+        if (orderStatus === 'completed') status = 'Completed'
+        else if (orderStatus === 'cancelled') status = 'Cancelled'
+        else if (order.rider_id && order.rider_id !== '000000000000000000000000') status = 'Assigned'
+        else if (isFuture) status = 'Confirmed'
+        else status = 'Pending'
     }
-])
+    
+    // Format date and time
+    let dateTime = 'N/A'
+    if (pickupDate) {
+        const dateStr = pickupDate.toISOString().split('T')[0]
+        const timeStr = pickupDate.toTimeString().split(' ')[0].slice(0, 5)
+        dateTime = `${dateStr} at ${timeStr}`
+    }
+    
+    // Get driver info if assigned
+    let driver = null
+    let vehicle = null
+    let driverPhone = null
+    if (rider && order.rider_id && order.rider_id !== '000000000000000000000000') {
+        driver = `${rider.first_name || ''} ${rider.last_name || ''}`.trim() || rider.name || 'N/A'
+        driverPhone = rider.phone_number || rider.phone || null
+        const vehicleMake = rider.vehicle_make || ''
+        const vehicleModel = rider.vehicle_model || ''
+        const vehicleNumber = rider.vehicle_number || rider.registration_number || ''
+        if (vehicleMake || vehicleModel || vehicleNumber) {
+            vehicle = `${vehicleMake} ${vehicleModel}`.trim() || 'Vehicle'
+            if (vehicleNumber) vehicle += ` • ${vehicleNumber}`
+        }
+    }
+    
+    return {
+        id: order._id || order.order_id || order.id || '',
+        bookingId: order.delivery_code || order._id || order.order_id || order.id || 'N/A',
+        status: status,
+        dateTime: dateTime,
+        serviceType: order.vehicle_type || 'Standard',
+        passengers: '1 passenger', // Default, could be calculated if passenger count is available
+        passengerName: order.receiver_full_name || order.customer_name || order.customer?.name || 'N/A',
+        passengerPhone: order.receiver_mobile || order.customer?.phone || order.phone || 'N/A',
+        emailAddress: order.customer?.email || order.email || '',
+        driver: driver,
+        driverPhone: driverPhone,
+        vehicle: vehicle,
+        pickup: order.pick_up_address || order.pickup_address || order.pickup?.address || 'N/A',
+        dropoff: order.drop_off_address || order.delivery_address || order.delivery?.address || 'N/A',
+        distance: order.distance ? `${order.distance} km` : 'N/A',
+        duration: order.delivery_metrics?.duration ? `${Math.round(order.delivery_metrics.duration)} min` : 'N/A',
+        price: order.suggested_price ? `₦${parseFloat(order.suggested_price.toString()).toLocaleString()}` : (order.total_amount ? `₦${parseFloat(order.total_amount.toString()).toLocaleString()}` : '₦0'),
+        rating: order.rating || null,
+        bookedAt: order.created_at ? new Date(order.created_at).toLocaleString() : null,
+        specialRequests: order.special_caution || order.special_instructions || '',
+        original: order
+    }
+}
+
+// Fetch scheduled rides from API
+const fetchScheduledRides = async () => {
+    loading.value = true
+    try {
+        // Fetch all orders
+        const ordersRes = await deliveryService.getAllOrders({
+            page: 1,
+            limit: 1000
+        })
+        
+        // Parse orders response
+        const ordersApiResponse = ordersRes?.data || {}
+        let orders: any[] = []
+        if (Array.isArray(ordersApiResponse.data)) {
+            orders = ordersApiResponse.data
+        } else if (ordersApiResponse.data?.data && Array.isArray(ordersApiResponse.data.data)) {
+            orders = ordersApiResponse.data.data
+        } else if (Array.isArray(ordersApiResponse)) {
+            orders = ordersApiResponse
+        }
+        
+        // Fetch riders to get driver info
+        const ridersRes = await deliveryService.getAllRiders({
+            page: 1,
+            limit: 1000
+        }).catch(() => null)
+        
+        const ridersApiResponse = ridersRes?.data || {}
+        let allRiders: any[] = []
+        if (ridersApiResponse.data?.data?.riders && Array.isArray(ridersApiResponse.data.data.riders)) {
+            allRiders = ridersApiResponse.data.data.riders
+        } else if (ridersApiResponse.data?.riders && Array.isArray(ridersApiResponse.data.riders)) {
+            allRiders = ridersApiResponse.data.riders
+        } else if (ridersApiResponse.data?.data && Array.isArray(ridersApiResponse.data.data)) {
+            allRiders = ridersApiResponse.data.data
+        } else if (Array.isArray(ridersApiResponse.data)) {
+            allRiders = ridersApiResponse.data
+        } else if (Array.isArray(ridersApiResponse)) {
+            allRiders = ridersApiResponse
+        }
+        
+        // Filter orders that have a pick_up_date (scheduled orders)
+        // Include both future scheduled orders and past scheduled orders (completed/cancelled)
+        const scheduled = orders.filter((o: any) => {
+            return o.pick_up_date && o.pick_up_date !== '0001-01-01T00:00:00Z'
+        })
+        
+        // Transform orders to scheduled rides format
+        scheduledRides.value = scheduled.map((order: any) => {
+            const rider = order.rider_id && order.rider_id !== '000000000000000000000000'
+                ? allRiders.find((r: any) => (r._id || r.id || r.rider_id) === order.rider_id)
+                : null
+            return transformOrderToScheduledRide(order, rider)
+        })
+        
+        // Calculate stats
+        const now = new Date()
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        
+        stats.value.totalScheduled = scheduledRides.value.length
+        stats.value.today = scheduledRides.value.filter(ride => {
+            if (!ride.original?.pick_up_date) return false
+            const pickupDate = new Date(ride.original.pick_up_date)
+            return pickupDate >= today && pickupDate < tomorrow
+        }).length
+        stats.value.pendingAssignment = scheduledRides.value.filter(ride => {
+            return (ride.status === 'Confirmed' || ride.status === 'Pending') && !ride.driver
+        }).length
+        stats.value.recurring = 0 // Recurring rides would need a separate field in the order
+        
+    } catch (error: any) {
+        console.error('Error fetching scheduled rides:', error)
+        toast.error(error?.response?.data?.message || 'Failed to load scheduled rides')
+        scheduledRides.value = []
+    } finally {
+        loading.value = false
+    }
+}
 
 // Filtered Data
 const filteredRides = computed(() => {
@@ -914,38 +981,45 @@ const closeEditModal = () => {
     }
 }
 
-const updateRide = () => {
+const updateRide = async () => {
     // Validate required fields
     if (!editForm.value.fullName || !editForm.value.phoneNumber || 
         !editForm.value.pickupLocation || !editForm.value.dropoffLocation ||
         !editForm.value.date || !editForm.value.time) {
-        alert('Please fill in all required fields.')
+        toast.error('Please fill in all required fields.')
         return
     }
     
-    // Find and update the ride
-    const rideIndex = scheduledRides.value.findIndex(r => r.id === editingRideId.value)
-    if (rideIndex !== -1) {
-        const ride = scheduledRides.value[rideIndex]
-        const dateTime = `${editForm.value.date} at ${editForm.value.time}`
-        const passengersText = editForm.value.passengers === 1 ? '1 passenger' : `${editForm.value.passengers} passengers`
-        
-        scheduledRides.value[rideIndex] = {
-            ...ride,
-            passengerName: editForm.value.fullName,
-            passengerPhone: editForm.value.phoneNumber,
-            emailAddress: editForm.value.emailAddress,
-            pickup: editForm.value.pickupLocation,
-            dropoff: editForm.value.dropoffLocation,
-            dateTime: dateTime,
-            serviceType: editForm.value.vehicleType,
-            passengers: passengersText,
-            specialRequests: editForm.value.specialRequests
+    try {
+        const ride = scheduledRides.value.find(r => r.id === editingRideId.value)
+        if (!ride || !ride.original) {
+            toast.error('Ride not found')
+            return
         }
+        
+        // Combine date and time for pick_up_date
+        const dateTimeStr = `${editForm.value.date}T${editForm.value.time}:00Z`
+        const pickUpDate = new Date(dateTimeStr).toISOString()
+        
+        // Update order via API
+        await deliveryService.updateOrder(ride.id, {
+            receiver_full_name: editForm.value.fullName,
+            receiver_mobile: editForm.value.phoneNumber,
+            pick_up_address: editForm.value.pickupLocation,
+            drop_off_address: editForm.value.dropoffLocation,
+            pick_up_date: pickUpDate,
+            vehicle_type: editForm.value.vehicleType,
+            special_caution: editForm.value.specialRequests || '',
+            special_instructions: editForm.value.specialRequests || ''
+        })
+        
+        toast.success('Ride updated successfully')
+        closeEditModal()
+        await fetchScheduledRides()
+    } catch (error: any) {
+        console.error('Error updating ride:', error)
+        toast.error(error?.response?.data?.message || 'Failed to update ride')
     }
-    
-    console.log('Updating ride:', editingRideId.value, editForm.value)
-    closeEditModal()
 }
 
 const deleteRide = (ride: any) => {
@@ -958,8 +1032,10 @@ const deleteRide = (ride: any) => {
     }
 }
 
-const assignDriver = (ride: any) => {
-    console.log('Assigning driver to ride:', ride.bookingId)
-    // Handle assign driver logic
+const assignDriver = async (ride: any) => {
+    // This would open a driver selection modal
+    // For now, we'll just show a message
+    toast.info('Driver assignment feature - to be implemented')
+    // TODO: Implement driver assignment modal similar to Dispatch.vue
 }
 </script>

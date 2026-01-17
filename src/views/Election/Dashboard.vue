@@ -410,41 +410,91 @@ const formatTimeAgo = (dateString: string) => {
 const loadDashboardData = async () => {
   loading.value = true;
   try {
-    // Load dashboard stats
+    // Load dashboard stats, active elections, and recent activities
+    // Note: Stats endpoint may return 401 - handled gracefully with fallback
     const [statsResponse, activeElectionsResponse, recentActivitiesResponse] = await Promise.allSettled([
-      electionService.getDashboardStats(),
+      electionService.getDashboardStats().catch((error) => {
+        // Silently handle 401 or other errors - will calculate from elections data instead
+        // Don't log as error since we have a fallback
+        if (process.env.NODE_ENV === 'development' && error?.response?.status !== 401) {
+          console.warn('[Dashboard] Stats endpoint failed, will calculate from elections data:', error?.response?.status || error?.message);
+        }
+        return { status: 'rejected', error };
+      }),
       electionService.getActiveElections(),
       electionService.getRecentActivities(),
     ]);
 
-    // Update statistics
-    if (statsResponse.status === 'fulfilled' && statsResponse.value?.data) {
-      const stats = statsResponse.value.data;
-      statistics.value[0].value = (stats.total_voters || stats.totalVoters || 0).toLocaleString();
-      statistics.value[1].value = (stats.active_elections || stats.activeElections || 0).toString();
-      statistics.value[3].value = (stats.completed_elections || stats.completedElections || 0).toString();
+    // Load all elections for display and stats calculation
+    await loadElections();
+
+    // Try to use stats from API first, fallback to calculated from elections
+    // Check if stats response is successful and has valid data
+    const statsData = statsResponse.status === 'fulfilled' && statsResponse.value?.data && !statsResponse.value?.error
+      ? statsResponse.value.data
+      : null;
+    
+    if (statsData && statsData.ok !== false) {
+      // Update statistics from API response
+      if (statsData.total_voters !== undefined || statsData.totalVoters !== undefined) {
+        statistics.value[0].value = (statsData.total_voters || statsData.totalVoters || 0).toLocaleString();
+      }
+      if (statsData.active_elections !== undefined || statsData.activeElections !== undefined) {
+        statistics.value[1].value = (statsData.active_elections || statsData.activeElections || 0).toString();
+      }
+      if (statsData.completed_elections !== undefined || statsData.completedElections !== undefined) {
+        statistics.value[3].value = (statsData.completed_elections || statsData.completedElections || 0).toString();
+      }
+    } else {
+      // Calculate statistics from elections data (fallback)
+      const allElections = Array.isArray(elections.value) ? elections.value : [];
+      const activeElections = allElections.filter((e: any) => 
+        e.status === 'active' || e.status === 'Live' || e.status === 'live'
+      );
+      const completedElections = allElections.filter((e: any) => 
+        e.status === 'completed' || e.status === 'Completed'
+      );
+
+      // Update statistics from calculated data
+      statistics.value[1].value = activeElections.length.toString();
+      statistics.value[3].value = completedElections.length.toString();
+
+      // Calculate total voters from elections (sum of eligibleVoters if available)
+      let totalVoters = 0;
+      for (const election of allElections) {
+        const voters = typeof election.eligibleVoters === 'number' 
+          ? election.eligibleVoters 
+          : parseInt(String(election.eligibleVoters || 0).replace(/,/g, '')) || 0;
+        totalVoters += voters;
+      }
+      statistics.value[0].value = totalVoters > 0 ? totalVoters.toLocaleString() : '0';
     }
 
-    // Update active elections count
-    if (activeElectionsResponse.status === 'fulfilled' && activeElectionsResponse.value?.data) {
-      const activeElections = Array.isArray(activeElectionsResponse.value.data) 
+    // Also update active elections count from activeElectionsResponse if stats API didn't work
+    if (activeElectionsResponse.status === 'fulfilled' && activeElectionsResponse.value?.data && statsResponse.status !== 'fulfilled') {
+      const activeFromApi = Array.isArray(activeElectionsResponse.value.data) 
         ? activeElectionsResponse.value.data 
         : [];
-      statistics.value[1].value = activeElections.length.toString();
+      if (activeFromApi.length > 0) {
+        statistics.value[1].value = activeFromApi.length.toString();
+      }
     }
-
-    // Load all elections for display
-    await loadElections();
 
     // Update recent activities
     if (recentActivitiesResponse.status === 'fulfilled' && recentActivitiesResponse.value?.data) {
-      const activities = Array.isArray(recentActivitiesResponse.value.data)
-        ? recentActivitiesResponse.value.data
+      // Handle nested structure: response.data.data.activities or response.data.activities
+      const responseData = recentActivitiesResponse.value.data;
+      const activities = Array.isArray(responseData?.data?.activities)
+        ? responseData.data.activities
+        : Array.isArray(responseData?.activities)
+        ? responseData.activities
+        : Array.isArray(responseData)
+        ? responseData
         : [];
       
       recentActivities.value = activities.slice(0, 10).map((activity: any) => ({
         id: activity.id || activity._id || Math.random().toString(),
-        title: activity.title || activity.type || 'Activity',
+        title: activity.action || activity.type || activity.title || 'Activity',
         description: activity.description || activity.message || activity.details || '',
         time: formatTimeAgo(activity.created_at || activity.timestamp || activity.createdAt || new Date().toISOString()),
       }));
@@ -518,14 +568,25 @@ const handleNextStep = async (formData: unknown) => {
   try {
     const data = formData as any;
     if (data) {
+      // Validate required fields
+      if (!data.institution_id || !data.institution_name) {
+        toast.error('Institution ID and name are required');
+        return;
+      }
+      if (!data.type || !['school', 'estate', 'group'].includes(data.type)) {
+        toast.error('Valid institution type (school, estate, or group) is required');
+        return;
+      }
+      
       await electionService.createElection(data);
       toast.success('Election created successfully');
       await loadElections();
       await loadDashboardData();
+      closeCreateElectionModal();
     }
-    closeCreateElectionModal();
   } catch (error: any) {
-    toast.error(error?.response?.data?.message || 'Failed to create election');
+    console.error('Error creating election:', error);
+    toast.error(error?.response?.data?.message || error?.message || 'Failed to create election');
   }
 };
 

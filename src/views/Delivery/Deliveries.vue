@@ -183,6 +183,12 @@
                         <span v-else class="text-gray-400">-</span>
                     </template>
                 </Vue3Datatable>
+                <div v-else-if="loading" class="p-10 text-center">
+                    <div class="flex flex-col items-center justify-center space-y-4">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Loading deliveries...</p>
+                    </div>
+                </div>
                 <div v-else class="p-10 text-center text-gray-500 dark:text-gray-400">
                     No deliveries found
                 </div>
@@ -215,23 +221,57 @@
                     <!-- User Information -->
                     <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 block">User Information</label>
-                        <div class="flex items-center gap-3">
+                        <div v-if="loadingUserData" class="flex items-center gap-3">
+                            <div class="animate-pulse text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+                        </div>
+                        <div v-else-if="userData" class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <UserIcon class="h-5 w-5 text-gray-400" />
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ userData.first_name || '' }} {{ userData.lastname || '' }}
+                                </span>
+                            </div>
+                            <div v-if="userData.email" class="flex items-center gap-3">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ userData.email }}</span>
+                            </div>
+                            <div v-if="userData.phone" class="flex items-center gap-3">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ userData.phone }}</span>
+                            </div>
+                        </div>
+                        <div v-else class="flex items-center gap-3">
                             <UserIcon class="h-5 w-5 text-gray-400" />
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedDelivery.customer }}</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedDelivery.customer || 'N/A' }}</span>
                         </div>
                     </div>
 
                     <!-- Driver Information -->
                     <div>
                         <label class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 block">Driver Information</label>
-                        <div class="space-y-2">
+                        <div v-if="loadingRiderData" class="flex items-center gap-3">
+                            <div class="animate-pulse text-sm text-gray-500 dark:text-gray-400">Loading...</div>
+                        </div>
+                        <div v-else-if="riderData" class="space-y-2">
                             <div class="flex items-center gap-3">
                                 <UserIcon class="h-5 w-5 text-gray-400" />
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedDelivery.driverName || 'John Smith' }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ riderData.first_name || '' }} {{ riderData.last_name || '' }} {{ riderData.name || '' }}
+                                </span>
                             </div>
-                            <div class="flex items-center gap-3">
+                            <div v-if="riderData.email" class="flex items-center gap-3">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ riderData.email }}</span>
+                            </div>
+                            <div v-if="riderData.phone_number || riderData.phone" class="flex items-center gap-3">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{{ riderData.phone_number || riderData.phone }}</span>
+                            </div>
+                            <div v-if="riderData.rating" class="flex items-center gap-3">
                                 <StarIcon class="h-5 w-5 text-yellow-400" />
-                                <span class="text-sm text-gray-700 dark:text-gray-300">Rating: {{ selectedDelivery.driverRating || '4.9' }}</span>
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Rating: {{ riderData.rating }}</span>
+                            </div>
+                        </div>
+                        <div v-else class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <UserIcon class="h-5 w-5 text-gray-400" />
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">Unassigned</span>
                             </div>
                         </div>
                     </div>
@@ -326,7 +366,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 import { 
     EyeIcon, 
     XMarkIcon, 
@@ -337,12 +378,100 @@ import {
 } from '@heroicons/vue/24/outline'
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import '@bhplugin/vue3-datatable/dist/style.css'
+import deliveryService from '@/services/deliveryService'
+import userService from '@/services/userService'
 
 // Wallet icon component (using BanknotesIcon as fallback)
 const WalletIcon = BanknotesIcon
 
-// Sample data with extended fields
-const deliveries = ref([
+const toast = useToast()
+
+// Real data from API
+const deliveries = ref<any[]>([])
+const currentPage = ref(1)
+const totalPages = ref(1)
+const totalDeliveries = ref(0)
+
+// Transform API order data to delivery format
+const transformOrderToDelivery = (order: any) => {
+    // Map API fields to delivery format
+    const status = order.status || 'Pending'
+    const suggestedPrice = order.suggested_price || 0
+    
+    return {
+        id: order._id || order.order_id || order.id || '',
+        customer: order.receiver_full_name || order.customer_name || order.customer?.name || 'N/A',
+        pickup: order.pick_up_address || order.pickup_address || order.pickup?.address || 'N/A',
+        destination: order.drop_off_address || order.delivery_address || order.delivery?.address || 'N/A',
+        pickupAddress: order.pick_up_address || order.pickup_address || order.pickup?.full_address || 'N/A',
+        destinationAddress: order.drop_off_address || order.delivery_address || order.delivery?.full_address || 'N/A',
+        courier: order.rider_id && order.rider_id !== '000000000000000000000000' ? 'Assigned' : 'Unassigned',
+        driverName: order.rider_name || order.rider?.name || 'Unassigned',
+        driverRating: order.rider?.rating || '0',
+        payment: order.payment_method || 'N/A',
+        fare: `₦${parseFloat(suggestedPrice.toString()).toLocaleString()}`,
+        status: status,
+        distance: order.distance ? `${order.distance}km` : 'N/A',
+        distanceValue: order.distance ? `${(order.distance * 0.621371).toFixed(1)} mi` : 'N/A',
+        distanceFare: order.distance_fare ? `₦${order.distance_fare.toLocaleString()}` : '₦0',
+        timeValue: order.estimated_delivery_time || order.pick_up_date || 'N/A',
+        timeFare: order.time_fare ? `₦${order.time_fare.toLocaleString()}` : '₦0',
+        baseFare: order.base_fare ? `₦${order.base_fare.toLocaleString()}` : '₦0',
+        route: {
+            pickup: order.pick_up_address || order.pickup_address || 'N/A',
+            destination: order.drop_off_address || order.delivery_address || 'N/A'
+        },
+        original: order // Keep original data for reference
+    }
+}
+
+// Fetch deliveries from API
+const fetchDeliveries = async () => {
+    loading.value = true
+    try {
+        const params: any = {
+            page: currentPage.value,
+            limit: rowsPerPage.value
+        }
+        
+        if (selectedStatus.value !== 'All Status') {
+            params.status = selectedStatus.value.toLowerCase()
+        }
+        
+        const response = await deliveryService.getAllOrders(params)
+        
+        // API response structure: { data: [...], message: "...", ok: true }
+        // axios wraps it, so response.data is the API response
+        const apiResponse = response.data
+        
+        // Handle different response structures
+        let ordersArray: any[] = []
+        if (Array.isArray(apiResponse.data)) {
+            // Direct array in data field
+            ordersArray = apiResponse.data
+        } else if (apiResponse.data?.data && Array.isArray(apiResponse.data.data)) {
+            // Nested data.data array
+            ordersArray = apiResponse.data.data
+        } else if (Array.isArray(apiResponse)) {
+            // Response is directly an array
+            ordersArray = apiResponse
+        }
+        
+        deliveries.value = ordersArray.map(transformOrderToDelivery)
+        totalDeliveries.value = (apiResponse as any).total || ordersArray.length
+        totalPages.value = (apiResponse as any).total_pages || Math.ceil(totalDeliveries.value / rowsPerPage.value)
+        
+    } catch (error: any) {
+        console.error('Error fetching deliveries:', error)
+        toast.error(error?.response?.data?.message || 'Failed to load deliveries')
+        deliveries.value = []
+    } finally {
+        loading.value = false
+    }
+}
+
+// Sample data fallback (will be replaced by API)
+const sampleData = [
     {
         id: 'TRIP-78945',
         customer: 'Sarah Johnson',
@@ -443,7 +572,7 @@ const deliveries = ref([
         timeFare: '$5.00',
         baseFare: '$6.00'
     }
-])
+]
 
 // Table configuration
 const columns = ref([
@@ -514,7 +643,7 @@ const selectedStatus = ref('All Status')
 const selectedVehicle = ref('All Vehicles')
 const selectedPayment = ref('All Payments')
 
-const statusOptions = ['All Status', 'completed', 'In transit', 'cancelled']
+const statusOptions = ['All Status', 'Pending', 'completed', 'In transit', 'cancelled']
 const vehicleOptions = ['All Vehicles', 'Car', 'Bike', 'Van']
 const paymentOptions = ['All Payments', 'Card', 'Cash', 'Wallet']
 
@@ -532,6 +661,12 @@ const selectedDelivery = ref<any>(null)
 const modalMapContainer = ref<HTMLDivElement | null>(null)
 let modalMap: google.maps.Map | null = null
 
+// User and rider data
+const userData = ref<any>(null)
+const riderData = ref<any>(null)
+const loadingUserData = ref(false)
+const loadingRiderData = ref(false)
+
 // Google Maps
 declare global {
   interface Window {
@@ -539,7 +674,7 @@ declare global {
   }
 }
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCxK0c-UDughTkIOKtBhacBDEClUgZWGmI';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyABaUOSZbdkQ8iT2U4bcKg9Surc2cX9Tbw';
 
 const loadGoogleMaps = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -564,10 +699,18 @@ const initModalMap = async () => {
   try {
     await loadGoogleMaps();
 
-    const sfCenter = { lat: 37.7749, lng: -122.4194 };
+    // Get coordinates from order_location if available
+    const orderLocation = selectedDelivery.value?.original?.order_location
+    const pickupLat = orderLocation?.pick_up_lat || 6.4541 // Default to Lagos coordinates
+    const pickupLng = orderLocation?.pick_up_long || 3.3947
+    const dropoffLat = orderLocation?.drop_off_lat || 6.4474
+    const dropoffLng = orderLocation?.drop_off_long || 3.4539
+
+    // Use pickup location as center
+    const mapCenter = { lat: pickupLat, lng: pickupLng };
 
     modalMap = new google.maps.Map(modalMapContainer.value, {
-      center: sfCenter,
+      center: mapCenter,
       zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       disableDefaultUI: false,
@@ -581,7 +724,7 @@ const initModalMap = async () => {
 
     // Add pickup marker
     const pickupMarker = new google.maps.Marker({
-      position: { lat: 37.7755, lng: -122.4180 },
+      position: { lat: pickupLat, lng: pickupLng },
       map: modalMap,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
@@ -596,7 +739,7 @@ const initModalMap = async () => {
 
     // Add dropoff marker
     const dropoffMarker = new google.maps.Marker({
-      position: { lat: 37.7740, lng: -122.4210 },
+      position: { lat: dropoffLat, lng: dropoffLng },
       map: modalMap,
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
@@ -697,9 +840,47 @@ const getStatusClass = (status: string) => {
 }
 
 // View delivery details
-const viewDeliveryDetails = (delivery: any) => {
+const viewDeliveryDetails = async (delivery: any) => {
     selectedDelivery.value = delivery
     showModal.value = true
+    
+    // Reset user and rider data
+    userData.value = null
+    riderData.value = null
+    
+    // Fetch user information
+    if (delivery.original?.customer_id) {
+        loadingUserData.value = true
+        try {
+            const userResponse = await userService.getUserById(delivery.original.customer_id)
+            if (userResponse.data?.data) {
+                userData.value = userResponse.data.data
+            }
+        } catch (error: any) {
+            console.error('Error fetching user data:', error)
+            toast.error('Failed to load user information')
+        } finally {
+            loadingUserData.value = false
+        }
+    }
+    
+    // Fetch rider information if rider is assigned
+    const riderId = delivery.original?.rider_id
+    if (riderId && riderId !== '000000000000000000000000') {
+        loadingRiderData.value = true
+        try {
+            const riderResponse = await deliveryService.getRider({ rider_id: riderId })
+            if (riderResponse.data?.data) {
+                riderData.value = riderResponse.data.data
+            }
+        } catch (error: any) {
+            console.error('Error fetching rider data:', error)
+            toast.error('Failed to load rider information')
+        } finally {
+            loadingRiderData.value = false
+        }
+    }
+    
     // Initialize map after modal is shown
     setTimeout(() => {
         initModalMap()
@@ -709,6 +890,8 @@ const viewDeliveryDetails = (delivery: any) => {
 const closeModal = () => {
     showModal.value = false
     selectedDelivery.value = null
+    userData.value = null
+    riderData.value = null
     if (modalMap) {
         modalMap = null
     }
@@ -721,7 +904,14 @@ const onRowClick = (row: any) => {
 // Click outside handlers
 let handleClickOutside: ((event: MouseEvent) => void) | null = null
 
-onMounted(() => {
+// Watch for filter changes and refetch
+watch([selectedStatus, selectedVehicle, selectedPayment, currentPage], () => {
+    fetchDeliveries()
+})
+
+onMounted(async () => {
+    await fetchDeliveries()
+    
     handleClickOutside = (event: MouseEvent) => {
         if (statusDropdownRef.value && !statusDropdownRef.value.contains(event.target as Node)) {
             showStatusDropdown.value = false

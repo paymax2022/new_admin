@@ -352,7 +352,7 @@ const modalMapContainer = ref<HTMLDivElement | null>(null);
 let modalMap: google.maps.Map | null = null;
 
 // Google Maps API Key
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCxK0c-UDughTkIOKtBhacBDEClUgZWGmI';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyABaUOSZbdkQ8iT2U4bcKg9Surc2cX9Tbw';
 
 // Extend Window interface for Google Maps
 declare global {
@@ -800,7 +800,7 @@ const paginatedDeliveries = computed(() => {
 const visiblePages = computed(() => {
   const pages: number[] = [];
   const maxVisible = 5;
-  
+
   if (totalPages.value <= 7) {
     // Show all pages if total is 7 or less
     for (let i = 1; i <= totalPages.value; i++) {
@@ -809,7 +809,7 @@ const visiblePages = computed(() => {
   } else {
     // Always show first page
     pages.push(1);
-    
+
     if (currentPage.value <= 3) {
       // Near the start: show 1, 2, 3, 4, 5, ..., 10
       for (let i = 2; i <= 5; i++) {
@@ -827,7 +827,7 @@ const visiblePages = computed(() => {
       pages.push(currentPage.value + 1);
     }
   }
-  
+
   return pages;
 });
 
@@ -879,7 +879,7 @@ watch([searchQuery, statusFilter, courierFilter, dateFilter], () => {
 const openDeliveryModal = async (delivery: Delivery) => {
   selectedDelivery.value = delivery;
   showDeliveryModal.value = true;
-  
+
   // Initialize map after modal opens
   await nextTick();
   if (modalMapContainer.value) {
@@ -905,7 +905,7 @@ const initModalMap = async () => {
     // Get route coordinates (simplified - in real app would use actual addresses)
     const route = selectedDelivery.value?.route || '';
     const [pickup, dropoff] = route.split(' → ');
-    
+
     // Use Lagos coordinates (Awolowo Road area)
     const center = { lat: 6.4481, lng: 3.4300 };
 

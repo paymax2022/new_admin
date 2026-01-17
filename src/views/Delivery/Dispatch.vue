@@ -35,7 +35,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Pending Requests</p>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">4</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.pendingRequests }}</p>
                     </div>
                     <div class="flex-shrink-0 ml-4">
                         <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-yellow-100 dark:bg-yellow-900/30">
@@ -50,7 +50,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Available Drivers</p>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">4</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.availableDrivers }}</p>
                     </div>
                     <div class="flex-shrink-0 ml-4">
                         <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-green-100 dark:bg-green-900/30">
@@ -65,7 +65,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Active Assignments</p>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">0</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : stats.activeAssignments }}</p>
                     </div>
                     <div class="flex-shrink-0 ml-4">
                         <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-100 dark:bg-blue-900/30">
@@ -82,7 +82,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Avg Wait Time</p>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">4.2m</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : `${stats.avgWaitTime.toFixed(1)}m` }}</p>
                     </div>
                     <div class="flex-shrink-0 ml-4">
                         <div class="flex items-center justify-center h-12 w-12 rounded-lg bg-purple-100 dark:bg-purple-900/30">
@@ -101,7 +101,9 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Ride Requests</h2>
-                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">4</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                        {{ activeRequestTab === 'pending' ? pendingRequests.length : assignedRequests.length }}
+                    </span>
                 </div>
 
                 <!-- Tabs -->
@@ -132,40 +134,49 @@
 
                 <!-- Pending Requests List -->
                 <div v-if="activeRequestTab === 'pending'" class="space-y-3">
-                    <div 
-                        v-for="request in pendingRequests" 
-                        :key="request.id"
-                        @click="openRequestDetailsModal(request)"
-                        class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                        <div class="flex items-start justify-between mb-2">
-                            <div class="flex-1">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ request.id }}</span>
-                                    <span 
-                                        :class="[
-                                            'px-2 py-0.5 text-xs font-medium rounded',
-                                            request.priority === 'urgent' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                                        ]"
-                                    >
-                                        {{ request.priority }}
-                                    </span>
-                                </div>
-                                <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">{{ request.customer }}</p>
-                                <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                                    <MapPinIcon class="h-3 w-3 text-green-500" />
-                                    <span>{{ request.pickup }}</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 mt-1">
-                                    <MapPinIcon class="h-3 w-3 text-red-500" />
-                                    <span>{{ request.destination }}</span>
+                    <div v-if="loading" class="text-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Loading requests...</p>
+                    </div>
+                    <template v-else-if="pendingRequests.length > 0">
+                        <div 
+                            v-for="request in pendingRequests" 
+                            :key="request.id"
+                            @click="openRequestDetailsModal(request)"
+                            class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        >
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ request.id }}</span>
+                                        <span 
+                                            :class="[
+                                                'px-2 py-0.5 text-xs font-medium rounded',
+                                                request.priority === 'urgent' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                                            ]"
+                                        >
+                                            {{ request.priority }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400 mb-1">{{ request.customer }}</p>
+                                    <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                        <MapPinIcon class="h-3 w-3 text-green-500" />
+                                        <span>{{ request.pickup }}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 mt-1">
+                                        <MapPinIcon class="h-3 w-3 text-red-500" />
+                                        <span>{{ request.destination }}</span>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ request.vehicleType }}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ request.timeAgo }}</span>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ request.vehicleType }}</span>
-                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ request.timeAgo }}</span>
-                        </div>
+                    </template>
+                    <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+                        No pending requests
                     </div>
                 </div>
 
@@ -231,7 +242,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Available Drivers</h2>
-                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">4</span>
+                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">{{ availableDrivers.length }}</span>
                 </div>
 
                 <!-- Search and Filters -->
@@ -297,7 +308,12 @@
             </div>
 
             <div class="space-y-4">
+                <div v-if="loading" class="text-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Loading assignments...</p>
+                </div>
                 <div 
+                    v-else-if="recentAssignments.length > 0"
                     v-for="assignment in recentAssignments" 
                     :key="assignment.id"
                     class="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
@@ -328,6 +344,9 @@
                             {{ assignment.status }}
                         </span>
                     </div>
+                </div>
+                <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
+                    No recent assignments
                 </div>
             </div>
         </div>
@@ -387,7 +406,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Estimated Fare</label>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">${{ selectedRequest.estimatedFare || '24.50' }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedRequest.estimatedFare || '₦0.00' }}</p>
                             </div>
                             <div>
                                 <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Priority</label>
@@ -451,14 +470,18 @@
                         </div>
 
                         <div class="space-y-3">
+                            <div v-if="recommendedDrivers.length === 0" class="text-center py-4 text-gray-500 dark:text-gray-400 text-sm">
+                                No drivers available
+                            </div>
                             <div 
+                                v-else
                                 v-for="driver in recommendedDrivers" 
                                 :key="driver.id"
                                 class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-between"
                             >
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-semibold text-gray-900 dark:text-white mb-1">{{ driver.name }}</p>
-                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ driver.distance }} - {{ driver.eta }}</p>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">{{ driver.distance !== 'N/A' ? driver.distance : '' }} {{ driver.eta !== 'N/A' ? `- ${driver.eta}` : '' }}</p>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <div class="flex items-center gap-1">
@@ -604,7 +627,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 import { 
     ClockIcon, 
     UserIcon, 
@@ -615,6 +639,9 @@ import {
     XMarkIcon,
     PhoneIcon
 } from '@heroicons/vue/24/outline'
+import deliveryService from '@/services/deliveryService'
+
+const toast = useToast()
 
 // Auto-Assignment Toggle
 const autoAssignment = ref(true)
@@ -626,79 +653,198 @@ const activeRequestTab = ref('pending')
 const showRequestDetailsModal = ref(false)
 const selectedRequest = ref<any>(null)
 
-// Pending Requests
-const pendingRequests = ref([
-    {
-        id: 'REQ-1001',
-        priority: 'urgent',
-        customer: 'John Davis',
-        phone: '+234567809',
-        pickup: '123 Main Street, Downtown',
-        destination: '456 Oak Avenue, Uptown',
-        vehicleType: 'Standard',
-        timeAgo: '2 min ago',
-        distance: '8.5 km',
-        estimatedFare: '24.50',
-        specialRequest: ''
-    },
-    {
-        id: 'REQ-1002',
-        priority: 'high',
-        customer: 'Sarah Johnson',
-        phone: '+234567810',
-        pickup: '789 Pine Street',
-        destination: '321 Elm Avenue',
-        vehicleType: 'Premium',
-        timeAgo: '5 min ago',
-        distance: '12.3 km',
-        estimatedFare: '35.20',
-        specialRequest: ''
-    },
-    {
-        id: 'REQ-1003',
-        priority: 'normal',
-        customer: 'Mike Chen',
-        phone: '+234567811',
-        pickup: '555 Broadway',
-        destination: '888 Market Street',
-        vehicleType: 'Standard',
-        timeAgo: '8 min ago',
-        distance: '6.2 km',
-        estimatedFare: '18.50',
-        specialRequest: ''
-    },
-    {
-        id: 'REQ-1004',
-        priority: 'normal',
-        customer: 'Emily Davis',
-        phone: '+234567812',
-        pickup: '222 First Street',
-        destination: '999 Second Avenue',
-        vehicleType: 'XL',
-        timeAgo: '12 min ago',
-        distance: '15.8 km',
-        estimatedFare: '42.30',
-        specialRequest: ''
-    }
-])
+// Stats
+const stats = ref({
+    pendingRequests: 0,
+    availableDrivers: 0,
+    activeAssignments: 0,
+    avgWaitTime: 0
+})
 
-// Recommended Drivers for Request
-const recommendedDrivers = ref([
-    {
-        id: 'DRV-501',
-        name: 'James Wilson',
-        distance: '0.8 km',
-        eta: '3m ETA',
-        rating: '4.9'
-    },
-    {
-        id: 'DRV-504',
-        name: 'Lisa Anderson',
-        distance: '1.5 km',
-        eta: '6m ETA',
-        rating: '4.92'
+const loading = ref(false)
+
+// Transform order to request format
+const transformOrderToRequest = (order: any) => {
+    return {
+        id: order.order_id || order.id || 'N/A',
+        priority: order.priority || 'normal',
+        customer: order.customer_name || order.customer?.name || 'N/A',
+        phone: order.customer?.phone || order.phone || 'N/A',
+        pickup: order.pickup_address || order.pickup?.address || 'N/A',
+        destination: order.delivery_address || order.delivery?.address || 'N/A',
+        vehicleType: order.vehicle_type || 'Standard',
+        timeAgo: order.created_at ? calculateTimeAgo(order.created_at) : 'N/A',
+        distance: order.distance ? `${order.distance} km` : 'N/A',
+        estimatedFare: order.total_amount ? `₦${parseFloat(order.total_amount).toFixed(2)}` : '₦0.00',
+        specialRequest: order.special_instructions || '',
+        original: order
     }
-])
+}
+
+// Calculate time ago
+const calculateTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins} min ago`
+    const diffHours = Math.floor(diffMins / 60)
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`
+    const diffDays = Math.floor(diffHours / 24)
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`
+}
+
+// Fetch pending orders and available drivers
+const fetchDispatchData = async () => {
+    loading.value = true
+    try {
+        const [ordersRes, ridersRes] = await Promise.all([
+            deliveryService.getAllOrders({
+                page: 1,
+                limit: 100
+            }).catch(() => null),
+            deliveryService.getAllRiders({
+                page: 1,
+                limit: 100
+            }).catch(() => null)
+        ])
+
+        // Parse orders response - handle different structures
+        const ordersApiResponse = ordersRes?.data || {}
+        let orders: any[] = []
+        if (Array.isArray(ordersApiResponse.data)) {
+            orders = ordersApiResponse.data
+        } else if (ordersApiResponse.data?.data && Array.isArray(ordersApiResponse.data.data)) {
+            orders = ordersApiResponse.data.data
+        } else if (Array.isArray(ordersApiResponse)) {
+            orders = ordersApiResponse
+        }
+
+        // Parse riders response - handle different structures
+        const ridersApiResponse = ridersRes?.data || {}
+        let allRiders: any[] = []
+        if (ridersApiResponse.data?.data?.riders && Array.isArray(ridersApiResponse.data.data.riders)) {
+            allRiders = ridersApiResponse.data.data.riders
+        } else if (ridersApiResponse.data?.riders && Array.isArray(ridersApiResponse.data.riders)) {
+            allRiders = ridersApiResponse.data.riders
+        } else if (ridersApiResponse.data?.data && Array.isArray(ridersApiResponse.data.data)) {
+            allRiders = ridersApiResponse.data.data
+        } else if (Array.isArray(ridersApiResponse.data)) {
+            allRiders = ridersApiResponse.data
+        } else if (Array.isArray(ridersApiResponse)) {
+            allRiders = ridersApiResponse
+        }
+        
+        // Filter pending orders (status = 'Pending' or rider_id is unassigned)
+        const pending = orders.filter((o: any) => {
+            const status = (o.status || '').toLowerCase()
+            const riderId = o.rider_id || o.riderId || ''
+            return status === 'pending' || (status !== 'completed' && status !== 'cancelled' && (!riderId || riderId === '000000000000000000000000'))
+        })
+        
+        // Filter assigned orders
+        const assigned = orders.filter((o: any) => {
+            const status = (o.status || '').toLowerCase()
+            const riderId = o.rider_id || o.riderId || ''
+            return (status === 'assigned' || status === 'in_transit' || status === 'picked_up') && riderId && riderId !== '000000000000000000000000'
+        })
+        
+        // Filter available riders (status = 'online' or 'active')
+        const available = allRiders.filter((r: any) => {
+            const status = (r.status || '').toLowerCase()
+            return status === 'online' || status === 'active'
+        })
+
+        // Update pending requests (only show in pending tab)
+        if (activeRequestTab.value === 'pending') {
+            pendingRequests.value = pending.map(transformOrderToRequest)
+        } else {
+            assignedRequests.value = assigned.map(transformOrderToRequest)
+        }
+        
+        // Update available drivers
+        availableDrivers.value = available.map((r: any) => ({
+            id: r._id || r.id || r.rider_id || '',
+            name: `${r.first_name || ''} ${r.last_name || ''}`.trim() || r.name || 'N/A',
+            driverId: r._id || r.rider_id || r.id || 'N/A',
+            vehicle: r.vehicle_type || r.transport_mode || 'Standard',
+            location: r.address || r.local_district || r.location || 'N/A',
+            rating: r.rating || '0',
+            trips: r.total_trips || r.total_deliveries || '0',
+            original: r
+        }))
+
+        // Update stats
+        stats.value.pendingRequests = pending.length
+        stats.value.availableDrivers = available.length
+        stats.value.activeAssignments = assigned.length
+        
+        // Calculate average wait time from pending orders
+        if (pending.length > 0) {
+            const now = new Date()
+            const waitTimes = pending
+                .map((o: any) => {
+                    if (o.created_at) {
+                        const created = new Date(o.created_at)
+                        return (now.getTime() - created.getTime()) / 60000 // minutes
+                    }
+                    return 0
+                })
+                .filter((time: number) => time > 0)
+            
+            if (waitTimes.length > 0) {
+                const avgWaitTime = waitTimes.reduce((sum: number, time: number) => sum + time, 0) / waitTimes.length
+                stats.value.avgWaitTime = Math.round(avgWaitTime * 10) / 10
+            }
+        }
+        
+        // Generate recent assignments from assigned orders (last 10)
+        recentAssignments.value = assigned
+            .slice(0, 10)
+            .map((o: any) => {
+                const rider = allRiders.find((r: any) => (r._id || r.id || r.rider_id) === (o.rider_id || o.riderId))
+                return {
+                    id: o._id || o.order_id || o.id || 'N/A',
+                    driver: rider ? `${rider.first_name || ''} ${rider.last_name || ''}`.trim() || rider.name || 'N/A' : 'N/A',
+                    date: o.updated_at || o.created_at ? new Date(o.updated_at || o.created_at).toLocaleString() : 'N/A',
+                    assignedBy: 'System', // Could be from order metadata if available
+                    note: o.special_caution || o.special_instructions || '',
+                    status: (o.status || '').toLowerCase() === 'completed' ? 'completed' : 'accepted',
+                    icon: (o.status || '').toLowerCase() === 'completed' ? CheckCircleIcon : PaperAirplaneIcon
+                }
+            })
+        
+    } catch (error: any) {
+        console.error('Error fetching dispatch data:', error)
+        toast.error(error?.response?.data?.message || 'Failed to load dispatch data')
+    } finally {
+        loading.value = false
+    }
+}
+
+// Pending Requests - populated from API
+const pendingRequests = ref<any[]>([])
+
+// Assigned Requests - populated from API
+const assignedRequests = ref<any[]>([])
+
+// Recommended Drivers for Request - calculated from available drivers
+const recommendedDrivers = computed(() => {
+    if (!selectedRequest.value) return []
+    
+    // Get top 5 available drivers (can be enhanced with proximity calculation)
+    return availableDrivers.value
+        .slice(0, 5)
+        .map((driver: any) => ({
+            id: driver.id,
+            name: driver.name,
+            distance: 'N/A', // Could calculate from coordinates if available
+            eta: 'N/A', // Could calculate from distance if available
+            rating: driver.rating || '0',
+            original: driver.original
+        }))
+})
 
 const openRequestDetailsModal = (request: any) => {
     selectedRequest.value = { ...request }
@@ -716,14 +862,31 @@ const assignDriver = (driver: any) => {
     showConfirmAssignmentModal.value = true
 }
 
-const confirmAssignment = () => {
-    // Handle driver assignment logic here
-    console.log('Confirming assignment:', selectedDriver.value?.name, 'to request:', selectedRequest.value?.id, 'Notes:', assignmentNotes.value)
-    showConfirmAssignmentModal.value = false
-    showRequestDetailsModal.value = false
-    assignmentNotes.value = ''
-    selectedDriver.value = null
-    // You could add logic to move request to assigned tab, etc.
+const confirmAssignment = async () => {
+    if (!selectedDriver.value || !selectedRequest.value) return
+    
+    try {
+        const orderId = selectedRequest.value.original?._id || selectedRequest.value.original?.order_id || selectedRequest.value.original?.id || selectedRequest.value.id
+        const riderId = selectedDriver.value.original?._id || selectedDriver.value.original?.rider_id || selectedDriver.value.original?.id || selectedDriver.value.id
+        
+        // Assign rider to order
+        await deliveryService.updateOrder(orderId, {
+            rider_id: riderId,
+            status: 'assigned'
+        })
+        
+        toast.success(`Driver ${selectedDriver.value.name} assigned successfully`)
+        showConfirmAssignmentModal.value = false
+        showRequestDetailsModal.value = false
+        assignmentNotes.value = ''
+        selectedDriver.value = null
+        
+        // Refresh data
+        await fetchDispatchData()
+    } catch (error: any) {
+        console.error('Error assigning driver:', error)
+        toast.error(error?.response?.data?.message || 'Failed to assign driver')
+    }
 }
 
 const cancelAssignment = () => {
@@ -736,76 +899,31 @@ const cancelAssignment = () => {
 // Driver Search
 const driverSearchQuery = ref('')
 
-// Available Drivers
-const availableDrivers = ref([
-    {
-        id: 'DRV-501',
-        name: 'James Wilson',
-        driverId: 'DRV-501',
-        vehicle: 'Standard - Toyota Camry 2022',
-        location: 'Downtown',
-        rating: '4.9',
-        trips: '1245'
-    },
-    {
-        id: 'DRV-502',
-        name: 'Maria Garcia',
-        driverId: 'DRV-502',
-        vehicle: 'Premium - BMW 5 Series 2023',
-        location: 'Uptown',
-        rating: '4.8',
-        trips: '892'
-    },
-    {
-        id: 'DRV-503',
-        name: 'Robert Smith',
-        driverId: 'DRV-503',
-        vehicle: 'Standard - Honda Accord 2021',
-        location: 'Midtown',
-        rating: '4.7',
-        trips: '654'
-    },
-    {
-        id: 'DRV-504',
-        name: 'Lisa Anderson',
-        driverId: 'DRV-504',
-        vehicle: 'XL - Ford Transit 2022',
-        location: 'Airport',
-        rating: '4.9',
-        trips: '1123'
-    }
-])
+// Available Drivers - will be populated from API
+const availableDrivers = ref<any[]>([])
 
 const filteredDrivers = computed(() => {
     if (!driverSearchQuery.value) return availableDrivers.value
     const query = driverSearchQuery.value.toLowerCase()
     return availableDrivers.value.filter(driver => 
-        driver.name.toLowerCase().includes(query) ||
-        driver.driverId.toLowerCase().includes(query) ||
-        driver.location.toLowerCase().includes(query)
+        (driver.name || '').toLowerCase().includes(query) ||
+        (driver.driverId || '').toLowerCase().includes(query) ||
+        (driver.location || '').toLowerCase().includes(query)
     )
 })
 
-// Recent Assignments
-const recentAssignments = ref([
-    {
-        id: 'REQ-998',
-        driver: 'James Wilson',
-        date: '2025-10-19 14:30',
-        assignedBy: 'admin@paymax.com',
-        note: 'Customer requested experienced driver',
-        status: 'completed',
-        icon: CheckCircleIcon
-    },
-    {
-        id: 'REQ-999',
-        driver: 'Maria Garcia',
-        date: '2025-10-19 14:45',
-        assignedBy: 'dispatcher@paymax.com',
-        note: '',
-        status: 'accepted',
-        icon: PaperAirplaneIcon
+// Watch for tab changes
+watch(activeRequestTab, () => {
+    if (activeRequestTab.value === 'pending') {
+        fetchDispatchData()
     }
-])
+})
+
+onMounted(async () => {
+    await fetchDispatchData()
+})
+
+// Recent Assignments - populated from API
+const recentAssignments = ref<any[]>([])
 </script>
 

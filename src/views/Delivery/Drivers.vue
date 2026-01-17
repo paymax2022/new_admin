@@ -227,19 +227,39 @@
                             <div class="space-y-3">
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Full Name:</span>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.name }}</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original?.first_name || '' }} {{ selectedDriver.original?.last_name || '' }}
+                                    </span>
                                 </div>
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Phone:</span>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.phone }}</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original?.phone_number || selectedDriver.phone || 'N/A' }}
+                                    </span>
                                 </div>
                                 <div>
                                     <span class="text-sm text-gray-500 dark:text-gray-400">Email:</span>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.email || 'driver@email.com' }}</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original?.email || selectedDriver.email || 'N/A' }}
+                                    </span>
                                 </div>
-                                <div>
-                                    <span class="text-sm text-gray-500 dark:text-gray-400">DOB:</span>
-                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.dob || '01/15/1990' }}</span>
+                                <div v-if="selectedDriver.original?.address">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Address:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original.address }}
+                                    </span>
+                                </div>
+                                <div v-if="selectedDriver.original?.area_of_operation">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">Area of Operation:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original.area_of_operation }}
+                                    </span>
+                                </div>
+                                <div v-if="selectedDriver.original?.about_me">
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">About:</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                        {{ selectedDriver.original.about_me }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -247,8 +267,14 @@
                         <!-- Profile Photo -->
                         <div>
                             <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Profile Photo</h3>
-                            <div class="w-full aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                <UserIcon class="h-24 w-24 text-gray-400 dark:text-gray-500" />
+                            <div class="w-full aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
+                                <img 
+                                    v-if="selectedDriver.original?.driver_photo" 
+                                    :src="selectedDriver.original.driver_photo" 
+                                    :alt="selectedDriver.name"
+                                    class="w-full h-full object-cover"
+                                />
+                                <UserIcon v-else class="h-24 w-24 text-gray-400 dark:text-gray-500" />
                             </div>
                         </div>
                     </div>
@@ -256,48 +282,77 @@
                     <!-- Documents Tab -->
                     <div v-if="activeReviewTab === 'documents'" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Driver License -->
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
-                                <div class="mb-4">
-                                    <DocumentTextIcon class="h-12 w-12 text-gray-400 dark:text-gray-500" />
+                            <!-- Driver License Front -->
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Driver License - Front</h4>
+                                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-3 min-h-[200px] flex items-center justify-center">
+                                    <img 
+                                        v-if="selectedDriver.original?.driving_license_photo_front" 
+                                        :src="selectedDriver.original.driving_license_photo_front" 
+                                        alt="Driver License Front"
+                                        class="w-full h-full object-contain cursor-pointer"
+                                        @click="window.open(selectedDriver.original.driving_license_photo_front, '_blank')"
+                                    />
+                                    <DocumentTextIcon v-else class="h-12 w-12 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Driver License</h4>
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    verified
-                                </span>
+                                <div v-if="selectedDriver.original?.drivers_license_number" class="text-xs text-gray-600 dark:text-gray-400">
+                                    License: {{ selectedDriver.original.drivers_license_number }}
+                                </div>
+                                <div v-if="selectedDriver.original?.drivers_license_expiry" class="text-xs text-gray-600 dark:text-gray-400">
+                                    Expires: {{ new Date(selectedDriver.original.drivers_license_expiry).toLocaleDateString() }}
+                                </div>
                             </div>
 
-                            <!-- Insurance Certificate -->
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
-                                <div class="mb-4">
-                                    <DocumentTextIcon class="h-12 w-12 text-gray-400 dark:text-gray-500" />
+                            <!-- Driver License Back -->
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Driver License - Back</h4>
+                                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-3 min-h-[200px] flex items-center justify-center">
+                                    <img 
+                                        v-if="selectedDriver.original?.driving_license_photo_back" 
+                                        :src="selectedDriver.original.driving_license_photo_back" 
+                                        alt="Driver License Back"
+                                        class="w-full h-full object-contain cursor-pointer"
+                                        @click="window.open(selectedDriver.original.driving_license_photo_back, '_blank')"
+                                    />
+                                    <DocumentTextIcon v-else class="h-12 w-12 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Insurance Certificate</h4>
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    verified
-                                </span>
                             </div>
 
-                            <!-- Background Check -->
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
-                                <div class="mb-4">
-                                    <DocumentTextIcon class="h-12 w-12 text-gray-400 dark:text-gray-500" />
+                            <!-- Vehicle Image -->
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Vehicle Image</h4>
+                                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden mb-3 min-h-[200px] flex items-center justify-center">
+                                    <img 
+                                        v-if="selectedDriver.original?.vehicle_image" 
+                                        :src="selectedDriver.original.vehicle_image" 
+                                        alt="Vehicle"
+                                        class="w-full h-full object-contain cursor-pointer"
+                                        @click="window.open(selectedDriver.original.vehicle_image, '_blank')"
+                                    />
+                                    <DocumentTextIcon v-else class="h-12 w-12 text-gray-400 dark:text-gray-500" />
                                 </div>
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Background Check</h4>
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                    pending
-                                </span>
+                                <div v-if="selectedDriver.original?.vehicle_number" class="text-xs text-gray-600 dark:text-gray-400">
+                                    Plate: {{ selectedDriver.original.vehicle_number }}
+                                </div>
                             </div>
 
                             <!-- Vehicle Registration -->
-                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6 flex flex-col items-center justify-center min-h-[200px]">
-                                <div class="mb-4">
-                                    <DocumentTextIcon class="h-12 w-12 text-gray-400 dark:text-gray-500" />
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-6">
+                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Vehicle Details</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div v-if="selectedDriver.original?.registration_number">
+                                        <span class="text-gray-600 dark:text-gray-400">Registration:</span>
+                                        <span class="text-gray-900 dark:text-white ml-2 font-medium">
+                                            {{ selectedDriver.original.registration_number }}
+                                        </span>
+                                    </div>
+                                    <div v-if="selectedDriver.original?.vehicle_ownership">
+                                        <span class="text-gray-600 dark:text-gray-400">Ownership:</span>
+                                        <span class="text-gray-900 dark:text-white ml-2 font-medium capitalize">
+                                            {{ selectedDriver.original.vehicle_ownership }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Vehicle Registration</h4>
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                    verified
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -305,22 +360,55 @@
                     <!-- Vehicle Tab -->
                     <div v-if="activeReviewTab === 'vehicle'" class="space-y-4">
                         <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Vehicle Information</h3>
+                        <div v-if="selectedDriver.original?.vehicle_image" class="mb-6">
+                            <img 
+                                :src="selectedDriver.original.vehicle_image" 
+                                alt="Vehicle"
+                                class="w-full max-w-md mx-auto rounded-lg shadow-lg"
+                            />
+                        </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <span class="text-sm text-gray-500 dark:text-gray-400">Make/Model:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.vehicle?.makeModel || 'Toyota Camry 2020' }}</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Type:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_type || selectedDriver.original?.transport_mode || 'N/A' }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Make:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_make || 'N/A' }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Model:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_model || 'N/A' }}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Year:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_year || 'N/A' }}
+                                </span>
                             </div>
                             <div>
                                 <span class="text-sm text-gray-500 dark:text-gray-400">License Plate:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.vehicle?.licensePlate || 'ABC-1234' }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_number || selectedDriver.original?.registration_number || 'N/A' }}
+                                </span>
                             </div>
                             <div>
                                 <span class="text-sm text-gray-500 dark:text-gray-400">Color:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.vehicle?.color || 'Silver' }}</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">
+                                    {{ selectedDriver.original?.vehicle_color || 'N/A' }}
+                                </span>
                             </div>
                             <div>
-                                <span class="text-sm text-gray-500 dark:text-gray-400">Seats:</span>
-                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2">{{ selectedDriver.vehicle?.seats || '5' }}</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">Ownership:</span>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white ml-2 capitalize">
+                                    {{ selectedDriver.original?.vehicle_ownership || 'N/A' }}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -1105,22 +1193,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 import { UserIcon, CheckCircleIcon, ExclamationTriangleIcon, XMarkIcon, DocumentTextIcon, StarIcon, ArrowLeftIcon, EnvelopeIcon, NoSymbolIcon, PhoneIcon, CalendarDaysIcon, ArrowDownTrayIcon, EyeIcon, TruckIcon, CurrencyDollarIcon, ArrowUpIcon, ArrowDownIcon } from '@heroicons/vue/24/outline'
 import { StarIcon as StarIconSolid } from '@heroicons/vue/24/solid'
 import Vue3Datatable from '@bhplugin/vue3-datatable'
 import '@bhplugin/vue3-datatable/dist/style.css'
 import LineChart from '@/components/charts/LineChart.vue'
 import BarChart from '@/components/charts/BarChart.vue'
+import deliveryService from '@/services/deliveryService'
 
 // Navigation tabs
 const activeTab = ref('pending')
 const navigationTabs = ref([
-    { name: 'pending', label: 'Pending Applications', count: 3 },
-    { name: 'active', label: 'Active Drivers', count: 3 },
-    { name: 'inactive', label: 'Inactive', count: undefined },
-    { name: 'suspended', label: 'Suspended', count: undefined }
+    { name: 'pending', label: 'Pending Applications', count: 0 },
+    { name: 'active', label: 'Active Drivers', count: 0 },
+    { name: 'inactive', label: 'Inactive', count: 0 },
+    { name: 'suspended', label: 'Suspended', count: 0 }
 ])
+
+const toast = useToast()
 
 // Search query
 const searchQuery = ref('')
@@ -1687,140 +1779,107 @@ const reviewTabs = ref([
     { name: 'auto-checklist', label: 'Auto-Checklist' }
 ])
 
-// Sample driver data
-const drivers = ref([
-    {
-        id: 1,
-        name: 'James Wilson',
-        driverId: 'DRV-001',
-        phone: '234567890',
-        email: 'driver@email.com',
-        dob: '01/15/1990',
-        appliedDate: '2025-10-18',
-        progress: 95,
-        faceMatch: 98,
-        docsStatus: 'complete',
-        status: 'pending',
-        vehicle: {
-            makeModel: 'Toyota Camry 2020',
-            licensePlate: 'ABC-1234',
-            color: 'Silver',
-            seats: '5'
-        }
-    },
-    {
-        id: 2,
-        name: 'James Wilson',
-        driverId: 'DRV-001',
-        phone: '234567890',
-        email: 'james.wilson@email.com',
-        dob: '03/22/1988',
-        appliedDate: '2025-10-18',
-        progress: 95,
-        faceMatch: 92,
-        docsStatus: 'missing',
-        status: 'pending',
-        vehicle: {
-            makeModel: 'Honda Accord 2019',
-            licensePlate: 'XYZ-5678',
-            color: 'Black',
-            seats: '5'
-        }
-    },
-    {
-        id: 3,
-        name: 'Ahmed Khan',
-        driverId: 'DRV-001',
-        phone: '234567890',
-        email: 'ahmed.khan@email.com',
-        dob: '07/10/1992',
-        appliedDate: '2025-10-17',
-        progress: 100,
-        faceMatch: 96,
-        docsStatus: 'complete',
-        status: 'pending',
-        vehicle: {
-            makeModel: 'Nissan Altima 2021',
-            licensePlate: 'DEF-9012',
-            color: 'White',
-            seats: '5'
-        }
-    },
-    {
-        id: 4,
-        name: 'John Smith',
-        driverId: 'DRV-234',
-        phone: '+23402972563',
-        email: 'john.smith@email.com',
-        dob: '05/20/1985',
-        appliedDate: '2025-10-16',
-        progress: 100,
-        faceMatch: 99,
-        docsStatus: 'complete',
-        status: 'active',
-        rating: 4.9,
-        totalTrips: 1243,
-        earnings: '$24,567',
-        vehicle: {
-            makeModel: 'Toyota Camry 2020',
-            licensePlate: 'ABC-1234',
-            color: 'Silver',
-            seats: '5'
-        }
-    },
-    {
-        id: 5,
-        name: 'Emma Davis',
-        driverId: 'DRV-235',
-        phone: '+23402972564',
-        email: 'emma.davis@email.com',
-        dob: '08/12/1990',
-        appliedDate: '2025-10-15',
-        progress: 100,
-        faceMatch: 97,
-        docsStatus: 'complete',
-        status: 'active',
-        rating: 4.8,
-        totalTrips: 987,
-        earnings: '$19,234',
-        vehicle: {
-            makeModel: 'Honda Accord 2019',
-            licensePlate: 'XYZ-5678',
-            color: 'Black',
-            seats: '5'
-        }
-    },
-    {
-        id: 6,
-        name: 'Chris Wilson',
-        driverId: 'DRV-236',
-        phone: '+23402972565',
-        email: 'chris.wilson@email.com',
-        dob: '11/05/1988',
-        appliedDate: '2025-10-14',
-        progress: 100,
-        faceMatch: 95,
-        docsStatus: 'complete',
-        status: 'inactive',
-        rating: 4.7,
-        totalTrips: 756,
-        earnings: '$15,890',
-        vehicle: {
-            makeModel: 'Nissan Altima 2021',
-            licensePlate: 'DEF-9012',
-            color: 'White',
-            seats: '5'
-        }
+// Real driver data from API
+const drivers = ref<any[]>([])
+const currentPage = ref(1)
+const totalPages = ref(1)
+
+// Transform API rider data to driver format
+const transformRiderToDriver = (rider: any) => {
+    // Map status: "online" from API should be treated as "active" for filtering
+    let status = (rider.status || 'pending').toLowerCase()
+    if (status === 'online') {
+        status = 'active' // Map online to active for UI consistency
     }
-])
+    
+    // Build vehicle make/model string
+    const vehicleMakeModel = rider.vehicle_make && rider.vehicle_model 
+        ? `${rider.vehicle_make} ${rider.vehicle_model}`
+        : rider.vehicle_type || rider.vehicle?.makeModel || 'N/A'
+    
+    return {
+        id: rider._id || rider.id || rider.rider_id || '',
+        driverId: rider._id || rider.rider_id || rider.id || 'N/A',
+        name: `${rider.first_name || ''} ${rider.last_name || ''}`.trim() || rider.name || 'N/A',
+        phone: rider.phone_number || rider.phone || 'N/A',
+        email: rider.email || 'N/A',
+        dob: rider.date_of_birth || rider.dob || 'N/A',
+        appliedDate: rider.created_at ? new Date(rider.created_at).toLocaleDateString() : 'N/A',
+        progress: 100, // Could calculate based on documents
+        faceMatch: 0,
+        docsStatus: 'complete',
+        status: status,
+        rating: rider.rating || 0,
+        totalTrips: rider.total_trips || rider.total_deliveries || 0,
+        earnings: rider.total_earnings ? `₦${parseFloat(rider.total_earnings.toString()).toLocaleString()}` : '₦0',
+        vehicle: {
+            makeModel: vehicleMakeModel,
+            licensePlate: rider.vehicle_number || rider.registration_number || rider.vehicle?.licensePlate || 'N/A',
+            color: rider.vehicle_color || rider.vehicle?.color || 'N/A',
+            seats: rider.vehicle?.seats || 'N/A',
+            year: rider.vehicle_year || 'N/A',
+            type: rider.vehicle_type || rider.transport_mode || 'N/A'
+        },
+        original: rider // Keep original data
+    }
+}
+
+// Fetch drivers/riders from API
+const fetchDrivers = async () => {
+    loading.value = true
+    try {
+        const response = await deliveryService.getAllRiders({
+            page: currentPage.value,
+            limit: 1000
+        })
+        
+        // API response structure: { data: { riders: [...], ... }, message: "...", ok: true }
+        // axios wraps it, so response.data is the API response
+        const apiResponse = response.data?.data || {}
+        
+        // Handle different response structures
+        let riders: any[] = []
+        if (Array.isArray(apiResponse.riders)) {
+            // Riders array directly in data.riders
+            riders = apiResponse.riders
+        } else if (Array.isArray(apiResponse.data)) {
+            // Nested data.data array
+            riders = apiResponse.data
+        } else if (Array.isArray(apiResponse)) {
+            // Response is directly an array
+            riders = apiResponse
+        }
+        
+        drivers.value = riders.map(transformRiderToDriver)
+        
+        // Update tab counts
+        navigationTabs.value[0].count = drivers.value.filter(d => d.status === 'pending').length
+        navigationTabs.value[1].count = drivers.value.filter(d => d.status === 'active' || d.status === 'online').length
+        navigationTabs.value[2].count = drivers.value.filter(d => d.status === 'inactive').length
+        navigationTabs.value[3].count = drivers.value.filter(d => d.status === 'suspended').length
+        
+    } catch (error: any) {
+        console.error('Error fetching drivers:', error)
+        toast.error(error?.response?.data?.message || 'Failed to load drivers')
+        drivers.value = []
+    } finally {
+        loading.value = false
+    }
+}
+
+// Watch for tab changes and refresh data if needed
+watch(activeTab, () => {
+    // Could refresh or filter data here if needed
+})
 
 // Filtered drivers based on active tab and search
 const filteredDrivers = computed(() => {
     let filtered = drivers.value.filter(driver => {
-        if (activeTab.value === 'pending') return driver.status === 'pending'
-        if (activeTab.value === 'active') return driver.status === 'active'
-        if (activeTab.value === 'inactive') return driver.status === 'inactive'
-        if (activeTab.value === 'suspended') return driver.status === 'suspended'
+        const status = (driver.status || '').toLowerCase()
+        if (activeTab.value === 'pending') return status === 'pending'
+        if (activeTab.value === 'active') return status === 'active'
+        if (activeTab.value === 'inactive') return status === 'inactive'
+        if (activeTab.value === 'suspended') return status === 'suspended'
         return true
     })
 
@@ -1860,11 +1919,46 @@ const getStatusBadgeClass = (status: string) => {
 }
 
 // View driver profile
-const viewDriverProfile = (driver: any) => {
-    selectedProfileDriver.value = driver
-    showProfileModal.value = true
-    activeProfileTab.value = 'overview'
+const viewDriverProfile = async (driver: any) => {
+    try {
+        // Fetch full driver details from API
+        const riderId = driver.original?.rider_id || driver.original?.id || driver.driverId
+        if (riderId) {
+            const response = await deliveryService.getRider({ rider_id: riderId })
+            if (response.data?.data) {
+                selectedProfileDriver.value = transformRiderToDriver(response.data.data)
+            } else {
+                selectedProfileDriver.value = driver
+            }
+        } else {
+            selectedProfileDriver.value = driver
+        }
+        showProfileModal.value = true
+        activeProfileTab.value = 'overview'
+    } catch (error: any) {
+        toast.error(error?.response?.data?.message || 'Failed to load driver details')
+        selectedProfileDriver.value = driver
+        showProfileModal.value = true
+        activeProfileTab.value = 'overview'
+    }
 }
+
+// Fetch driver details for profile view
+const fetchDriverDetails = async (riderId: string) => {
+    try {
+        const response = await deliveryService.getRider({ rider_id: riderId })
+        if (response.data?.data) {
+            return transformRiderToDriver(response.data.data)
+        }
+    } catch (error: any) {
+        toast.error(error?.response?.data?.message || 'Failed to load driver details')
+    }
+    return null
+}
+
+onMounted(async () => {
+    await fetchDrivers()
+})
 
 const closeProfileModal = () => {
     showProfileModal.value = false

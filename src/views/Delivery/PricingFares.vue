@@ -38,196 +38,72 @@
             </div>
         </div>
 
-        <!-- Vehicle Type Cards -->
-        <div class="space-y-4">
-            <!-- Standard Vehicle Card -->
+        <!-- Pricing Parameters Cards -->
+        <div v-if="loading" class="space-y-4">
             <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+                </div>
+            </div>
+        </div>
+        <div v-else-if="pricingParams.length === 0" class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-12 text-center">
+            <p class="text-gray-500 dark:text-gray-400">No pricing parameters found</p>
+        </div>
+        <div v-else class="space-y-4">
+            <template v-for="(param, index) in filteredPricingParams" :key="index">
+            <div 
+                class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6"
+            >
                 <!-- Card Header -->
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-3">
                         <TruckIcon class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Standard</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-900 dark:bg-gray-700 text-white rounded">active</span>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">{{ param.method || `Method ${index + 1}` }}</h2>
+                        <span class="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">active</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <button 
-                            @click="openDetailsModal('Standard')"
+                            @click="openDetailsModal(param)"
                             class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
                         >
                             <InformationCircleIcon class="h-4 w-4" />
                             Details
                         </button>
                         <button 
-                            @click="openHistoryModal('Standard')"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <ClockIcon class="h-4 w-4" />
-                            History
-                        </button>
-                        <button 
-                            @click="openEditModal('Standard')"
+                            @click="openEditModal(param)"
                             class="px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 flex items-center gap-2"
                         >
                             <PencilIcon class="h-4 w-4" />
                             Edit
                         </button>
-                        <button class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 flex items-center gap-2">
-                            <TrashIcon class="h-4 w-4" />
-                            Delete
-                        </button>
                     </div>
                 </div>
 
-                <!-- Description and Capacity -->
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Affordable rides for everyday travel</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Capacity: 4 passengers</p>
-
                 <!-- Pricing Details -->
-                <div class="grid grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Base Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$5.00</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div v-if="param.base_fee !== undefined">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Base Fee</p>
+                        <p class="text-base font-bold text-gray-900 dark:text-white">₦{{ param.base_fee.toLocaleString() }}</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per km</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$1.50</p>
+                    <div v-if="param.distance_rate !== undefined">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Distance Rate</p>
+                        <p class="text-base font-bold text-gray-900 dark:text-white">₦{{ param.distance_rate.toLocaleString() }}</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per min</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$0.35</p>
+                    <div v-if="param.weight_rate !== undefined">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Weight Rate</p>
+                        <p class="text-base font-bold text-gray-900 dark:text-white">₦{{ param.weight_rate.toLocaleString() }}</p>
                     </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Minimum Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$8.00</p>
+                    <div v-if="param.fragile_fee !== undefined">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Fragile Fee</p>
+                        <p class="text-base font-bold text-gray-900 dark:text-white">₦{{ param.fragile_fee.toLocaleString() }}</p>
+                    </div>
+                    <div v-if="param.volatile_fee !== undefined">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Volatile Fee</p>
+                        <p class="text-base font-bold text-gray-900 dark:text-white">₦{{ param.volatile_fee.toLocaleString() }}</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Premium Vehicle Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-                <!-- Card Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <TruckIcon class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Premium</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-900 dark:bg-gray-700 text-white rounded">active</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button 
-                            @click="openDetailsModal('Premium')"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <InformationCircleIcon class="h-4 w-4" />
-                            Details
-                        </button>
-                        <button 
-                            @click="openHistoryModal('Premium')"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <ClockIcon class="h-4 w-4" />
-                            History
-                        </button>
-                        <button 
-                            @click="openEditModal('Premium')"
-                            class="px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <PencilIcon class="h-4 w-4" />
-                            Edit
-                        </button>
-                        <button class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 flex items-center gap-2">
-                            <TrashIcon class="h-4 w-4" />
-                            Delete
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Description and Capacity -->
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Luxury vehicles with premium comfort</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Capacity: 4 passengers</p>
-
-                <!-- Pricing Details -->
-                <div class="grid grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Base Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$8.00</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per km</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$2.20</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per min</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$0.50</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Minimum Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$12.00</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- XL Vehicle Card -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-6">
-                <!-- Card Header -->
-                <div class="flex items-center justify-between mb-4">
-                    <div class="flex items-center gap-3">
-                        <TruckIcon class="h-6 w-6 text-gray-400 dark:text-gray-500" />
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">XL</h2>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-900 dark:bg-gray-700 text-white rounded">active</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button 
-                            @click="openDetailsModal('XL')"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <InformationCircleIcon class="h-4 w-4" />
-                            Details
-                        </button>
-                        <button 
-                            @click="openHistoryModal('XL')"
-                            class="px-3 py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <ClockIcon class="h-4 w-4" />
-                            History
-                        </button>
-                        <button 
-                            @click="openEditModal('XL')"
-                            class="px-3 py-1.5 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600 flex items-center gap-2"
-                        >
-                            <PencilIcon class="h-4 w-4" />
-                            Edit
-                        </button>
-                        <button class="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 flex items-center gap-2">
-                            <TrashIcon class="h-4 w-4" />
-                            Delete
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Description and Capacity -->
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Extra space for groups up to 6 passengers</p>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Capacity: 5 passengers</p>
-
-                <!-- Pricing Details -->
-                <div class="grid grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Base Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$10.00</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per km</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$2.80</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Rate per min</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$0.60</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Minimum Fare</p>
-                        <p class="text-base font-bold text-gray-900 dark:text-white">$15.00</p>
-                    </div>
-                </div>
-            </div>
+            </template>
         </div>
 
         <!-- Fare Simulator Modal -->
@@ -449,8 +325,8 @@
                     <div class="flex items-center gap-3">
                         <TruckIcon class="h-6 w-6 text-gray-600 dark:text-gray-400" />
                         <div>
-                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Add New Vehicle Type</h2>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Create a new vehicle type with custom pricing and configuration.</p>
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Add New Pricing Parameter</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Create a new pricing parameter with custom rates and fees.</p>
                         </div>
                     </div>
                     <button
@@ -492,42 +368,17 @@
                             />
                         </div>
 
-                        <!-- Passenger Capacity -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                Passenger Capacity <span class="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="number"
-                                v-model.number="newVehicleType.capacity"
-                                min="1"
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            />
-                        </div>
-
-                        <!-- Description -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                Description <span class="text-red-500">*</span>
-                            </label>
-                            <textarea
-                                v-model="newVehicleType.description"
-                                rows="3"
-                                placeholder="Brief description of this vehicle type..."
-                                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            ></textarea>
-                        </div>
                     </div>
 
                     <!-- Initial Pricing Structure Section -->
                     <div class="space-y-4">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Initial Pricing Structure</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pricing Structure</h3>
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Base Fare -->
+                            <!-- Base Fee -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                    Base Fare ($)
+                                    Base Fee (₦)
                                 </label>
                                 <input
                                     type="number"
@@ -538,10 +389,10 @@
                                 />
                             </div>
 
-                            <!-- Rate per km -->
+                            <!-- Distance Rate -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                    Rate per km ($)
+                                    Distance Rate (₦)
                                 </label>
                                 <input
                                     type="number"
@@ -552,28 +403,42 @@
                                 />
                             </div>
 
-                            <!-- Rate per min -->
+                            <!-- Weight Rate -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                    Rate per min ($)
+                                    Weight Rate (₦)
                                 </label>
                                 <input
                                     type="number"
-                                    v-model.number="newVehicleType.ratePerMin"
+                                    v-model.number="newVehicleType.weightRate"
                                     step="0.01"
                                     min="0"
                                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 />
                             </div>
 
-                            <!-- Minimum Fare -->
+                            <!-- Fragile Fee -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                    Minimum Fare ($)
+                                    Fragile Fee (₦)
                                 </label>
                                 <input
                                     type="number"
-                                    v-model.number="newVehicleType.minimumFare"
+                                    v-model.number="newVehicleType.fragileFee"
+                                    step="0.01"
+                                    min="0"
+                                    class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <!-- Volatile Fee -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                                    Volatile Fee (₦)
+                                </label>
+                                <input
+                                    type="number"
+                                    v-model.number="newVehicleType.volatileFee"
                                     step="0.01"
                                     min="0"
                                     class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -619,7 +484,7 @@
                         @click="addVehicleType"
                         class="px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg text-sm font-medium hover:bg-gray-800 dark:hover:bg-gray-600"
                     >
-                        Add Vehicle Type
+                        Add Pricing Parameter
                     </button>
                 </div>
             </div>
@@ -627,7 +492,7 @@
 
         <!-- Edit Pricing Modal -->
         <div
-            v-if="showEditPricingModal && selectedVehicleType"
+            v-if="showEditPricingModal && selectedPricingParam"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto py-8"
             @click.self="showEditPricingModal = false"
         >
@@ -637,8 +502,8 @@
                     <div class="flex items-center gap-3">
                         <CurrencyDollarIcon class="h-6 w-6 text-gray-600 dark:text-gray-400" />
                         <div>
-                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Edit Pricing - {{ selectedVehicleType }}</h2>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure all pricing parameters for this vehicle type. Changes will be saved to the system.</p>
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Edit Pricing - {{ selectedPricingParam?.method || 'Dynamic' }}</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Configure all pricing parameters for this method. Changes will be saved to the system.</p>
                         </div>
                     </div>
                     <button
@@ -707,97 +572,88 @@
                                 checked
                                 class="mt-1 w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                             />
-                            <p class="text-sm text-gray-700 dark:text-gray-300">Base pricing defines the fundamental fare structure for this vehicle type.</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">Configure pricing parameters for this method.</p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-6">
                             <!-- Left Column -->
                             <div class="space-y-4">
-                                <!-- Base Fare -->
+                                <!-- Base Fee -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Base Fare ($)
+                                        Base Fee (₦)
                                     </label>
                                     <input
                                         type="number"
                                         v-model.number="editPricing.baseFare"
                                         step="0.01"
+                                        min="0"
                                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Initial charge when trip starts</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Base fee for the delivery</p>
                                 </div>
 
-                                <!-- Rate per Minute -->
+                                <!-- Distance Rate -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Rate per Minute ($)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        v-model.number="editPricing.ratePerMin"
-                                        step="0.01"
-                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cost per minute of trip duration</p>
-                                </div>
-
-                                <!-- Minimum Fare -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Minimum Fare ($)
-                                    </label>
-                                    <input
-                                        type="number"
-                                        v-model.number="editPricing.minimumFare"
-                                        step="0.01"
-                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Minimum charge for any trip</p>
-                                </div>
-                            </div>
-
-                            <!-- Right Column -->
-                            <div class="space-y-4">
-                                <!-- Rate per Kilometer -->
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Rate per Kilometer ($)
+                                        Distance Rate (₦)
                                     </label>
                                     <input
                                         type="number"
                                         v-model.number="editPricing.ratePerKm"
                                         step="0.01"
+                                        min="0"
                                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Cost per kilometer traveled</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Rate per unit distance</p>
                                 </div>
 
-                                <!-- Wait Time Rate -->
+                                <!-- Weight Rate -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Wait Time Rate ($/min)
+                                        Weight Rate (₦)
                                     </label>
                                     <input
                                         type="number"
-                                        v-model.number="editPricing.waitTimeRate"
+                                        v-model.number="editPricing.weightRate"
                                         step="0.01"
+                                        min="0"
                                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Charged when vehicle is waiting</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Rate based on weight</p>
                                 </div>
+                            </div>
 
-                                <!-- Maximum Fare -->
+                            <!-- Right Column -->
+                            <div class="space-y-4">
+                                <!-- Fragile Fee -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        Maximum Fare ($)
+                                        Fragile Fee (₦)
                                     </label>
                                     <input
                                         type="number"
-                                        v-model.number="editPricing.maximumFare"
+                                        v-model.number="editPricing.fragileFee"
                                         step="0.01"
+                                        min="0"
                                         class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     />
-                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Optional cap on trip fare</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Additional fee for fragile items</p>
+                                </div>
+
+                                <!-- Volatile Fee -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">
+                                        Volatile Fee (₦)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        v-model.number="editPricing.volatileFee"
+                                        step="0.01"
+                                        min="0"
+                                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Additional fee for volatile items</p>
                                 </div>
                             </div>
                         </div>
@@ -1106,9 +962,9 @@
             </div>
         </div>
 
-        <!-- Vehicle Details Modal -->
+        <!-- Pricing Parameter Details Modal -->
         <div
-            v-if="showDetailsModal && selectedDetailsVehicle"
+            v-if="showDetailsModal && selectedDetailsParam"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 overflow-y-auto py-8"
             @click.self="showDetailsModal = false"
         >
@@ -1116,8 +972,8 @@
                 <!-- Modal Header -->
                 <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedDetailsVehicle }} - Vehicle Details</h2>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Complete overview of vehicle type configuration and pricing</p>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedDetailsParam.method || 'Pricing Parameter' }} - Details</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Complete overview of pricing parameter configuration</p>
                     </div>
                     <button
                         @click="showDetailsModal = false"
@@ -1129,81 +985,40 @@
 
                 <!-- Modal Content - Scrollable -->
                 <div class="p-6 space-y-6 overflow-y-auto flex-1">
-                    <!-- Description Section -->
+                    <!-- Method Section -->
                     <div>
-                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Description</label>
+                        <label class="block text-sm font-medium text-gray-900 dark:text-white mb-2">Method</label>
                         <div class="flex items-center justify-between">
-                            <p class="text-sm text-gray-700 dark:text-gray-300">{{ getVehicleDescription(selectedDetailsVehicle) }}</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">{{ selectedDetailsParam.method || 'N/A' }}</p>
                             <span class="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded">active</span>
                         </div>
                     </div>
 
-                    <!-- Key Metrics Section -->
+                    <!-- Pricing Details Section -->
                     <div>
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Key Metrics</h3>
-                        <div class="grid grid-cols-3 gap-4">
-                            <!-- Capacity -->
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-                                <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ getVehicleCapacity(selectedDetailsVehicle) }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">passengers</div>
-                            </div>
-                            <!-- Base Fare -->
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-                                <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).baseFare.toFixed(1) }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">0</div>
-                            </div>
-                            <!-- Min Fare -->
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center">
-                                <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).minimumFare.toFixed(1) }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">0</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pricing Breakdown Section -->
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Pricing Breakdown</h3>
+                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Pricing Details</h3>
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Per Kilometer</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).ratePerKm.toFixed(2) }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">0</div>
+                            <div v-if="selectedDetailsParam.base_fee !== undefined" class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Base Fee</div>
+                                <div class="text-lg font-semibold text-gray-900 dark:text-white">₦{{ selectedDetailsParam.base_fee.toLocaleString() }}</div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Per Minute</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).ratePerMin.toFixed(2) }}</div>
+                            <div v-if="selectedDetailsParam.distance_rate !== undefined" class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Distance Rate</div>
+                                <div class="text-lg font-semibold text-gray-900 dark:text-white">₦{{ selectedDetailsParam.distance_rate.toLocaleString() }}</div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Wait Time Rate</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).waitTimeRate.toFixed(2) }}/min</div>
+                            <div v-if="selectedDetailsParam.weight_rate !== undefined" class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Weight Rate</div>
+                                <div class="text-lg font-semibold text-gray-900 dark:text-white">₦{{ selectedDetailsParam.weight_rate.toLocaleString() }}</div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Cancellation Fee</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">${{ getVehiclePricing(selectedDetailsVehicle).cancellationFee.toFixed(1) }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">0</div>
+                            <div v-if="selectedDetailsParam.fragile_fee !== undefined" class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Fragile Fee</div>
+                                <div class="text-lg font-semibold text-gray-900 dark:text-white">₦{{ selectedDetailsParam.fragile_fee.toLocaleString() }}</div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Multipliers Section -->
-                    <div>
-                        <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">Multipliers</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Peak Hour</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ (getVehiclePricing(selectedDetailsVehicle).peakHourMultiplier / 10).toFixed(2) }}x</div>
-                            </div>
-                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Night Charge</div>
-                                <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ (getVehiclePricing(selectedDetailsVehicle).nightChargeMultiplier / 10).toFixed(2) }}x</div>
+                            <div v-if="selectedDetailsParam.volatile_fee !== undefined" class="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Volatile Fee</div>
+                                <div class="text-lg font-semibold text-gray-900 dark:text-white">₦{{ selectedDetailsParam.volatile_fee.toLocaleString() }}</div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Tolls & Fees Information -->
-                    <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                        <InformationCircleIcon class="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                        <p class="text-sm text-gray-700 dark:text-gray-300">Tolls & fees: {{ getVehiclePricing(selectedDetailsVehicle).includeTolls ? 'Included in fare' : 'Not included' }}</p>
                     </div>
                 </div>
 
@@ -1284,7 +1099,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 import { 
     DocumentTextIcon, 
     PlusIcon, 
@@ -1295,8 +1111,76 @@ import {
     TrashIcon,
     XMarkIcon,
     MapPinIcon,
-    CurrencyDollarIcon
+    CurrencyDollarIcon,
+    ArrowTrendingUpIcon
 } from '@heroicons/vue/24/outline'
+import deliveryService from '@/services/deliveryService'
+
+const toast = useToast()
+const pricingParams = ref<any[]>([])
+const loading = ref(false)
+
+// Filter pricing params to only show those with actual pricing data
+const filteredPricingParams = computed(() => {
+    return pricingParams.value.filter(param => 
+        param.method && (
+            param.base_fee !== undefined || 
+            param.distance_rate !== undefined || 
+            param.weight_rate !== undefined || 
+            param.fragile_fee !== undefined || 
+            param.volatile_fee !== undefined
+        )
+    )
+})
+
+// Fetch pricing parameters
+const fetchPricingParams = async () => {
+    loading.value = true
+    try {
+        const response = await deliveryService.getAllPricingParams()
+        // API response structure: { data: [...], message: "...", ok: true }
+        // axios wraps it, so response.data is the API response
+        const apiResponse = response.data
+        
+        // Handle different response structures
+        let paramsArray: any[] = []
+        if (Array.isArray(apiResponse.data)) {
+            paramsArray = apiResponse.data
+        } else if (Array.isArray(apiResponse)) {
+            paramsArray = apiResponse
+        }
+        
+        pricingParams.value = paramsArray
+    } catch (error: any) {
+        console.error('Error fetching pricing params:', error)
+        toast.error(error?.response?.data?.message || 'Failed to load pricing parameters')
+        pricingParams.value = []
+    } finally {
+        loading.value = false
+    }
+}
+
+// Save/Update pricing
+const savePricing = async (data: any) => {
+    try {
+        if (data._id || data.id) {
+            await deliveryService.updatePricingParams(data)
+            toast.success('Pricing updated successfully')
+        } else {
+            await deliveryService.createPricingParams(data)
+            toast.success('Pricing created successfully')
+        }
+        await fetchPricingParams()
+    } catch (error: any) {
+        console.error('Error in savePricing:', error)
+        toast.error(error?.response?.data?.message || 'Failed to save pricing')
+        throw error // Re-throw to allow caller to handle
+    }
+}
+
+onMounted(async () => {
+    await fetchPricingParams()
+})
 
 // Fare Simulator Modal
 const showFareSimulatorModal = ref(false)
@@ -1339,10 +1223,13 @@ const newVehicleType = ref({
     name: '',
     capacity: 4,
     description: '',
-    baseFare: 5,
-    ratePerKm: 1.5,
-    ratePerMin: 0.35,
-    minimumFare: 8,
+    baseFare: 0,
+    ratePerKm: 0,
+    ratePerMin: 0,
+    minimumFare: 0,
+    weightRate: 0,
+    fragileFee: 0,
+    volatileFee: 0,
     isActive: false
 })
 
@@ -1365,6 +1252,7 @@ const addVehicleType = () => {
 
 // Edit Pricing Modal
 const showEditPricingModal = ref(false)
+const selectedPricingParam = ref<any | null>(null)
 const selectedVehicleType = ref<string | null>(null)
 const activeEditTab = ref('base')
 
@@ -1425,37 +1313,80 @@ const editPricing = ref({
     isActive: true
 })
 
-const openEditModal = (vehicleType: string) => {
-    selectedVehicleType.value = vehicleType
-    const pricing = vehiclePricingData[vehicleType] || vehiclePricingData['Standard']
+const openEditModal = (param: any) => {
+    selectedPricingParam.value = param
+    selectedVehicleType.value = param.method || 'dynamic'
+    
+    // Map API fields to edit form format
     editPricing.value = {
-        baseFare: pricing.baseFare || 5,
-        ratePerKm: pricing.ratePerKm || 1.5,
-        ratePerMin: pricing.ratePerMin || 0.35,
-        minimumFare: pricing.minimumFare || 8,
-        waitTimeRate: pricing.waitTimeRate || 0.25,
-        maximumFare: pricing.maximumFare || 150,
-        peakHourMultiplier: pricing.peakHourMultiplier || 12,
-        nightChargeMultiplier: pricing.nightChargeMultiplier || 11.5,
-        cancellationFee: pricing.cancellationFee || 3,
-        includeTolls: pricing.includeTolls !== undefined ? pricing.includeTolls : true,
-        isActive: pricing.isActive !== undefined ? pricing.isActive : true
+        baseFare: param.base_fee || 0,
+        ratePerKm: param.distance_rate || 0,
+        ratePerMin: 0, // Not in API response
+        minimumFare: 0, // Not in API response
+        waitTimeRate: 0, // Not in API response
+        maximumFare: 0, // Not in API response
+        peakHourMultiplier: 12,
+        nightChargeMultiplier: 11.5,
+        cancellationFee: 0, // Not in API response
+        includeTolls: true,
+        isActive: true,
+        weightRate: param.weight_rate || 0,
+        fragileFee: param.fragile_fee || 0,
+        volatileFee: param.volatile_fee || 0,
+        method: param.method || 'dynamic'
     }
     activeEditTab.value = 'base'
     showEditPricingModal.value = true
 }
 
-const saveEditPricing = () => {
-    // Handle save logic here
-    console.log('Saving pricing for:', selectedVehicleType.value, editPricing.value)
-    if (selectedVehicleType.value) {
-        vehiclePricingData[selectedVehicleType.value] = { ...editPricing.value }
+const saveEditPricing = async () => {
+    try {
+        if (!selectedPricingParam.value) {
+            toast.error('No pricing parameter selected')
+            return
+        }
+
+        // Map form fields to API structure
+        const apiData: any = {
+            method: editPricing.value.method || selectedPricingParam.value.method || 'dynamic'
+        }
+
+        // Only include fields that have values
+        if (editPricing.value.baseFare !== undefined && editPricing.value.baseFare !== null) {
+            apiData.base_fee = editPricing.value.baseFare
+        }
+        if (editPricing.value.ratePerKm !== undefined && editPricing.value.ratePerKm !== null) {
+            apiData.distance_rate = editPricing.value.ratePerKm
+        }
+        if (editPricing.value.weightRate !== undefined && editPricing.value.weightRate !== null) {
+            apiData.weight_rate = editPricing.value.weightRate
+        }
+        if (editPricing.value.fragileFee !== undefined && editPricing.value.fragileFee !== null) {
+            apiData.fragile_fee = editPricing.value.fragileFee
+        }
+        if (editPricing.value.volatileFee !== undefined && editPricing.value.volatileFee !== null) {
+            apiData.volatile_fee = editPricing.value.volatileFee
+        }
+
+        // Include ID if it exists (for update)
+        if (selectedPricingParam.value._id) {
+            apiData._id = selectedPricingParam.value._id
+        } else if (selectedPricingParam.value.id) {
+            apiData.id = selectedPricingParam.value.id
+        }
+
+        // Call savePricing function which handles create/update
+        await savePricing(apiData)
+        showEditPricingModal.value = false
+    } catch (error: any) {
+        console.error('Error saving pricing:', error)
+        toast.error(error?.response?.data?.message || 'Failed to save pricing')
     }
-    showEditPricingModal.value = false
 }
 
 // Vehicle Details Modal
 const showDetailsModal = ref(false)
+const selectedDetailsParam = ref<any | null>(null)
 const selectedDetailsVehicle = ref<string | null>(null)
 
 const vehicleDescriptions: Record<string, string> = {
@@ -1483,15 +1414,16 @@ const getVehiclePricing = (vehicleType: string | null) => {
     return vehiclePricingData[vehicleType] || vehiclePricingData['Standard']
 }
 
-const openDetailsModal = (vehicleType: string) => {
-    selectedDetailsVehicle.value = vehicleType
+const openDetailsModal = (param: any) => {
+    selectedDetailsParam.value = param
+    selectedDetailsVehicle.value = param.method || 'dynamic'
     showDetailsModal.value = true
 }
 
 const openEditFromDetails = () => {
-    if (selectedDetailsVehicle.value) {
+    if (selectedDetailsParam.value) {
         showDetailsModal.value = false
-        openEditModal(selectedDetailsVehicle.value)
+        openEditModal(selectedDetailsParam.value)
     }
 }
 

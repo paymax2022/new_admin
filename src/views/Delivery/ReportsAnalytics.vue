@@ -93,11 +93,11 @@
                 <div class="space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Total Trips:</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">17,880</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : analyticsData.totalTrips.toLocaleString() }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Avg Fare:</span>
-                        <span class="text-sm font-semibold text-gray-900 dark:text-white">$24.32</span>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ loading ? '...' : `₦${analyticsData.avgFare.toFixed(2)}` }}</span>
                     </div>
                 </div>
             </div>
@@ -586,7 +586,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 import { 
     CalendarDaysIcon,
     PlusIcon,
@@ -604,6 +605,9 @@ import {
 } from '@heroicons/vue/24/outline'
 import LineChart from '@/components/charts/LineChart.vue'
 import BarChart from '@/components/charts/BarChart.vue'
+import deliveryService from '@/services/deliveryService'
+
+const toast = useToast()
 
 // Tabs
 const tabs = [
@@ -630,10 +634,82 @@ const toggleDateDropdown = () => {
     showDateDropdown.value = !showDateDropdown.value
 }
 
-const selectDateRange = (value: string) => {
+// Get date range for API calls
+const getDateRange = () => {
+    const today = new Date()
+    const ranges: Record<string, { start: string; end: string }> = {
+        today: {
+            start: new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '7days': {
+            start: new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '30days': {
+            start: new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        },
+        '90days': {
+            start: new Date(today.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            end: today.toISOString().split('T')[0]
+        }
+    }
+    const selected = dateRangeOptions.find(opt => opt.label === selectedDateRange.value)
+    return ranges[selected?.value || '30days'] || ranges['30days']
+}
+
+// Analytics data
+const analyticsData = ref({
+    totalTrips: 0,
+    avgFare: 0,
+    totalRevenue: 0,
+    totalCosts: 0,
+    topPerformers: [] as any[]
+})
+
+const loading = ref(false)
+
+// Fetch analytics data
+const fetchAnalyticsData = async () => {
+    loading.value = true
+    try {
+        const dateRange = getDateRange()
+        
+        const [metricsRes, topPerformersRes] = await Promise.all([
+            deliveryService.getDeliveryMetrics({
+                start_date: dateRange.start,
+                end_date: dateRange.end
+            }).catch(() => null),
+            deliveryService.getTopPerformers({
+                start_date: dateRange.start,
+                end_date: dateRange.end,
+                limit: 10
+            }).catch(() => null)
+        ])
+
+        // Handle response structure - axios wraps it, so response.data is the API response
+        const metrics = metricsRes?.data?.data || metricsRes?.data || {}
+        const topPerformers = topPerformersRes?.data?.data || topPerformersRes?.data || []
+
+        analyticsData.value.totalTrips = metrics.total_orders || 0
+        // Calculate average fare from total revenue and total orders if available
+        analyticsData.value.avgFare = metrics.average_fare || (metrics.total_revenue && metrics.total_orders ? metrics.total_revenue / metrics.total_orders : 0)
+        analyticsData.value.totalRevenue = metrics.total_revenue || 0
+        analyticsData.value.topPerformers = topPerformers
+
+    } catch (error: any) {
+        toast.error(error?.response?.data?.message || 'Failed to load analytics data')
+    } finally {
+        loading.value = false
+    }
+}
+
+const selectDateRange = async (value: string) => {
     const option = dateRangeOptions.find(opt => opt.value === value)
     if (option) {
         selectedDateRange.value = option.label
+        await fetchAnalyticsData()
     }
     showDateDropdown.value = false
 }
@@ -645,8 +721,9 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     document.addEventListener('click', handleClickOutside)
+    await fetchAnalyticsData()
 })
 
 onBeforeUnmount(() => {

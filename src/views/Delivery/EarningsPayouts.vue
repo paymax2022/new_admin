@@ -18,7 +18,7 @@
                             </svg>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Gross Earnings</p>
                         </div>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">99,047</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">₦{{ earningsStats.grossEarnings.toLocaleString() }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">15% average</p>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                             </svg>
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Net Earnings</p>
                         </div>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">5567</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">₦{{ earningsStats.netEarnings.toLocaleString() }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">15% average</p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                             <CurrencyDollarIcon class="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Payouts</p>
                         </div>
-                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">$36,187</p>
+                        <p class="text-2xl font-semibold text-gray-900 dark:text-white">₦{{ earningsStats.pendingPayouts.toLocaleString() }}</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">15% average</p>
                     </div>
                 </div>
@@ -1365,6 +1365,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useToast } from 'vue-toastification'
 import { 
     CurrencyDollarIcon,
     DocumentTextIcon,
@@ -1374,6 +1375,27 @@ import {
     PlusIcon,
     TrashIcon
 } from '@heroicons/vue/24/outline'
+import deliveryService from '@/services/deliveryService'
+
+const toast = useToast()
+const earningsStats = ref({
+    grossEarnings: 0,
+    netEarnings: 0,
+    pendingPayouts: 0,
+    adjustments: 0
+})
+
+// Fetch earnings data
+const fetchEarningsData = async () => {
+    try {
+        const today = new Date().toISOString().split('T')[0]
+        // Note: Would need to aggregate from multiple riders or use a summary endpoint if available
+        // For now, we'll fetch earnings for a date range
+        // const response = await deliveryService.getRiderEarnings(today)
+    } catch (error: any) {
+        toast.error(error?.response?.data?.message || 'Failed to load earnings data')
+    }
+}
 
 // Tabs
 const tabs = [
@@ -1408,8 +1430,9 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
     document.addEventListener('click', handleClickOutside)
+    await fetchEarningsData()
 })
 
 onBeforeUnmount(() => {
