@@ -26,7 +26,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">1,247</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.total }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -37,7 +37,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">100</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.active }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -48,7 +48,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">3.9</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.avgRating }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -59,7 +59,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">$156K</p>
+                <p class="text-2xl font-bold text-gray-900">${{ kpiStats.totalEarnings }}</p>
             </div>
         </div>
 
@@ -104,7 +104,21 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="rider in filteredRiders" :key="rider.id" class="hover:bg-gray-50 cursor-pointer" @click="openRiderModal(rider)">
+                        <tr v-if="loading">
+                            <td colspan="6" class="px-6 py-8 text-center">
+                                <div class="flex items-center justify-center">
+                                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="ml-3 text-gray-600">Loading riders...</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-else-if="riders.length === 0">
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">No riders found</td>
+                        </tr>
+                        <tr v-else v-for="rider in filteredRiders" :key="rider.id" class="hover:bg-gray-50 cursor-pointer" @click="openRiderModal(rider)">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold', getAvatarColor(rider.id)]">
@@ -560,9 +574,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import { restaurantService } from '@/services/restaurantService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const searchQuery = ref('');
 const statusFilter = ref('all');
+const loading = ref(false);
 const openDocumentDropdowns = ref<Record<string, boolean>>({});
 const openStatusDropdowns = ref<Record<string, boolean>>({});
 const showRiderModal = ref(false);
@@ -577,101 +595,142 @@ const defaultDocuments = [
     { name: 'Vehicle Registration', size: '3.5MB' }
 ];
 
-const riders = ref([
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'mama.put@gmail.com',
-        phone: '+234 905 098 0955',
-        location: 'Aja Lagos',
-        applicationId: 'APP-1001',
-        dateJoined: '2025-08-30',
-        vehicleDetails: 'Motorbike (Honda CBR 150)',
-        ownership: 'Self Owned',
-        avgRating: '4.5',
-        totalOrders: '980',
-        performance: {
-            onTime: 94,
-            completion: 98,
-            vehicle: 'motorcycle'
-        },
-        earnings: 2450.00,
-        documents: [
-            { name: 'License', status: 'Uploaded' },
-            { name: 'Insurance', status: 'Uploaded' },
-            { name: 'Vehicle', status: 'Uploaded' }
-        ],
-        documentDetails: [
-            { name: 'Driver License (Front)', size: '3.5MB' },
-            { name: 'Driver License (Back)', size: '3.5MB' },
-            { name: 'Vehicle Registration', size: '3.5MB' }
-        ],
-        status: 'Active',
-        onlineStatus: 'Online'
-    },
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'mama.put@gmail.com',
-        phone: '+234 905 098 0955',
-        location: 'Aja Lagos',
-        applicationId: 'APP-1001',
-        dateJoined: '2025-08-30',
-        vehicleDetails: 'Motorbike (Honda CBR 150)',
-        ownership: 'Self Owned',
-        avgRating: '4.5',
-        totalOrders: '980',
-        performance: {
-            onTime: 94,
-            completion: 98,
-            vehicle: 'motorcycle'
-        },
-        earnings: 2450.00,
-        documents: [
-            { name: 'License', status: 'Expired' },
-            { name: 'Insurance', status: 'Expired' },
-            { name: 'Vehicle', status: 'Uploaded' }
-        ],
-        documentDetails: [
-            { name: 'Driver License (Front)', size: '3.5MB' },
-            { name: 'Driver License (Back)', size: '3.5MB' },
-            { name: 'Vehicle Registration', size: '3.5MB' }
-        ],
-        status: 'Active',
-        onlineStatus: 'Offline'
-    },
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'mama.put@gmail.com',
-        phone: '+234 905 098 0955',
-        location: 'Aja Lagos',
-        applicationId: 'APP-1001',
-        dateJoined: '2025-08-30',
-        vehicleDetails: 'Motorbike (Honda CBR 150)',
-        ownership: 'Self Owned',
-        avgRating: '4.5',
-        totalOrders: '980',
-        performance: {
-            onTime: 94,
-            completion: 90,
-            vehicle: 'motorcycle'
-        },
-        earnings: 2450.00,
-        documents: [
-            { name: 'License', status: 'Rejected' },
-            { name: 'Insurance', status: 'Expired' },
-            { name: 'Vehicle', status: 'Uploaded' }
-        ],
-        documentDetails: [
-            { name: 'Driver License (Front)', size: '3.5MB' },
-            { name: 'Driver License (Back)', size: '3.5MB' },
-            { name: 'Vehicle Registration', size: '3.5MB' }
-        ],
-        status: 'Suspended',
-        onlineStatus: 'Offline'
+const riders = ref<any[]>([]);
+
+// Transform API rider data to component format
+const transformRiderData = (apiRider: any) => {
+    const fullName = `${apiRider.first_name || ''} ${apiRider.last_name || ''}`.trim() || 'Unknown Rider';
+    const location = apiRider.local_district || apiRider.address || `${apiRider.city || ''}, ${apiRider.state || ''}`.trim() || 'N/A';
+    const vehicle = apiRider.vehicle_type || apiRider.transport_mode || 'N/A';
+    const vehicleDetails = apiRider.vehicle_make && apiRider.vehicle_model 
+        ? `${vehicle} (${apiRider.vehicle_make} ${apiRider.vehicle_model})`
+        : vehicle;
+    
+    // Format date joined
+    const dateJoined = apiRider.created_at 
+        ? new Date(apiRider.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    // Build documents array from available photos
+    const documents: any[] = [];
+    const documentDetails: any[] = [];
+    
+    if (apiRider.driving_license_photo_front) {
+        documents.push({ name: 'License', status: 'Uploaded' });
+        documentDetails.push({ name: 'Driver License (Front)', size: '3.5MB', url: apiRider.driving_license_photo_front });
+    } else {
+        documents.push({ name: 'License', status: 'Pending' });
     }
-]);
+    
+    if (apiRider.driving_license_photo_back) {
+        if (!documents.find(d => d.name === 'License')) {
+            documents.push({ name: 'License', status: 'Uploaded' });
+        }
+        documentDetails.push({ name: 'Driver License (Back)', size: '3.5MB', url: apiRider.driving_license_photo_back });
+    }
+    
+    if (apiRider.driver_photo) {
+        documents.push({ name: 'Driver Photo', status: 'Uploaded' });
+        documentDetails.push({ name: 'Driver Photo', size: '3.5MB', url: apiRider.driver_photo });
+    } else {
+        documents.push({ name: 'Driver Photo', status: 'Pending' });
+    }
+    
+    if (apiRider.vehicle_image) {
+        documents.push({ name: 'Vehicle', status: 'Uploaded' });
+        documentDetails.push({ name: 'Vehicle Registration', size: '3.5MB', url: apiRider.vehicle_image });
+    } else {
+        documents.push({ name: 'Vehicle', status: 'Pending' });
+    }
+    
+    // Map status
+    let status = 'Inactive';
+    let onlineStatus = 'Offline';
+    if (apiRider.status === 'online' || apiRider.status === 'active') {
+        status = 'Active';
+        onlineStatus = 'Online';
+    } else if (apiRider.status === 'suspended' || apiRider.status === 'offline') {
+        status = 'Suspended';
+        onlineStatus = 'Offline';
+    }
+    
+    // Default performance metrics (not in API)
+    const performance = {
+        onTime: 94, // Default value
+        completion: 98, // Default value
+        vehicle: vehicle
+    };
+    
+    // Default earnings (not in API)
+    const earnings = 0; // Default value
+    
+    return {
+        id: apiRider._id || apiRider.id || 'N/A',
+        name: fullName,
+        email: apiRider.email || 'N/A',
+        phone: apiRider.phone_number || apiRider.phone || 'N/A',
+        location: location,
+        applicationId: `APP-${(apiRider._id || apiRider.id || '').substring(0, 8).toUpperCase()}`,
+        dateJoined: dateJoined,
+        vehicleDetails: vehicleDetails,
+        ownership: apiRider.vehicle_ownership === 'owned' ? 'Self Owned' : 'Rented',
+        avgRating: '4.5', // Default - API doesn't provide this
+        totalOrders: '0', // Default - API doesn't provide this
+        performance: performance,
+        earnings: earnings,
+        documents: documents,
+        documentDetails: documentDetails.length > 0 ? documentDetails : defaultDocuments,
+        status: status,
+        onlineStatus: onlineStatus,
+        _original: apiRider
+    };
+};
+
+// Fetch all riders
+const fetchRiders = async () => {
+    loading.value = true;
+    try {
+        const response = await restaurantService.getRiders();
+        const ridersData = response.data?.riders || response.riders || [];
+        
+        if (Array.isArray(ridersData)) {
+            riders.value = ridersData.map(transformRiderData);
+        } else {
+            riders.value = [];
+        }
+        
+        if (riders.value.length === 0) {
+            toast.info('No riders found');
+        } else {
+            toast.success(`Loaded ${riders.value.length} rider(s)`);
+        }
+    } catch (error: any) {
+        console.error('Error fetching riders:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to load riders';
+        toast.error(errorMessage);
+        riders.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+// KPI Stats computed from riders data
+const kpiStats = computed(() => {
+    const total = riders.value.length;
+    const active = riders.value.filter(r => r.status === 'Active').length;
+    const avgRating = total > 0 ? '4.5' : '0.0'; // Default rating since API doesn't provide
+    const totalEarnings = riders.value.reduce((sum, r) => sum + (r.earnings || 0), 0);
+    const earningsFormatted = totalEarnings >= 1000 
+        ? `${(totalEarnings / 1000).toFixed(0)}K` 
+        : totalEarnings.toFixed(0);
+    
+    return {
+        total,
+        active,
+        avgRating,
+        totalEarnings: earningsFormatted
+    };
+});
 
 const filteredRiders = computed(() => {
     let filtered = riders.value;
@@ -744,12 +803,41 @@ const updateDocumentStatus = (riderId: string, docIndex: number, status: string)
     openDocumentDropdowns.value[`${riderId}-${docIndex}`] = false;
 };
 
-const updateRiderStatus = (riderId: string, status: string) => {
+const updateRiderStatus = async (riderId: string, status: string) => {
     const rider = riders.value.find(r => r.id === riderId);
-    if (rider) {
-        rider.status = status;
+    if (!rider) {
+        toast.error('Rider not found');
+        return;
     }
-    openStatusDropdowns.value[riderId] = false;
+
+    // Map UI status to API status
+    const statusMap: { [key: string]: string } = {
+        'Active': 'active',
+        'Suspended': 'suspended',
+        'Inactive': 'inactive'
+    };
+    const apiStatus = statusMap[status] || status.toLowerCase();
+
+    try {
+        await restaurantService.updateRiderStatus(riderId, apiStatus);
+        
+        // Update local state
+        rider.status = status;
+        
+        // Update online status based on new status
+        if (status === 'Active') {
+            rider.onlineStatus = 'Online';
+        } else {
+            rider.onlineStatus = 'Offline';
+        }
+        
+        toast.success(`Rider status updated to ${status}`);
+        openStatusDropdowns.value[riderId] = false;
+    } catch (error: any) {
+        console.error('Error updating rider status:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to update rider status';
+        toast.error(errorMessage);
+    }
 };
 
 const closeAllDropdowns = () => {
@@ -763,6 +851,7 @@ const closeAllDropdowns = () => {
 
 onMounted(() => {
     document.addEventListener('click', closeAllDropdowns);
+    fetchRiders();
 });
 
 onUnmounted(() => {
@@ -779,11 +868,30 @@ const closeRiderModal = () => {
     selectedRider.value = null;
 };
 
-const handleActivate = () => {
-    if (selectedRider.value) {
-        selectedRider.value.status = 'Active';
+const handleActivate = async () => {
+    if (!selectedRider.value) {
+        return;
     }
-    closeRiderModal();
+
+    try {
+        await restaurantService.updateRiderStatus(selectedRider.value.id, 'active');
+        selectedRider.value.status = 'Active';
+        selectedRider.value.onlineStatus = 'Online';
+        
+        // Update in main list
+        const rider = riders.value.find(r => r.id === selectedRider.value.id);
+        if (rider) {
+            rider.status = 'Active';
+            rider.onlineStatus = 'Online';
+        }
+        
+        toast.success('Rider activated successfully');
+        closeRiderModal();
+    } catch (error: any) {
+        console.error('Error activating rider:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to activate rider';
+        toast.error(errorMessage);
+    }
 };
 
 const handleReject = () => {
@@ -797,15 +905,34 @@ const closeRejectModal = () => {
     rejectionMessage.value = '';
 };
 
-const sendRejection = () => {
+const sendRejection = async () => {
     if (!rejectionMessage.value.trim()) {
         return;
     }
-    if (selectedRider.value) {
-        selectedRider.value.status = 'Suspended';
+    
+    if (!selectedRider.value) {
+        return;
     }
-    showRejectModal.value = false;
-    showRejectConfirmationModal.value = true;
+
+    try {
+        await restaurantService.updateRiderStatus(selectedRider.value.id, 'suspended');
+        selectedRider.value.status = 'Suspended';
+        selectedRider.value.onlineStatus = 'Offline';
+        
+        // Update in main list
+        const rider = riders.value.find(r => r.id === selectedRider.value.id);
+        if (rider) {
+            rider.status = 'Suspended';
+            rider.onlineStatus = 'Offline';
+        }
+        
+        showRejectModal.value = false;
+        showRejectConfirmationModal.value = true;
+    } catch (error: any) {
+        console.error('Error rejecting rider:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to reject rider';
+        toast.error(errorMessage);
+    }
 };
 
 const closeRejectConfirmationModal = () => {

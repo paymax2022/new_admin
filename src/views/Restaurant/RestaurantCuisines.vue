@@ -49,18 +49,24 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NAME</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CREATED BY</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RESTAURANT COUNT</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">STATUS</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ACTIONS</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="cuisine in paginatedCuisines" :key="cuisine.id" class="hover:bg-gray-50">
+                        <tr v-if="loading">
+                            <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">Loading cuisines...</td>
+                        </tr>
+                        <tr v-else-if="error">
+                            <td colspan="4" class="px-6 py-4 text-center text-sm text-red-500">{{ error }}</td>
+                        </tr>
+                        <tr v-else v-for="cuisine in paginatedCuisines" :key="cuisine.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ cuisine.name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-500 capitalize">{{ cuisine.created_by }}</div>
+                                <div class="text-sm text-gray-500">{{ cuisine.count }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
@@ -92,7 +98,7 @@
                                 </div>
                             </td>
                         </tr>
-                        <tr v-if="filteredCuisines.length === 0">
+                        <tr v-if="!loading && !error && filteredCuisines.length === 0">
                             <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">No cuisines found</td>
                         </tr>
                     </tbody>
@@ -141,9 +147,14 @@
 </template>
 
 <script setup>
-    import { ref, computed, watch } from 'vue';
+    import { ref, computed, watch, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
+    import { useToast } from 'vue-toastification';
+    import { restaurantService } from '@/services/restaurantService';
+
     const router = useRouter();
+    const toast = useToast();
+    
     const goToCreate = () => {
         router.push({ name: 'createCuisines' });
     };
@@ -151,27 +162,44 @@
         router.push({ name: 'editCuisines', params: { id: String(cuisineId) } });
     };
 
-    const cuisines = ref([
-        { id: 1, name: 'Italian', created_by: 'John Doe', status: 'Active' },
-        { id: 2, name: 'Mexican', created_by: 'Jane Smith', status: 'Active' },
-        { id: 3, name: 'Chinese', created_by: 'Mike Johnson', status: 'Active' },
-        { id: 4, name: 'Indian', created_by: 'Sarah Williams', status: 'Active' },
-        { id: 5, name: 'Japanese', created_by: 'David Brown', status: 'Active' },
-        { id: 6, name: 'Mediterranean', created_by: 'Emily Davis', status: 'Active' },
-        { id: 7, name: 'Thai', created_by: 'Robert Wilson', status: 'Active' },
-        { id: 8, name: 'French', created_by: 'Lisa Miller', status: 'Active' },
-        { id: 9, name: 'American', created_by: 'James Taylor', status: 'Active' },
-        { id: 10, name: 'Vietnamese', created_by: 'Jennifer Anderson', status: 'Active' },
-        { id: 11, name: 'Korean', created_by: 'Thomas Martinez', status: 'Active' },
-        { id: 12, name: 'Greek', created_by: 'Jessica Thomas', status: 'Active' },
-        { id: 13, name: 'Spanish', created_by: 'Daniel Hernandez', status: 'Active' },
-        { id: 14, name: 'Lebanese', created_by: 'Karen Moore', status: 'Active' },
-        { id: 15, name: 'Brazilian', created_by: 'Christopher Martin', status: 'Active' },
-    ]);
-
+    const cuisines = ref([]);
+    const loading = ref(false);
+    const error = ref('');
     const searchQuery = ref('');
     const perPage = ref(10);
     const currentPage = ref(1);
+
+    const fetchCuisines = async () => {
+        loading.value = true;
+        error.value = '';
+        
+        try {
+            const response = await restaurantService.getTopCuisines(50);
+            
+            // Map API response to component structure
+            if (response?.data && Array.isArray(response.data)) {
+                cuisines.value = response.data.map((item, index) => ({
+                    id: item._id || index,
+                    name: item._id || 'Unknown',
+                    count: item.count || 0,
+                    status: 'Active'
+                }));
+            } else {
+                error.value = 'Invalid response format';
+                toast.error('Failed to load cuisines');
+            }
+        } catch (err) {
+            console.error('Error fetching cuisines:', err);
+            error.value = err?.response?.data?.message || 'Failed to load cuisines';
+            toast.error('Failed to load cuisines');
+        } finally {
+            loading.value = false;
+        }
+    };
+
+    onMounted(() => {
+        fetchCuisines();
+    });
 
     // Filter cuisines based on search query
     const filteredCuisines = computed(() => {
@@ -180,7 +208,7 @@
         const query = searchQuery.value.toLowerCase();
         return cuisines.value.filter(
             (cuisine) =>
-                cuisine.name.toLowerCase().includes(query) || cuisine.created_by.toLowerCase().includes(query) || cuisine.status.toLowerCase().includes(query),
+                cuisine.name.toLowerCase().includes(query) || cuisine.status.toLowerCase().includes(query),
         );
     });
 

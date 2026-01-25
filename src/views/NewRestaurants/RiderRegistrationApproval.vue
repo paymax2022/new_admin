@@ -26,7 +26,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">247</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.total }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -37,7 +37,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">100</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.pending }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -48,7 +48,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">900</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.approved }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -59,7 +59,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">10%</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.rejectionRate }}%</p>
             </div>
         </div>
 
@@ -104,7 +104,21 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="rider in filteredRiders" :key="rider.id" class="hover:bg-gray-50">
+                        <tr v-if="loading">
+                            <td colspan="6" class="px-6 py-8 text-center">
+                                <div class="flex items-center justify-center">
+                                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="ml-3 text-gray-600">Loading riders...</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-else-if="riders.length === 0">
+                            <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">No riders found</td>
+                        </tr>
+                        <tr v-else v-for="rider in filteredRiders" :key="rider.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center gap-3">
                                     <div :class="['w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold', getAvatarColor(rider.id)]">
@@ -220,59 +234,131 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { restaurantService } from '@/services/restaurantService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const searchQuery = ref('');
 const statusFilter = ref('all');
+const loading = ref(false);
 const openDocumentDropdowns = ref<Record<string, boolean>>({});
 const openStatusDropdowns = ref<Record<string, boolean>>({});
 
-const riders = ref([
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        phone: '+1234567890',
-        location: 'Aja Lagos',
-        vehicle: 'motorcycle',
-        appliedDate: '2024-01-15',
-        documents: [
-            { name: 'License', status: 'Uploaded' },
-            { name: 'Insurance', status: 'Uploaded' },
-            { name: 'Vehicle', status: 'Uploaded' }
-        ],
-        status: 'Pending'
-    },
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        phone: '+1234567890',
-        location: 'Aja Lagos',
-        vehicle: 'motorcycle',
-        appliedDate: '2024-01-15',
-        documents: [
-            { name: 'License', status: 'Uploaded' },
-            { name: 'Insurance', status: 'Uploaded' },
-            { name: 'Vehicle', status: 'Pending' }
-        ],
-        status: 'Approved'
-    },
-    {
-        id: 'R001',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        phone: '+1234567890',
-        location: 'Aja Lagos',
-        vehicle: 'motorcycle',
-        appliedDate: '2024-01-15',
-        documents: [
-            { name: 'License', status: 'Rejected' },
-            { name: 'Insurance', status: 'Uploaded' },
-            { name: 'Vehicle', status: 'Pending' }
-        ],
-        status: 'Rejected'
+const riders = ref<any[]>([]);
+
+// Transform API rider data to component format
+const transformRiderData = (apiRider: any) => {
+    const fullName = `${apiRider.first_name || ''} ${apiRider.last_name || ''}`.trim() || 'Unknown Rider';
+    const location = apiRider.local_district || apiRider.address || `${apiRider.city || ''}, ${apiRider.state || ''}`.trim() || 'N/A';
+    const vehicle = apiRider.vehicle_type || apiRider.transport_mode || 'N/A';
+    
+    // Format applied date (use created_at if available, otherwise current date)
+    const appliedDate = apiRider.created_at 
+        ? new Date(apiRider.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+        : new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    
+    // Build documents array from available photos
+    const documents: any[] = [];
+    if (apiRider.driving_license_photo_front || apiRider.driving_license_photo_back) {
+        documents.push({ 
+            name: 'License', 
+            status: (apiRider.driving_license_photo_front && apiRider.driving_license_photo_back) ? 'Uploaded' : 'Pending',
+            front: apiRider.driving_license_photo_front,
+            back: apiRider.driving_license_photo_back
+        });
     }
-]);
+    if (apiRider.driver_photo) {
+        documents.push({ 
+            name: 'Driver Photo', 
+            status: 'Uploaded',
+            url: apiRider.driver_photo
+        });
+    }
+    if (apiRider.vehicle_image) {
+        documents.push({ 
+            name: 'Vehicle', 
+            status: 'Uploaded',
+            url: apiRider.vehicle_image
+        });
+    }
+    
+    // Default to at least one document entry if none exist
+    if (documents.length === 0) {
+        documents.push({ name: 'License', status: 'Pending' });
+        documents.push({ name: 'Driver Photo', status: 'Pending' });
+        documents.push({ name: 'Vehicle', status: 'Pending' });
+    }
+    
+    // Map status - API might have different status values
+    // Default to 'Pending' if status is not explicitly approved/rejected
+    let status = 'Pending';
+    if (apiRider.status === 'approved' || apiRider.approved === true) {
+        status = 'Approved';
+    } else if (apiRider.status === 'rejected' || apiRider.rejected === true) {
+        status = 'Rejected';
+    } else if (apiRider.status === 'online' || apiRider.status === 'active') {
+        // Online/active riders are likely approved
+        status = 'Approved';
+    }
+    
+    return {
+        id: apiRider._id || apiRider.id || 'N/A',
+        name: fullName,
+        email: apiRider.email || 'N/A',
+        phone: apiRider.phone_number || apiRider.phone || 'N/A',
+        location: location,
+        vehicle: vehicle,
+        appliedDate: appliedDate,
+        documents: documents,
+        status: status,
+        _original: apiRider
+    };
+};
+
+// Fetch all riders
+const fetchRiders = async () => {
+    loading.value = true;
+    try {
+        const response = await restaurantService.getRiders();
+        const ridersData = response.data?.riders || response.riders || [];
+        
+        if (Array.isArray(ridersData)) {
+            riders.value = ridersData.map(transformRiderData);
+        } else {
+            riders.value = [];
+        }
+        
+        if (riders.value.length === 0) {
+            toast.info('No riders found');
+        } else {
+            toast.success(`Loaded ${riders.value.length} rider(s)`);
+        }
+    } catch (error: any) {
+        console.error('Error fetching riders:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to load riders';
+        toast.error(errorMessage);
+        riders.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+// KPI Stats computed from riders data
+const kpiStats = computed(() => {
+    const total = riders.value.length;
+    const pending = riders.value.filter(r => r.status === 'Pending').length;
+    const approved = riders.value.filter(r => r.status === 'Approved').length;
+    const rejected = riders.value.filter(r => r.status === 'Rejected').length;
+    const rejectionRate = total > 0 ? Math.round((rejected / total) * 100) : 0;
+    
+    return {
+        total,
+        pending,
+        approved,
+        rejected,
+        rejectionRate
+    };
+});
 
 const filteredRiders = computed(() => {
     let filtered = riders.value;
@@ -358,6 +444,7 @@ const closeAllDropdowns = () => {
 
 onMounted(() => {
     document.addEventListener('click', closeAllDropdowns);
+    fetchRiders();
 });
 
 onUnmounted(() => {

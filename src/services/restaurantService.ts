@@ -169,13 +169,68 @@ export const restaurantService = {
         }
     },
 
-    // Get restaurant orders
-    async getRestaurantOrders(restaurantId: string, page: number = 1, limit: number = 10): Promise<any> {
+    // Get restaurant orders with optional filters
+    async getRestaurantOrders(
+        restaurantId: string,
+        page: number = 1,
+        limit: number = 10,
+        filters?: {
+            status?: string;
+            from_date?: string;
+            to_date?: string;
+        }
+    ): Promise<any> {
         try {
-            const response = await api.get(`/api/v1/delivery/restaurant-orders/restaurant/${restaurantId}?page=${page}&limit=${limit}`);
+            let url = `/api/v1/delivery/restaurant-orders/restaurant/${restaurantId}?page=${page}&limit=${limit}`;
+            
+            if (filters) {
+                if (filters.status) {
+                    url += `&status=${filters.status}`;
+                }
+                if (filters.from_date) {
+                    url += `&from_date=${filters.from_date}`;
+                }
+                if (filters.to_date) {
+                    url += `&to_date=${filters.to_date}`;
+                }
+            }
+            
+            const response = await api.get(url);
             return response.data;
         } catch (error) {
             console.error('Error fetching restaurant orders:', error);
+            throw error;
+        }
+    },
+
+    // Get all restaurant IDs from delivery API
+    async getAllDeliveryRestaurantIds(): Promise<string[]> {
+        try {
+            const response = await api.get('/api/v1/delivery/restaurants/restaurants');
+            // Handle different response structures
+            const restaurants = response.data?.data || response.data || [];
+            if (Array.isArray(restaurants)) {
+                return restaurants.map((r: any) => r._id || r.id || r.restaurant_id).filter(Boolean);
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching delivery restaurant IDs:', error);
+            throw error;
+        }
+    },
+
+    // Get all restaurants from delivery API with full details
+    async getAllDeliveryRestaurants(): Promise<any[]> {
+        try {
+            const response = await api.get('/api/v1/delivery/restaurants/restaurants');
+            // Handle different response structures
+            const restaurants = response.data?.data || response.data || [];
+            if (Array.isArray(restaurants)) {
+                return restaurants;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching delivery restaurants:', error);
             throw error;
         }
     },
@@ -267,6 +322,84 @@ export const restaurantService = {
             return response.data;
         } catch (error) {
             console.error('Error fetching restaurant ratings:', error);
+            throw error;
+        }
+    },
+
+    // Get riders with optional status and limit filters
+    async getRiders(status?: string, limit?: number): Promise<any> {
+        try {
+            let url = '/api/v1/delivery/riders/riders';
+            const params: string[] = [];
+            
+            if (status) {
+                params.push(`status=${status}`);
+            }
+            if (limit) {
+                params.push(`limit=${limit}`);
+            }
+            
+            if (params.length > 0) {
+                url += `?${params.join('&')}`;
+            }
+            
+            const response = await api.get(url);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching riders:', error);
+            throw error;
+        }
+    },
+
+    // Update rider status
+    async updateRiderStatus(riderId: string, status: string): Promise<any> {
+        try {
+            // Map status to API format
+            const apiStatus = status.toLowerCase();
+            const response = await api.put(`/api/v1/delivery/riders/rider/${riderId}/status`, {
+                status: apiStatus
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating rider status:', error);
+            throw error;
+        }
+    },
+
+    // Get delivery analytics (general metrics)
+    async getDeliveryAnalytics(): Promise<any> {
+        try {
+            const response = await api.get('/api/v1/delivery/tracking/analytics');
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching delivery analytics:', error);
+            throw error;
+        }
+    },
+
+    // Get rider performance metrics
+    async getRiderPerformance(riderId: string, startDate: string, endDate: string): Promise<any> {
+        try {
+            const response = await api.get(`/api/v1/delivery/tracking/analytics/riders/${riderId}/performance`, {
+                params: {
+                    start_date: startDate,
+                    end_date: endDate
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching rider performance:', error);
+            throw error;
+        }
+    },
+
+    // Get top cuisines
+    async getTopCuisines(limit: number = 50): Promise<any> {
+        try {
+            const response = await api.get(`/api/v1/restaurants/top-cuisines?limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching top cuisines:', error);
             throw error;
         }
     },

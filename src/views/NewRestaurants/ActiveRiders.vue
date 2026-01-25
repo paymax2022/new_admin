@@ -27,7 +27,19 @@
 
         <!-- Riders List -->
         <div class="bg-white border border-gray-200 rounded-lg overflow-hidden mb-6">
-            <div class="divide-y divide-gray-200">
+            <div v-if="loading" class="px-6 py-8 text-center text-gray-500">
+                <div class="flex items-center justify-center">
+                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-3">Loading riders...</span>
+                </div>
+            </div>
+            <div v-else-if="allRiders.length === 0" class="px-6 py-8 text-center text-gray-500">
+                No online riders found
+            </div>
+            <div v-else class="divide-y divide-gray-200">
                 <div v-for="rider in paginatedRiders" :key="rider.id" class="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
                     <!-- Profile Picture -->
                     <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
@@ -131,84 +143,69 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { restaurantService } from '@/services/restaurantService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const searchQuery = ref('');
 const currentPage = ref(1);
 const ridersPerPage = ref(10);
+const loading = ref(false);
 
-const allRiders = ref([
-    {
-        id: 1,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 2,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 3,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 4,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 5,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 6,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
-    },
-    {
-        id: 7,
-        name: 'Carlos Rodriguez',
-        location: 'Aja, Lagos',
-        rating: '4.8',
-        deliveries: '1247',
-        vehicleType: 'Bike',
-        avgTime: '18m',
-        status: 'Available'
+const allRiders = ref<any[]>([]);
+
+// Transform API rider data to component format
+const transformRiderData = (apiRider: any) => {
+    const fullName = `${apiRider.first_name || ''} ${apiRider.last_name || ''}`.trim() || 'Unknown Rider';
+    const location = apiRider.local_district || apiRider.address || apiRider.state || 'N/A';
+    const vehicleType = apiRider.vehicle_type || apiRider.transport_mode || 'N/A';
+    
+    return {
+        id: apiRider._id || apiRider.id || 'N/A',
+        name: fullName,
+        location: location,
+        rating: '4.8', // Default rating - API doesn't provide this
+        deliveries: '0', // Default deliveries - API doesn't provide this
+        vehicleType: vehicleType,
+        avgTime: '18m', // Default avg time - API doesn't provide this
+        status: apiRider.status === 'online' ? 'Available' : 'On Delivery',
+        _original: apiRider
+    };
+};
+
+// Fetch all online riders
+const fetchAllRiders = async () => {
+    loading.value = true;
+    try {
+        const response = await restaurantService.getRiders('online');
+        const ridersData = response.data?.riders || response.riders || [];
+        
+        if (Array.isArray(ridersData)) {
+            allRiders.value = ridersData.map(transformRiderData);
+        } else {
+            allRiders.value = [];
+        }
+        
+        if (allRiders.value.length === 0) {
+            toast.info('No online riders found');
+        } else {
+            toast.success(`Loaded ${allRiders.value.length} online rider(s)`);
+        }
+    } catch (error: any) {
+        console.error('Error fetching riders:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to load riders';
+        toast.error(errorMessage);
+        allRiders.value = [];
+    } finally {
+        loading.value = false;
     }
-]);
+};
+
+// Fetch riders on mount
+onMounted(() => {
+    fetchAllRiders();
+});
 
 const filteredRiders = computed(() => {
     let filtered = allRiders.value;
@@ -218,7 +215,8 @@ const filteredRiders = computed(() => {
         filtered = filtered.filter(
             (rider) =>
                 rider.name.toLowerCase().includes(query) ||
-                rider.location.toLowerCase().includes(query)
+                rider.location.toLowerCase().includes(query) ||
+                rider.id.toLowerCase().includes(query)
         );
     }
 

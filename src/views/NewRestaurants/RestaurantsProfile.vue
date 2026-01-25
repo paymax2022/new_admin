@@ -63,10 +63,23 @@
                                     </div>
                                 </div>
                             </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
+                        <tr v-if="loading">
+                            <td colspan="8" class="px-6 py-8 text-center">
+                                <div class="flex items-center justify-center">
+                                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="ml-3 text-gray-600">Loading restaurants...</span>
+                                </div>
+                            </td>
+                        </tr>
                         <tr 
+                            v-else
                             v-for="(restaurant, index) in paginatedRestaurants" 
                             :key="restaurant.id" 
                             :class="[
@@ -104,20 +117,48 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm text-gray-900">({{ restaurant.avgRating }})</div>
                             </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
+                                    <button
+                                        v-if="!restaurant.verified"
+                                        @click.stop="verifyRestaurant(restaurant)"
+                                        :disabled="verifyingRestaurantId === restaurant.id"
+                                        class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <span v-if="verifyingRestaurantId === restaurant.id" class="inline-flex items-center">
+                                            <svg class="animate-spin -ml-1 mr-2 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Verifying...
+                                        </span>
+                                        <span v-else>Verify</span>
+                                    </button>
+                                    <span
+                                        v-else
+                                        class="px-3 py-1.5 text-xs font-medium text-green-700 bg-green-100 rounded-md"
+                                    >
+                                        Verified
+                                    </span>
+                                </div>
+                            </td>
                         </tr>
-                        <tr v-if="filteredRestaurants.length === 0">
-                            <td colspan="7" class="px-6 py-4 text-center text-sm text-gray-500">No restaurants found</td>
+                        <tr v-if="!loading && filteredRestaurants.length === 0">
+                            <td colspan="8" class="px-6 py-4 text-center text-sm text-gray-500">No restaurants found</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- Pagination -->
-            <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-center">
+            <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Showing {{ (currentPage - 1) * perPage + 1 }} to {{ Math.min(currentPage * perPage, totalRestaurants) }} of {{ totalRestaurants }} restaurants
+                </div>
                 <div class="flex items-center gap-1">
                     <button
                         @click="prevPage"
-                        :disabled="currentPage === 1"
+                        :disabled="currentPage === 1 || loading"
                         class="p-2 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -143,7 +184,7 @@
 
                     <button
                         @click="nextPage"
-                        :disabled="currentPage === totalPages"
+                        :disabled="currentPage === totalPages || loading"
                         class="p-2 border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -704,7 +745,7 @@
                                                 <h3 class="text-lg font-bold text-gray-900">Menu Uploaded</h3>
                                                 <span class="text-sm text-blue-600 cursor-pointer">See all</span>
                                             </div>
-                                            <div class="flex gap-4 overflow-x-auto pb-4">
+                                            <div v-if="menuItems.length > 0" class="flex gap-4 overflow-x-auto pb-4">
                                                 <div v-for="menu in menuItems" :key="menu.id" class="flex-shrink-0 w-48">
                                                     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
                                                         <img :src="menu.image" :alt="menu.name" class="w-full h-32 object-cover" />
@@ -716,6 +757,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div v-else class="text-sm text-gray-500 py-4">No menu items available</div>
                                         </div>
 
                                         <!-- Bank/Payout Setup Section -->
@@ -1288,11 +1330,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import { restaurantService } from '@/services/restaurantService';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const searchQuery = ref('');
-const perPage = ref(10);
+const perPage = ref(20);
 const currentPage = ref(1);
 const showProfileModal = ref(false);
 const showDetailedModal = ref(false);
@@ -1300,6 +1345,9 @@ const showEditModal = ref(false);
 const selectedRestaurant = ref<any>(null);
 const activeTab = ref('restaurant-profiles');
 const aboutUsText = ref('');
+const loading = ref(false);
+const totalRestaurants = ref(0);
+const verifyingRestaurantId = ref<string | null>(null);
 
 const editForm = ref({
     restaurantId: '',
@@ -1317,12 +1365,8 @@ const editForm = ref({
     aboutUs: ''
 });
 
-// Menu items with dummy food images
-const menuItems = ref([
-    { id: 1, name: 'Menu Name', price: '20', category: 'Fast Food', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop' },
-    { id: 2, name: 'Menu Name', price: '20', category: 'Fast Food', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&h=200&fit=crop' },
-    { id: 3, name: 'Menu Name', price: '20', category: 'Fast Food', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&h=200&fit=crop' },
-]);
+// Menu items - populated from API data
+const menuItems = ref<any[]>([]);
 
 // Feedback items
 const feedbackItems = ref([
@@ -1334,93 +1378,121 @@ const feedbackItems = ref([
     { id: 6, userName: 'Oliver Mitchell', role: 'View Executive', comment: 'Personally surprised by the increase in funds, just last year, it\'s a good thing when the increase is massive.', timeAgo: '2 days ago' },
 ]);
 
-const restaurants = ref([
-    { 
-        id: 1, 
-        restaurantId: 'RES-2001', 
-        name: 'Mama Put Expr...', 
-        fullName: 'MAMA PUT EXPRESS',
-        category: 'Fast Food', 
-        cuisineType: 'Local', 
-        address: '12 Allen Ave, La...',
-        fullAddress: '12 Allen Ave, Ikeja, Lagos',
-        status: 'Active', 
-        avgRating: '4.5',
-        contactPerson: 'Tunde Adewale - 08012345678',
-        email: 'mama_put@gmail.com',
-        phone: '08023567876',
-        managerName: 'Tunde Adebayo',
-        service: 'Drive-In',
-        restaurantType: 'Vendors',
-        joinedOn: '2023-08-30',
-        totalOrders: '980',
-        totalReviews: '3800',
-        bankName: 'FBN',
-        accountHolderName: 'Tunde Adebayo',
-        accountNumber: '1234567890',
-        branch: 'Wuse Zone 4',
-        aboutUs: 'Mama Put Express has applied to join the platform. Documents are pending verification. Requires approval to onboard.',
-        licenseSize: '1.5MB',
-        certSize: '1.5MB'
-    },
-    { 
-        id: 2, 
-        restaurantId: 'RES-2002', 
-        name: 'Spice Hub', 
-        fullName: 'SPICE HUB',
-        category: 'Drinks', 
-        cuisineType: 'Nigerian', 
-        address: '44 Awka Rd, On...',
-        fullAddress: '44 Awka Rd, Onitsha, Anambra',
-        status: 'Inactive', 
-        avgRating: '3.4',
-        contactPerson: 'John Doe - 08098765432',
-        email: 'spicehub@gmail.com',
-        phone: '08098765432',
-        managerName: 'John Doe',
-        service: 'Dine-In',
-        restaurantType: 'Restaurant',
-        joinedOn: '2023-07-15',
-        totalOrders: '450',
-        totalReviews: '1200',
-        bankName: 'GTB',
-        accountHolderName: 'John Doe',
-        accountNumber: '9876543210',
-        branch: 'Onitsha Main',
-        aboutUs: 'Spice Hub is a Nigerian cuisine restaurant.',
-        licenseSize: '2.0MB',
-        certSize: '1.8MB'
-    },
-    // Add more restaurants to fill pages
-    ...Array.from({ length: 98 }, (_, i) => ({
-        id: i + 3,
-        restaurantId: `RES-${2003 + i}`,
-        name: i % 2 === 0 ? 'Mama Put Expr...' : 'Spice Hub',
-        fullName: i % 2 === 0 ? 'MAMA PUT EXPRESS' : 'SPICE HUB',
-        category: i % 2 === 0 ? 'Fast Food' : 'Drinks',
-        cuisineType: i % 2 === 0 ? 'Local' : 'Nigerian',
-        address: i % 2 === 0 ? '12 Allen Ave, La...' : '44 Awka Rd, On...',
-        fullAddress: i % 2 === 0 ? '12 Allen Ave, Ikeja, Lagos' : '44 Awka Rd, Onitsha',
-        status: i % 2 === 0 ? 'Active' : 'Inactive',
-        avgRating: '3.4',
-        contactPerson: 'Contact Person - 08000000000',
-        email: 'restaurant@example.com',
-        phone: '08000000000',
-        managerName: 'Manager Name',
-        service: i % 2 === 0 ? 'Drive-In' : 'Dine-In',
-        restaurantType: i % 2 === 0 ? 'Vendors' : 'Restaurant',
-        joinedOn: '2023-01-01',
-        totalOrders: '100',
-        totalReviews: '300',
-        bankName: 'FBN',
-        accountHolderName: 'Account Holder',
-        accountNumber: '0000000000',
-        branch: 'Branch Name',
-        aboutUs: 'Restaurant description',
-        licenseSize: '1.5MB',
-        certSize: '1.5MB'
-    })),
-]);
+const restaurants = ref<any[]>([]);
+
+// Transform API data to component format
+const transformRestaurantData = (apiRestaurant: any) => {
+    const cuisineNames = apiRestaurant.cuisines?.map((c: any) => c.name).join(', ') || 'N/A';
+    const firstCuisine = apiRestaurant.cuisines?.[0]?.name || 'N/A';
+    const address = apiRestaurant.address || 'N/A';
+    const shortAddress = address.length > 20 ? address.substring(0, 20) + '...' : address;
+    const shortName = apiRestaurant.name?.length > 15 ? apiRestaurant.name.substring(0, 15) + '...' : apiRestaurant.name;
+    
+    return {
+        id: apiRestaurant._id,
+        restaurantId: apiRestaurant._id,
+        name: shortName,
+        fullName: apiRestaurant.name,
+        category: apiRestaurant.category_id || 'N/A',
+        cuisineType: firstCuisine,
+        address: shortAddress,
+        fullAddress: address,
+        status: apiRestaurant.accepting_orders ? 'Active' : 'Inactive',
+        avgRating: '0.0', // Not in API response, default to 0.0
+        contactPerson: 'N/A',
+        email: 'N/A',
+        phone: 'N/A',
+        managerName: 'N/A',
+        service: apiRestaurant.services || 'N/A',
+        restaurantType: apiRestaurant.restaurant_type || 'N/A',
+        joinedOn: apiRestaurant.created_at ? new Date(apiRestaurant.created_at).toISOString().split('T')[0] : 'N/A',
+        totalOrders: '0',
+        totalReviews: '0',
+        bankName: apiRestaurant.settlement_bank || 'N/A',
+        accountHolderName: 'N/A',
+        accountNumber: apiRestaurant.account_number || 'N/A',
+        branch: 'N/A',
+        aboutUs: apiRestaurant.about || 'No description available',
+        licenseSize: 'N/A',
+        certSize: 'N/A',
+        verified: apiRestaurant.verified || false,
+        // Store original API data for reference
+        _original: apiRestaurant,
+        // Store restaurant ID for verification
+        restaurantId: apiRestaurant._id
+    };
+};
+
+// Fetch restaurants from API
+const fetchRestaurants = async () => {
+    loading.value = true;
+    try {
+        const response = await restaurantService.getAllRestaurants(perPage.value, currentPage.value);
+        
+        // Handle different response structures
+        const restaurantsData = response.data?.data || response.data || [];
+        const total = response.total || response.data?.total || restaurantsData.length;
+        
+        if (Array.isArray(restaurantsData)) {
+            restaurants.value = restaurantsData.map(transformRestaurantData);
+            totalRestaurants.value = total;
+        } else {
+            restaurants.value = [];
+            totalRestaurants.value = 0;
+        }
+    } catch (error: any) {
+        console.error('Error fetching restaurants:', error);
+        toast.error('Failed to load restaurants');
+        restaurants.value = [];
+        totalRestaurants.value = 0;
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Fetch restaurants on mount and when page/perPage changes
+onMounted(() => {
+    fetchRestaurants();
+});
+
+watch([currentPage, perPage], () => {
+    fetchRestaurants();
+});
+
+// Verify restaurant function
+const verifyRestaurant = async (restaurant: any) => {
+    if (!restaurant.restaurantId && !restaurant.id) {
+        toast.error('Restaurant ID not found');
+        return;
+    }
+
+    const restaurantId = restaurant.restaurantId || restaurant.id;
+    verifyingRestaurantId.value = restaurantId;
+
+    try {
+        await restaurantService.verifyRestaurant(restaurantId);
+        
+        // Update restaurant status locally
+        const index = restaurants.value.findIndex(r => (r.id === restaurantId || r.restaurantId === restaurantId));
+        if (index !== -1) {
+            restaurants.value[index].verified = true;
+            restaurants.value[index].status = 'Active';
+            // Update original data if it exists
+            if (restaurants.value[index]._original) {
+                restaurants.value[index]._original.verified = true;
+                restaurants.value[index]._original.accepting_orders = true;
+            }
+        }
+
+        toast.success('Restaurant verified successfully');
+    } catch (error: any) {
+        console.error('Error verifying restaurant:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to verify restaurant';
+        toast.error(errorMessage);
+    } finally {
+        verifyingRestaurantId.value = null;
+    }
+};
 
 const filteredRestaurants = computed(() => {
     let filtered = restaurants.value;
@@ -1438,7 +1510,7 @@ const filteredRestaurants = computed(() => {
     return filtered;
 });
 
-const totalPages = computed(() => Math.ceil(filteredRestaurants.value.length / perPage.value));
+const totalPages = computed(() => Math.ceil(totalRestaurants.value / perPage.value));
 
 const pagination = computed(() => {
     const startIndex = (currentPage.value - 1) * perPage.value;
@@ -1447,7 +1519,8 @@ const pagination = computed(() => {
 });
 
 const paginatedRestaurants = computed(() => {
-    return filteredRestaurants.value.slice(pagination.value.startIndex, pagination.value.endIndex);
+    // Since we're fetching paginated data from API, just return filtered restaurants
+    return filteredRestaurants.value;
 });
 
 const visiblePages = computed(() => {
@@ -1523,6 +1596,21 @@ const openDetailedModal = (restaurant: any) => {
     selectedRestaurant.value = restaurant;
     aboutUsText.value = restaurant.aboutUs || 'Mama Put Express has applied to join the platform. Documents are pending verification. Requires approval to onboard.';
     activeTab.value = 'restaurant-profiles';
+    
+    // Populate menu items from API data
+    if (restaurant._original?.menus && Array.isArray(restaurant._original.menus)) {
+        menuItems.value = restaurant._original.menus.map((menu: any) => ({
+            id: menu._id,
+            name: menu.name || 'Menu Item',
+            price: menu.price || '0',
+            category: menu.category || 'N/A',
+            image: menu.item_image || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop',
+            description: menu.description || ''
+        }));
+    } else {
+        menuItems.value = [];
+    }
+    
     showDetailedModal.value = true;
 };
 

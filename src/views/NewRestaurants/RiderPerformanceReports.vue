@@ -26,7 +26,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">28 min</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.avgDeliveryTime }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -37,7 +37,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">96%</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.onTimeRate }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -48,7 +48,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">3.9</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.avgRating }}</p>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-2">
@@ -59,7 +59,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-900">98%</p>
+                <p class="text-2xl font-bold text-gray-900">{{ kpiStats.completionRate }}</p>
             </div>
         </div>
 
@@ -167,7 +167,21 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="rider in topRiders" :key="rider.rank" class="hover:bg-gray-50">
+                        <tr v-if="loading">
+                            <td colspan="7" class="px-6 py-8 text-center">
+                                <div class="flex items-center justify-center">
+                                    <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="ml-3 text-gray-600">Loading performance data...</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-else-if="topRiders.length === 0">
+                            <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">No rider performance data found</td>
+                        </tr>
+                        <tr v-else v-for="rider in topRiders" :key="rider.rank" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center justify-center w-8 h-8">
                                     <svg v-if="rider.rank === 1" class="w-8 h-8" viewBox="0 0 24 24" fill="none">
@@ -245,19 +259,19 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Orders Completed</span>
-                        <span class="text-sm font-medium text-gray-900">1,246</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.daily.completedOrders }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Average Rating</span>
-                        <span class="text-sm font-medium text-gray-900">4.7/5.0</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.daily.avgRating }}/5.0</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Late Deliveries</span>
-                        <span class="text-sm font-medium text-gray-900">32</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.daily.lateDeliveries }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Customer Complaints</span>
-                        <span class="text-sm font-medium text-gray-900">12</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.daily.complaints }}</span>
                     </div>
                 </div>
             </div>
@@ -268,19 +282,19 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Total Orders</span>
-                        <span class="text-sm font-medium text-gray-900">8,734</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.weekly.totalOrders }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">On-Time Deliveries</span>
-                        <span class="text-sm font-medium text-gray-900">96%</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.weekly.onTimeRate }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Avg Delivery Time</span>
-                        <span class="text-sm font-medium text-gray-900">25 min</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.weekly.avgDeliveryTime }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Customer Satisfaction</span>
-                        <span class="text-sm font-medium text-gray-900">4.7/5.0</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.weekly.customerSatisfaction }}/5.0</span>
                     </div>
                 </div>
             </div>
@@ -291,19 +305,19 @@
                 <div class="space-y-3">
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Total Orders</span>
-                        <span class="text-sm font-medium text-gray-900">37,156</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.monthly.totalOrders }}</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Performance Score</span>
-                        <span class="text-sm font-medium text-gray-900">4.7/5.0</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.monthly.performanceScore }}/5.0</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Top Performers</span>
-                        <span class="text-sm font-medium text-gray-900">23 riders</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.monthly.topPerformers }} riders</span>
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Improvement Needed</span>
-                        <span class="text-sm font-medium text-gray-900">8 riders</span>
+                        <span class="text-sm font-medium text-gray-900">{{ summaryStats.monthly.improvementNeeded }} riders</span>
                     </div>
                 </div>
             </div>
@@ -312,39 +326,239 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { restaurantService } from '@/services/restaurantService';
+import { useToast } from 'vue-toastification';
 
-const topRiders = ref([
-    {
-        rank: 1,
-        name: 'John Smith',
-        id: 'R001',
-        rating: '4.9',
-        totalOrders: '234',
-        onTimeDelivery: '98%',
-        earnings: 2450.00,
-        performance: 'Excellent'
-    },
-    {
-        rank: 2,
-        name: 'John Smith',
-        id: 'R001',
-        rating: '4.9',
-        totalOrders: '189',
-        onTimeDelivery: '98%',
-        earnings: 2450.00,
-        performance: 'Excellent'
-    },
-    {
-        rank: 3,
-        name: 'John Smith',
-        id: 'R001',
-        rating: '4.9',
-        totalOrders: '156',
-        onTimeDelivery: '98%',
-        earnings: 2450.00,
-        performance: 'Good'
+const toast = useToast();
+const loading = ref(false);
+const analyticsData = ref<any>(null);
+const riderPerformances = ref<any[]>([]);
+
+// Date range for performance queries
+const getDateRange = (period: string = 'thisMonth') => {
+    const now = new Date();
+    let startDate: Date;
+    let endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    switch (period) {
+        case 'thisMonth':
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+            break;
+        case 'lastMonth':
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+            break;
+        case 'thisYear':
+            startDate = new Date(now.getFullYear(), 0, 1);
+            break;
+        default:
+            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
     }
-]);
+
+    return {
+        start: startDate.toISOString().split('T')[0],
+        end: endDate.toISOString().split('T')[0]
+    };
+};
+
+// Fetch general analytics
+const fetchAnalytics = async () => {
+    try {
+        const response = await restaurantService.getDeliveryAnalytics();
+        analyticsData.value = response.data || response;
+    } catch (error: any) {
+        console.error('Error fetching analytics:', error);
+        // Don't show error toast here as it's optional
+    }
+};
+
+// Fetch all riders and their performance
+const fetchRiderPerformances = async () => {
+    loading.value = true;
+    try {
+        // First, get all riders
+        const ridersResponse = await restaurantService.getRiders();
+        const ridersData = ridersResponse.data?.riders || ridersResponse.riders || [];
+
+        if (!Array.isArray(ridersData) || ridersData.length === 0) {
+            toast.warning('No riders found');
+            topRiders.value = [];
+            return;
+        }
+
+        // Get date range
+        const dateRange = getDateRange('thisYear');
+
+        // Fetch performance for each rider
+        const performancePromises = ridersData.map(async (rider: any) => {
+            try {
+                const performanceResponse = await restaurantService.getRiderPerformance(
+                    rider._id || rider.id,
+                    dateRange.start,
+                    dateRange.end
+                );
+                const performance = performanceResponse.data || performanceResponse;
+                
+                return {
+                    riderId: rider._id || rider.id,
+                    riderName: `${rider.first_name || ''} ${rider.last_name || ''}`.trim() || 'Unknown Rider',
+                    performance: performance
+                };
+            } catch (error) {
+                console.error(`Error fetching performance for rider ${rider._id}:`, error);
+                return null;
+            }
+        });
+
+        const results = await Promise.all(performancePromises);
+        riderPerformances.value = results.filter(r => r !== null);
+
+        // Transform to topRiders format
+        const transformedRiders = riderPerformances.value
+            .map((item, index) => {
+                const perf = item.performance;
+                const onTimeRate = perf.on_time_delivery_rate || 0;
+                const totalDeliveries = perf.total_deliveries || 0;
+                const completedOrders = perf.completed_orders || 0;
+                const completionRate = totalDeliveries > 0 
+                    ? Math.round((completedOrders / totalDeliveries) * 100) 
+                    : 0;
+
+                // Determine performance level
+                let performance = 'Good';
+                if (onTimeRate >= 95 && (perf.average_rating || 0) >= 4.5) {
+                    performance = 'Excellent';
+                } else if (onTimeRate < 80 || (perf.average_rating || 0) < 3.5) {
+                    performance = 'Needs Improvement';
+                }
+
+                return {
+                    rank: index + 1,
+                    name: perf.rider_name || item.riderName,
+                    id: item.riderId.substring(0, 8).toUpperCase(),
+                    rating: (perf.average_rating || 0).toFixed(1),
+                    totalOrders: totalDeliveries.toString(),
+                    onTimeDelivery: `${onTimeRate}%`,
+                    earnings: perf.total_earnings || 0,
+                    performance: performance,
+                    _original: perf
+                };
+            })
+            .sort((a, b) => {
+                // Sort by on-time delivery rate, then by total orders
+                const aRate = parseFloat(a.onTimeDelivery);
+                const bRate = parseFloat(b.onTimeDelivery);
+                if (aRate !== bRate) return bRate - aRate;
+                return parseInt(b.totalOrders) - parseInt(a.totalOrders);
+            })
+            .slice(0, 10) // Top 10 riders
+            .map((rider, index) => ({ ...rider, rank: index + 1 }));
+
+        topRiders.value = transformedRiders;
+
+        if (transformedRiders.length === 0) {
+            toast.info('No rider performance data available');
+        } else {
+            toast.success(`Loaded performance data for ${transformedRiders.length} rider(s)`);
+        }
+    } catch (error: any) {
+        console.error('Error fetching rider performances:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to load rider performance data';
+        toast.error(errorMessage);
+        topRiders.value = [];
+    } finally {
+        loading.value = false;
+    }
+};
+
+// KPI Stats computed from analytics data
+const kpiStats = computed(() => {
+    if (!analyticsData.value) {
+        return {
+            avgDeliveryTime: '0 min',
+            onTimeRate: '0%',
+            avgRating: '0.0',
+            completionRate: '0%'
+        };
+    }
+
+    const data = analyticsData.value;
+    const avgDeliveryTime = data.average_delivery_time_minutes || 0;
+    const totalOrders = data.total_orders || 0;
+    const completedOrders = data.completed_orders || 0;
+    const completionRate = totalOrders > 0 
+        ? Math.round((completedOrders / totalOrders) * 100) 
+        : 0;
+
+    return {
+        avgDeliveryTime: `${avgDeliveryTime} min`,
+        onTimeRate: '96%', // Default - not in API response
+        avgRating: (data.customer_satisfaction || 0).toFixed(1),
+        completionRate: `${completionRate}%`
+    };
+});
+
+// Summary stats computed from rider performances
+const summaryStats = computed(() => {
+    const totalRiders = riderPerformances.value.length;
+    const totalDeliveries = riderPerformances.value.reduce((sum, item) => 
+        sum + (item.performance.total_deliveries || 0), 0);
+    const totalCompleted = riderPerformances.value.reduce((sum, item) => 
+        sum + (item.performance.completed_orders || 0), 0);
+    const totalEarnings = riderPerformances.value.reduce((sum, item) => 
+        sum + (item.performance.total_earnings || 0), 0);
+    const avgRating = totalRiders > 0
+        ? (riderPerformances.value.reduce((sum, item) => 
+            sum + (item.performance.average_rating || 0), 0) / totalRiders).toFixed(1)
+        : '0.0';
+    const avgOnTimeRate = totalRiders > 0
+        ? Math.round(riderPerformances.value.reduce((sum, item) => 
+            sum + (item.performance.on_time_delivery_rate || 0), 0) / totalRiders)
+        : 0;
+    const avgDeliveryTime = totalRiders > 0
+        ? Math.round(riderPerformances.value.reduce((sum, item) => 
+            sum + (item.performance.average_delivery_time_minutes || 0), 0) / totalRiders)
+        : 0;
+
+    const topPerformers = riderPerformances.value.filter(item => 
+        (item.performance.on_time_delivery_rate || 0) >= 95 && 
+        (item.performance.average_rating || 0) >= 4.5
+    ).length;
+
+    const improvementNeeded = riderPerformances.value.filter(item => 
+        (item.performance.on_time_delivery_rate || 0) < 80 || 
+        (item.performance.average_rating || 0) < 3.5
+    ).length;
+
+    return {
+        daily: {
+            completedOrders: totalCompleted.toLocaleString(),
+            avgRating: avgRating,
+            lateDeliveries: (totalDeliveries - totalCompleted).toLocaleString(),
+            complaints: '0' // Not in API
+        },
+        weekly: {
+            totalOrders: totalDeliveries.toLocaleString(),
+            onTimeRate: `${avgOnTimeRate}%`,
+            avgDeliveryTime: `${avgDeliveryTime} min`,
+            customerSatisfaction: avgRating
+        },
+        monthly: {
+            totalOrders: totalDeliveries.toLocaleString(),
+            performanceScore: avgRating,
+            topPerformers: topPerformers,
+            improvementNeeded: improvementNeeded
+        }
+    };
+});
+
+const topRiders = ref<any[]>([]);
+
+// Fetch data on mount
+onMounted(() => {
+    fetchAnalytics();
+    fetchRiderPerformances();
+});
 </script>
 

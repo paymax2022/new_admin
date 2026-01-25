@@ -115,7 +115,7 @@ const error = ref('')
 const menu = ref(null)
 
 const fetchMenu = async () => {
-  const menuId = route.params.id as string
+  const menuId = route.params.id as string;
   if (!menuId) {
     error.value = 'Menu ID is required'
     return

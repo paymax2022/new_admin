@@ -179,48 +179,118 @@ const fetchRestaurantName = async (restaurantId: string) => {
     return 'Loading...';
 };
 
+// Fetch all restaurants with pagination
+const fetchAllRestaurants = async (): Promise<any[]> => {
+    const allRestaurants: any[] = [];
+    let page = 1;
+    const limit = 100;
+    let hasMore = true;
+
+    while (hasMore) {
+        try {
+            const response = await restaurantService.getAllRestaurants(limit, page);
+            let restaurantsList: any[] = [];
+            
+            // Handle different response structures
+            if (response?.data?.data?.data && Array.isArray(response.data.data.data)) {
+                restaurantsList = response.data.data.data;
+            } else if (response?.data?.data && Array.isArray(response.data.data)) {
+                restaurantsList = response.data.data;
+            } else if (Array.isArray(response?.data)) {
+                restaurantsList = response.data;
+            } else if (Array.isArray(response)) {
+                restaurantsList = response;
+            }
+            
+            if (restaurantsList.length === 0) {
+                hasMore = false;
+            } else {
+                allRestaurants.push(...restaurantsList);
+                // If we got fewer results than the limit, we've reached the end
+                if (restaurantsList.length < limit) {
+                    hasMore = false;
+                } else {
+                    page++;
+                }
+            }
+        } catch (error) {
+            console.error(`Error fetching restaurants page ${page}:`, error);
+            hasMore = false;
+        }
+    }
+
+    return allRestaurants;
+};
+
 // Fetch all ratings from all restaurants
 const fetchAllRatings = async () => {
     try {
         loading.value = true;
         
         // First, get all restaurants
-        const restaurantsResponse = await restaurantService.getAllRestaurants(100, 1);
-        let restaurantsList = [];
+        const restaurantsList = await fetchAllRestaurants();
         
-        if (restaurantsResponse?.data?.data?.data && Array.isArray(restaurantsResponse.data.data.data)) {
-            restaurantsList = restaurantsResponse.data.data.data;
-        } else if (restaurantsResponse?.data?.data && Array.isArray(restaurantsResponse.data.data)) {
-            restaurantsList = restaurantsResponse.data.data;
-        } else if (Array.isArray(restaurantsResponse?.data)) {
-            restaurantsList = restaurantsResponse.data;
+        if (restaurantsList.length === 0) {
+            toast.warning('No restaurants found');
+            Ratings.value = [];
+            return;
         }
+
+        console.log(`Found ${restaurantsList.length} restaurants, fetching ratings...`);
         
-        // Fetch ratings for each restaurant
-        const allRatings: Rating[] = [];
-        
-        for (const restaurant of restaurantsList) {
-            try {
-                const ratingsResponse = await restaurantService.getRestaurantRatings(restaurant._id, 20, 0);
-                
-                if (ratingsResponse?.data && Array.isArray(ratingsResponse.data)) {
-                    const ratings = ratingsResponse.data.map((rating: any) => ({
-                        ...rating,
-                        restaurantName: restaurant.name // Set restaurant name immediately
-                    }));
-                    allRatings.push(...ratings);
-                }
-            } catch (error) {
-                console.error(`Error fetching ratings for restaurant ${restaurant._id}:`, error);
-                // Continue with other restaurants
+        // Create a map of restaurant ID to name for quick lookup
+        const restaurantMap = new Map<string, string>();
+        restaurantsList.forEach((restaurant: any) => {
+            const id = restaurant._id || restaurant.id;
+            const name = restaurant.name || `Restaurant ${id?.substring(0, 8)}`;
+            if (id) {
+                restaurantMap.set(id, name);
             }
+        });
+        
+        // Fetch ratings for each restaurant in parallel (with concurrency limit)
+        const allRatings: Rating[] = [];
+        const restaurantIds = Array.from(restaurantMap.keys());
+        
+        // Process in batches to avoid overwhelming the API
+        const batchSize = 10;
+        for (let i = 0; i < restaurantIds.length; i += batchSize) {
+            const batch = restaurantIds.slice(i, i + batchSize);
+            const batchPromises = batch.map(async (restaurantId) => {
+                try {
+                    // Fetch all ratings for this restaurant (use high limit to get all)
+                    const ratingsResponse = await restaurantService.getRestaurantRatings(restaurantId, 1000, 0);
+                    
+                    let ratings: any[] = [];
+                    if (ratingsResponse?.data && Array.isArray(ratingsResponse.data)) {
+                        ratings = ratingsResponse.data;
+                    } else if (Array.isArray(ratingsResponse)) {
+                        ratings = ratingsResponse;
+                    }
+                    
+                    return ratings.map((rating: any) => ({
+                        ...rating,
+                        id: rating._id || rating.id || `${restaurantId}-${rating.created_at}`,
+                        restaurantName: restaurantMap.get(restaurantId) || 'Unknown Restaurant'
+                    }));
+                } catch (error) {
+                    console.error(`Error fetching ratings for restaurant ${restaurantId}:`, error);
+                    return [];
+                }
+            });
+            
+            const batchResults = await Promise.all(batchPromises);
+            batchResults.forEach(ratings => {
+                allRatings.push(...ratings);
+            });
         }
         
         Ratings.value = allRatings;
-        toast.success(`Loaded ${allRatings.length} ratings`);
+        toast.success(`Loaded ${allRatings.length} ratings from ${restaurantIds.length} restaurants`);
     } catch (error: any) {
         console.error('Error fetching ratings:', error);
         toast.error('Failed to load ratings');
+        Ratings.value = [];
     } finally {
         loading.value = false;
     }
