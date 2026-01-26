@@ -28,10 +28,13 @@
           <div>
             <label class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Resolution Notes</label>
             <textarea
+              v-model="notes"
               rows="5"
               placeholder="Describe how this issue was resolved..."
               class="mt-2 w-full rounded-2xl border border-[#e2e8f0] bg-white px-4 py-3 text-sm text-[#111827] focus:border-[#111827] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
+              :disabled="loading"
             />
+            <p v-if="error" class="mt-1 text-xs text-red-500">{{ error }}</p>
           </div>
         </section>
 
@@ -45,9 +48,12 @@
           </button>
           <button
             type="button"
-            class="rounded-full border border-[#111827] bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0b1220]"
+            :disabled="loading"
+            class="rounded-full border border-[#111827] bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0b1220] disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="handleResolveTicket"
           >
-            Mark as Resolved
+            <span v-if="loading">Resolving...</span>
+            <span v-else>Mark as Resolved</span>
           </button>
         </footer>
       </div>
@@ -56,13 +62,57 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconX from '@/components/icon/icon-x.vue';
+import supportTicketService from '@/services/supportTicketService';
 
-defineProps<{
-  ticket: { id: string; description: string };
+const props = defineProps<{
+  ticket: { 
+    id: string; 
+    description?: string;
+  };
 }>();
 
-defineEmits(['close']);
+const emit = defineEmits(['close', 'resolved']);
+
+const toast = useToast();
+const loading = ref(false);
+const error = ref('');
+const notes = ref('');
+
+// Handle resolve ticket
+const handleResolveTicket = async () => {
+  loading.value = true;
+  error.value = '';
+  
+  try {
+    const updateData: any = {
+      id: props.ticket.id,
+      status: 'resolved',
+    };
+    
+    // Add notes if provided
+    if (notes.value.trim()) {
+      updateData.notes = notes.value.trim();
+    }
+    
+    await supportTicketService.updateTicket(updateData);
+    
+    toast.success('Ticket marked as resolved successfully');
+    emit('resolved');
+    emit('close');
+    
+    // Reset form
+    notes.value = '';
+  } catch (err: any) {
+    console.error('Error resolving ticket:', err);
+    error.value = err?.response?.data?.message || 'Failed to resolve ticket';
+    toast.error('Failed to resolve ticket');
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 

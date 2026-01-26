@@ -121,7 +121,7 @@
                   <transition name="fade">
                     <div
                       v-if="openMenuIndex === index"
-                      class="absolute right-0 top-12 z-20 w-44 rounded-2xl border border-[#e2e8f0] bg-white py-2 text-left shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
+                      class="absolute right-0 top-12 z-[9999] w-44 rounded-2xl border border-[#e2e8f0] bg-white py-2 text-left shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
                     >
                       <button
                         type="button"

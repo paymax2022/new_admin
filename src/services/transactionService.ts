@@ -42,6 +42,31 @@ export default {
     return api.get('/api/v1/admin/transactions/entries', { params });
   },
   
+  // Get account transactions
+  getAccountTransactions(params?: {
+    page?: number;
+    limit?: number;
+    rows_per_page?: number;
+    start_date?: string;
+    end_date?: string;
+    status?: string;
+    currency?: string;
+  }) {
+    const cleanParams: any = {};
+    if (params?.page !== undefined) cleanParams.page = params.page;
+    if (params?.limit !== undefined) {
+      cleanParams.limit = params.limit;
+    } else if (params?.rows_per_page !== undefined) {
+      cleanParams.limit = params.rows_per_page;
+    }
+    if (params?.start_date !== undefined) cleanParams.start_date = params.start_date;
+    if (params?.end_date !== undefined) cleanParams.end_date = params.end_date;
+    if (params?.status !== undefined) cleanParams.status = params.status;
+    if (params?.currency !== undefined) cleanParams.currency = params.currency;
+    
+    return api.get('/api/v1/account/transactions', { params: cleanParams });
+  },
+  
   // Method to get sample transactions for testing
   getSampleTransactions() {
     return Promise.resolve({
