@@ -36,4 +36,12 @@ export default {
     }
     return api.get('/api/v1/admin/multicurrency/virtual-cards', { params: cleanParams });
   },
+  // Get card customers (multicurrency users)
+  getCardCustomers(params?: { page?: number; limit?: number; status?: string }) {
+    const cleanParams: Record<string, number | string> = {};
+    if (params?.page !== undefined) cleanParams.page = params.page;
+    if (params?.limit !== undefined) cleanParams.limit = params.limit;
+    if (params?.status !== undefined && params.status !== '') cleanParams.status = params.status;
+    return api.get('/api/v1/admin/multicurrency/card-customers', { params: cleanParams });
+  },
 }; 
