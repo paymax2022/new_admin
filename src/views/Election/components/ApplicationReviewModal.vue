@@ -50,14 +50,14 @@
             <div>
               <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Platform Statement</p>
               <p class="mt-2 text-sm text-[#475569]">
-                {{ application.statement }}
+                {{ application.statement || '—' }}
               </p>
             </div>
           </div>
 
           <div v-else-if="activeTab === 'Document'" class="mt-6 space-y-4">
             <div
-              v-for="doc in application.documents"
+              v-for="doc in (application.documents || [])"
               :key="doc.name"
               class="flex items-center justify-between rounded-2xl border border-[#f1f5f9] px-4 py-3 text-sm"
             >
@@ -74,7 +74,7 @@
               </button>
             </div>
             <div
-              v-if="!application.documents.length"
+              v-if="!(application.documents && application.documents.length)"
               class="rounded-2xl border border-dashed border-[#e2e8f0] p-6 text-center"
             >
               <IconFolder class="mx-auto mb-3 h-6 w-6 text-[#94a3b8]" />
@@ -87,15 +87,17 @@
             <div>
               <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Review Notes</p>
               <textarea
+                v-model="reviewNotes"
                 rows="4"
                 class="mt-2 w-full rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm text-[#111827] placeholder:text-[#cbd5f5]"
                 placeholder="Add notes about this application..."
-              ></textarea>
+              />
             </div>
             <div class="flex flex-wrap gap-3">
               <button
                 type="button"
                 class="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#cbd5f5]"
+                @click="emit('review', { status: 'approved', admin_notes: reviewNotes })"
               >
                 <IconCircleCheck class="h-4 w-4 text-[#16a34a]" />
                 Approve
@@ -103,6 +105,7 @@
               <button
                 type="button"
                 class="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#cbd5f5]"
+                @click="emit('review', { status: 'in_review', admin_notes: reviewNotes })"
               >
                 <IconEye class="h-4 w-4 text-[#7c3aed]" />
                 Under Review
@@ -110,6 +113,7 @@
               <button
                 type="button"
                 class="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-[#111827] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#0f172a]"
+                @click="emit('review', { status: 'rejected', admin_notes: reviewNotes })"
               >
                 <IconInfoTriangle class="h-4 w-4 text-white" />
                 Reject
@@ -158,10 +162,12 @@ const activeTab = ref(tabs[0]);
 const detailItems = computed(() => [
   { label: 'ID', value: props.application.candidateId, icon: IconClipboardText },
   { label: 'Email', value: props.application.email, icon: IconMail },
-  { label: 'Phone', value: props.application.phone, icon: IconPhone },
-  { label: 'Education', value: props.application.education, icon: IconBook },
-  { label: 'Experience', value: props.application.experience, icon: IconClipboardText },
-  { label: 'District', value: props.application.district, icon: IconMapPin },
+  { label: 'ID', value: props.application.candidateId ?? '—', icon: IconClipboardText },
+  { label: 'Email', value: props.application.email ?? '—', icon: IconMail },
+  { label: 'Phone', value: props.application.phone ?? '—', icon: IconPhone },
+  { label: 'Education', value: props.application.education ?? '—', icon: IconBook },
+  { label: 'Experience', value: props.application.experience ?? '—', icon: IconClipboardText },
+  { label: 'District', value: props.application.district ?? '—', icon: IconMapPin },
 ]);
 
 const DetailCard = defineComponent({

@@ -121,6 +121,9 @@
       v-if="modal.open && modal.data"
       :complaint="modal.data"
       @close="closeModal"
+      @update-status="(payload) => handleUpdateStatus(modal.data?.id, payload)"
+      @resolve="(payload) => handleResolve(modal.data?.id, payload)"
+      @close-complaint="(payload) => handleClose(modal.data?.id, payload)"
     />
   </div>
 </template>
@@ -219,19 +222,27 @@ const filteredComplaints = computed(() => {
   return filtered;
 });
 
+const isValidObjectId = (id: unknown): id is string => {
+  if (typeof id !== 'string' || !id) return false;
+  return /^[a-fA-F0-9]{24}$/.test(id.trim());
+};
+
 const loadElections = async () => {
   try {
     const response = await electionService.getAllElectionsAdmin({ limit: 50 });
-    if (response?.data && Array.isArray(response.data)) {
-      elections.value = response.data.map((e: any) => ({
-        id: e.id || e._id,
-        title: e.title || e.name || 'Untitled Election',
-      }));
-      
-      if (elections.value.length > 0 && !selectedElectionId.value) {
-        selectedElectionId.value = elections.value[0].id;
-        await loadComplaints();
-      }
+    const list = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    const mapped = (list || []).map((e: any) => ({
+      id: String(e.id ?? e._id ?? '').trim(),
+      title: e.title || e.name || 'Untitled Election',
+    }));
+    elections.value = mapped.filter((e) => isValidObjectId(e.id));
+    if (elections.value.length > 0 && !selectedElectionId.value) {
+      selectedElectionId.value = elections.value[0].id;
+      await loadComplaints();
+    } else if (!isValidObjectId(selectedElectionId.value)) {
+      selectedElectionId.value = '';
+      complaints.value = [];
+      updateStats();
     }
   } catch (error: any) {
     console.error('Error loading elections:', error);
@@ -240,21 +251,19 @@ const loadElections = async () => {
 };
 
 const loadComplaints = async () => {
-  if (!selectedElectionId.value) {
+  const electionId = selectedElectionId.value;
+  if (!electionId || !isValidObjectId(electionId)) {
     complaints.value = [];
     updateStats();
     return;
   }
-  
   loading.value = true;
   try {
-    const params: any = { limit: 100 };
-    if (statusFilter.value) {
-      params.status = statusFilter.value;
-    }
-    
-    const response = await electionService.getAllComplaintsAdmin(selectedElectionId.value, params);
-    const comps = Array.isArray(response?.data) ? response.data : [];
+    const params: any = { page: 1, limit: 20 };
+    if (statusFilter.value) params.status = statusFilter.value;
+    const response = await electionService.getAllComplaintsAdmin(electionId, params);
+    const raw = response?.data;
+    const comps = Array.isArray(raw) ? raw : (raw?.complaints ?? []);
     
     complaints.value = comps.map((comp: any) => {
       const priority = getPriorityBadge(comp.priority || comp.severity || 'normal');
@@ -307,13 +316,74 @@ const modal = ref<{ open: boolean; data: any | null }>({
   data: null,
 });
 
-const openModal = (complaint: any) => {
+const openModal = async (complaint: any) => {
   modal.value = { open: true, data: complaint };
+  const complaintId = complaint.id ?? complaint._id;
+  if (complaintId && isValidObjectId(complaintId)) {
+    try {
+      const res = await electionService.getComplaintDetailsAdmin(complaintId);
+      if (res?.data) {
+        const d = res.data;
+        const priority = getPriorityBadge(d.priority || d.severity || 'normal');
+        const status = getStatusBadge(d.status || 'pending');
+        modal.value = {
+          open: true,
+          data: {
+            id: d.id || d._id || complaintId,
+            title: d.title || d.subject || d.description?.substring(0, 50) || complaint.title,
+            reporter: d.reporter_name ?? d.complainant_name ?? d.user_name ?? d.full_name ?? complaint.reporter,
+            date: formatDate(d.created_at ?? d.submitted_at ?? d.date),
+            category: d.category || d.type || complaint.category,
+            description: d.description ?? d.details ?? d.message ?? complaint.description,
+            priority,
+            status,
+            assignedTo: d.assigned_to ?? d.assigned_agent ?? complaint.assignedTo,
+            original: d,
+          },
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load complaint details:', e);
+    }
+  }
 };
 
 const closeModal = () => {
   modal.value = { open: false, data: null };
-  loadComplaints(); // Refresh after modal actions
+  loadComplaints();
+};
+
+const handleUpdateStatus = async (complaintId: string, status: 'pending' | 'in_review' | 'resolved' | 'closed') => {
+  if (!isValidObjectId(complaintId)) return;
+  try {
+    await electionService.updateComplaintStatus(complaintId, status);
+    toast.success('Status updated');
+    closeModal();
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Failed to update status');
+  }
+};
+
+const handleResolve = async (complaintId: string, payload: { admin_response: string; resolution: string }) => {
+  if (!isValidObjectId(complaintId)) return;
+  try {
+    await electionService.resolveComplaint(complaintId, payload);
+    toast.success('Complaint resolved');
+    closeModal();
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Failed to resolve');
+  }
+};
+
+const handleClose = async (complaintId: string, payload: { closing_notes: string }) => {
+  if (!isValidObjectId(complaintId)) return;
+  try {
+    await electionService.closeComplaint(complaintId, payload);
+    toast.success('Complaint closed');
+    closeModal();
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Failed to close');
+  }
 };
 
 onMounted(() => {

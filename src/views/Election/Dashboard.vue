@@ -56,84 +56,48 @@
 
       <div class="space-y-4">
         <div
-          v-for="election in elections"
-          :key="election.id"
+          v-for="activity in electionActivities"
+          :key="activity.id"
           class="rounded-2xl border border-[#e2e8f0] bg-white p-5"
         >
           <div class="flex items-start justify-between">
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
-                <h3 class="text-base font-semibold text-[#111827]">{{ election.title }}</h3>
+                <h3 class="text-base font-semibold text-[#111827]">
+                  {{ activity.election_title || 'System Activity' }}
+                </h3>
                 <span
                   class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide"
                   :class="
-                    election.status === 'Live' || election.status === 'active' 
-                      ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]' 
-                      : election.status === 'Upcoming' || election.status === 'pending'
+                    activity.action === 'election_created'
+                      ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]'
+                      : activity.action === 'admin_registered'
                       ? 'border-[#2563eb] bg-[#dbeafe] text-[#2563eb]'
-                      : election.status === 'Completed' || election.status === 'completed'
-                      ? 'border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]'
                       : 'border-[#94a3b8] bg-[#f1f5f9] text-[#64748b]'
                   "
                 >
-                  {{ election.status }}
+                  {{ formatActionLabel(activity.action) }}
                 </span>
               </div>
-              <p class="text-sm text-[#6b7280] mb-4">{{ election.description }}</p>
+              <p class="text-sm text-[#6b7280] mb-4">{{ activity.description }}</p>
               <div class="flex flex-wrap items-center gap-6 text-sm text-[#475569]">
                 <div>
-                  <span class="font-semibold text-[#111827]">Start:</span>
-                  <span class="ml-2">{{ election.startDate || 'N/A' }}</span>
+                  <span class="font-semibold text-[#111827]">Time:</span>
+                  <span class="ml-2">{{ formatActivityTime(activity.created_at) }}</span>
                 </div>
-                <div>
-                  <span class="font-semibold text-[#111827]">End:</span>
-                  <span class="ml-2">{{ election.endDate || 'N/A' }}</span>
-                </div>
-                <div v-if="election.voterTurnout">
-                  <span class="font-semibold text-[#111827]">Voter Turnout:</span>
-                  <span class="ml-2">{{ election.voterTurnout }}</span>
-                </div>
-                <div v-if="election.votes && election.eligibleVoters">
-                  <span class="font-semibold text-[#111827]">Details:</span>
-                  <span class="ml-2">{{ typeof election.votes === 'number' ? election.votes.toLocaleString() : election.votes }} out of {{ typeof election.eligibleVoters === 'number' ? election.eligibleVoters.toLocaleString() : election.eligibleVoters }}</span>
-                </div>
-                <div>
-                  <span class="font-semibold text-[#111827]">Positions:</span>
-                  <span class="ml-2">{{ election.positions }} {{ election.positions === 1 ? 'position' : 'positions' }}</span>
-                </div>
-                <div v-if="election.votes && !election.eligibleVoters">
-                  <span class="font-semibold text-[#111827]">Votes:</span>
-                  <span class="ml-2">{{ typeof election.votes === 'number' ? election.votes.toLocaleString() : election.votes }}</span>
+                <div v-if="activity.election_id && activity.election_id !== '000000000000000000000000'">
+                  <span class="font-semibold text-[#111827]">Election ID:</span>
+                  <span class="ml-2 font-mono text-xs">{{ activity.election_id }}</span>
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2 ml-4">
-              <button
-                v-if="election.status === 'Live' || election.status === 'active'"
-                type="button"
-                class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm font-semibold text-[#475569] transition hover:border-[#cbd5f5] hover:text-[#1e293b]"
-                @click="openLiveMonitoringModal(election)"
-              >
-                Monitor
-              </button>
-              <button
-                v-if="election.status === 'Live' || election.status === 'active'"
-                type="button"
-                class="rounded-full bg-[#111827] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
-                @click="openElectionDetailsModal(election)"
-              >
-                View
-              </button>
-              <button
-                v-else
-                type="button"
-                class="rounded-full bg-[#111827] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
-                @click="openEditElectionModal(election)"
-              >
-                Edit
-              </button>
-            </div>
           </div>
+        </div>
+        <div v-if="electionActivities.length === 0 && !loading" class="text-center py-8 text-[#6b7280]">
+          No activities found
+        </div>
+        <div v-if="loading" class="text-center py-8 text-[#6b7280]">
+          Loading activities...
         </div>
       </div>
     </section>
@@ -351,6 +315,7 @@ const statistics = ref([
 
 const elections = ref<any[]>([]);
 const recentActivities = ref<any[]>([]);
+const electionActivities = ref<any[]>([]);
 const loading = ref(false);
 
 const quickActions = [
@@ -406,6 +371,32 @@ const formatTimeAgo = (dateString: string) => {
   return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
 };
 
+// Format activity time helper
+const formatActivityTime = (dateString: string) => {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleString('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// Format action label helper
+const formatActionLabel = (action: string) => {
+  const actionMap: Record<string, string> = {
+    'election_created': 'Election Created',
+    'admin_registered': 'Admin Registered',
+    'election_started': 'Election Started',
+    'election_completed': 'Election Completed',
+    'vote_cast': 'Vote Cast',
+    'complaint_submitted': 'Complaint Submitted',
+  };
+  return actionMap[action] || action.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+};
+
 // Load dashboard data
 const loadDashboardData = async () => {
   loading.value = true;
@@ -428,22 +419,48 @@ const loadDashboardData = async () => {
     // Load all elections for display and stats calculation
     await loadElections();
 
+    // Load election activities for Elections Overview section
+    try {
+      const activitiesResponse = await electionService.getElectionsActivities({ limit: 50 });
+      if (activitiesResponse && 'ok' in activitiesResponse && activitiesResponse.ok && 'data' in activitiesResponse) {
+        const responseData = activitiesResponse.data as any;
+        if (responseData?.activities && Array.isArray(responseData.activities)) {
+          electionActivities.value = responseData.activities;
+        } else {
+          electionActivities.value = [];
+        }
+      } else {
+        electionActivities.value = [];
+      }
+    } catch (error) {
+      console.error('Error loading election activities:', error);
+      electionActivities.value = [];
+    }
+
     // Try to use stats from API first, fallback to calculated from elections
     // Check if stats response is successful and has valid data
-    const statsData = statsResponse.status === 'fulfilled' && statsResponse.value?.data && !statsResponse.value?.error
-      ? statsResponse.value.data
+    const statsResponseData = statsResponse.status === 'fulfilled' && statsResponse.value
+      ? statsResponse.value
       : null;
     
-    if (statsData && statsData.ok !== false) {
+    // The API response structure is: { data: {...}, ok: true, message: "..." }
+    const statsData = statsResponseData?.ok && statsResponseData?.data
+      ? statsResponseData.data
+      : null;
+    
+    if (statsData) {
       // Update statistics from API response
-      if (statsData.total_voters !== undefined || statsData.totalVoters !== undefined) {
-        statistics.value[0].value = (statsData.total_voters || statsData.totalVoters || 0).toLocaleString();
+      if (statsData.total_voters !== undefined) {
+        statistics.value[0].value = (statsData.total_voters || 0).toLocaleString();
       }
-      if (statsData.active_elections !== undefined || statsData.activeElections !== undefined) {
-        statistics.value[1].value = (statsData.active_elections || statsData.activeElections || 0).toString();
+      if (statsData.active_elections !== undefined) {
+        statistics.value[1].value = (statsData.active_elections || 0).toString();
       }
-      if (statsData.completed_elections !== undefined || statsData.completedElections !== undefined) {
-        statistics.value[3].value = (statsData.completed_elections || statsData.completedElections || 0).toString();
+      if (statsData.pending_complaints !== undefined) {
+        statistics.value[2].value = (statsData.pending_complaints || 0).toString();
+      }
+      if (statsData.completed_elections !== undefined) {
+        statistics.value[3].value = (statsData.completed_elections || 0).toString();
       }
     } else {
       // Calculate statistics from elections data (fallback)
@@ -500,28 +517,30 @@ const loadDashboardData = async () => {
       }));
     }
 
-    // Load pending complaints count
-    try {
-      const allElections = Array.isArray(elections.value) ? elections.value : [];
-      let totalPendingComplaints = 0;
-      
-      for (const election of allElections.slice(0, 5)) {
-        try {
-          const complaintsResponse = await electionService.getAllComplaintsAdmin(election.id || election._id);
-          if (complaintsResponse?.data && Array.isArray(complaintsResponse.data)) {
-            const pending = complaintsResponse.data.filter((c: any) => 
-              c.status === 'pending' || c.status === 'under_investigation'
-            );
-            totalPendingComplaints += pending.length;
+    // Load pending complaints count only if not provided by API
+    if (!statsData || statsData.pending_complaints === undefined) {
+      try {
+        const allElections = Array.isArray(elections.value) ? elections.value : [];
+        let totalPendingComplaints = 0;
+        
+        for (const election of allElections.slice(0, 5)) {
+          try {
+            const complaintsResponse = await electionService.getAllComplaintsAdmin(election.id || election._id);
+            if (complaintsResponse?.data && Array.isArray(complaintsResponse.data)) {
+              const pending = complaintsResponse.data.filter((c: any) => 
+                c.status === 'pending' || c.status === 'under_investigation'
+              );
+              totalPendingComplaints += pending.length;
+            }
+          } catch (error) {
+            // Skip failed requests
           }
-        } catch (error) {
-          // Skip failed requests
         }
+        
+        statistics.value[2].value = totalPendingComplaints.toString();
+      } catch (error) {
+        console.error('Error loading complaints:', error);
       }
-      
-      statistics.value[2].value = totalPendingComplaints.toString();
-    } catch (error) {
-      console.error('Error loading complaints:', error);
     }
 
   } catch (error: any) {

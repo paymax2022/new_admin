@@ -155,70 +155,36 @@
               <p class="text-sm text-gray-600 dark:text-gray-400">By fees generated</p>
             </div>
           </div>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div v-if="topRevenueSchools.length > 0" class="space-y-4">
+            <div 
+              v-for="(school, index) in topRevenueSchools" 
+              :key="school.id || index"
+              class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+            >
               <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span class="text-purple-600 text-xs font-medium">H</span>
+                <div :class="getSchoolAvatarColor(index)" class="w-8 h-8 rounded-full flex items-center justify-center">
+                  <span :class="getSchoolTextColor(index)" class="text-xs font-medium">
+                    {{ (school.name || '').charAt(0).toUpperCase() || 'N' }}
+                  </span>
                 </div>
                 <div>
-                  <div class="text-sm font-medium text-gray-900">Heritage Grammar School</div>
-                  <div class="text-xs text-gray-600">₦75M in transactions</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">{{ school.name || 'N/A' }}</div>
+                  <div class="text-xs text-gray-600 dark:text-gray-400">
+                    {{ formatCurrency(school.totalTransactions || 0) }} in transactions
+                  </div>
                 </div>
               </div>
               <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">₦112.5K</div>
-                <div class="text-xs text-gray-600">in fees</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ formatCurrency(school.totalFees || 0) }}
+                </div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">in fees</div>
               </div>
             </div>
-            
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span class="text-green-600 text-xs font-medium">G</span>
-                </div>
-                <div>
-                  <div class="text-sm font-medium text-gray-900">Greenfield Academy</div>
-                  <div class="text-xs text-gray-600">₦52M in transactions</div>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">₦78K</div>
-                <div class="text-xs text-gray-600">in fees</div>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <span class="text-blue-600 text-xs font-medium">S</span>
-                </div>
-                <div>
-                  <div class="text-sm font-medium text-gray-900">St. Michael's College</div>
-                  <div class="text-xs text-gray-600">₦48M in transactions</div>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">₦77K</div>
-                <div class="text-xs text-gray-600">in fees</div>
-              </div>
-            </div>
-            
-            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-              <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                  <span class="text-orange-600 text-xs font-medium">W</span>
-                </div>
-                <div>
-                  <div class="text-sm font-medium text-gray-900">Westpoint International</div>
-                  <div class="text-xs text-gray-600">₦45M in transactions</div>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="text-sm font-medium text-gray-900">₦7.5K</div>
-                <div class="text-xs text-gray-600">in fees</div>
-              </div>
-            </div>
+          </div>
+          <div v-else class="text-center py-8">
+            <p class="text-sm text-gray-500 dark:text-gray-400">No revenue data available</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-2">Revenue data will appear here when available</p>
           </div>
         </div>
       </div>
@@ -825,12 +791,22 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
+import { useToast } from 'vue-toastification'
 import DashboardCard from '@/components/DashboardCard.vue'
 import LineChart from '@/components/charts/LineChart.vue'
+import schoolService from '@/services/schoolService'
+
+const toast = useToast()
 
 // Reactive data
-const lastUpdated = ref('5/10/2025, 8:20:13 PM')
+const lastUpdated = ref(new Date().toLocaleString())
 const activeTab = ref('overview')
+const loading = ref(false)
+// API only supports years up to 2025
+const selectedYear = ref(Math.min(new Date().getFullYear(), 2025).toString())
+
+// Top Revenue Schools - Currently no endpoint available, using empty array
+const topRevenueSchools = ref<any[]>([])
 
 // Payout data
 const payoutsData = ref([
@@ -993,6 +969,42 @@ const getStatusClass = (status: string) => {
   }
 }
 
+// Helper function to format currency
+const formatCurrency = (amount: number) => {
+  if (amount >= 1000000) {
+    return `₦${(amount / 1000000).toFixed(1)}M`
+  } else if (amount >= 1000) {
+    return `₦${(amount / 1000).toFixed(1)}K`
+  }
+  return `₦${amount.toLocaleString()}`
+}
+
+// Helper function to get avatar color based on index
+const getSchoolAvatarColor = (index: number) => {
+  const colors = [
+    'bg-purple-100 dark:bg-purple-900',
+    'bg-green-100 dark:bg-green-900',
+    'bg-blue-100 dark:bg-blue-900',
+    'bg-orange-100 dark:bg-orange-900',
+    'bg-pink-100 dark:bg-pink-900',
+    'bg-indigo-100 dark:bg-indigo-900'
+  ]
+  return colors[index % colors.length]
+}
+
+// Helper function to get text color based on index
+const getSchoolTextColor = (index: number) => {
+  const colors = [
+    'text-purple-600 dark:text-purple-300',
+    'text-green-600 dark:text-green-300',
+    'text-blue-600 dark:text-blue-300',
+    'text-orange-600 dark:text-orange-300',
+    'text-pink-600 dark:text-pink-300',
+    'text-indigo-600 dark:text-indigo-300'
+  ]
+  return colors[index % colors.length]
+}
+
 // Functions for payout modal
 const viewPayoutDetails = (payout: any) => {
   selectedPayout.value = payout
@@ -1018,15 +1030,119 @@ const revenueTrendData = ref({
   }]
 })
 
+// Helper function to convert month name to short format
+const getMonthShortName = (monthName: string): string => {
+  const monthMap: { [key: string]: string } = {
+    'january': 'Jan',
+    'february': 'Feb',
+    'march': 'Mar',
+    'april': 'Apr',
+    'may': 'May',
+    'june': 'Jun',
+    'july': 'Jul',
+    'august': 'Aug',
+    'september': 'Sep',
+    'october': 'Oct',
+    'november': 'Nov',
+    'december': 'Dec'
+  }
+  return monthMap[monthName.toLowerCase()] || monthName.substring(0, 3)
+}
+
+// Fetch monthly revenue data
+const fetchMonthlyRevenue = async () => {
+  loading.value = true
+  try {
+    // Ensure year doesn't exceed 2025
+    const year = Math.min(parseInt(selectedYear.value) || 2025, 2025).toString()
+    const response = await schoolService.getMonthlyRevenue({ year })
+    if (response.data && Array.isArray(response.data)) {
+      // Map month names to short labels and extract revenue values
+      const labels = response.data.map((item: any) => {
+        if (typeof item.month === 'string') {
+          return getMonthShortName(item.month)
+        }
+        // Fallback: if month is a number
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        const monthIndex = parseInt(item.month || '1') - 1
+        return monthNames[monthIndex] || item.month || ''
+      })
+      
+      const data = response.data.map((item: any) => {
+        // Revenue is already in the correct format, no need to divide by 1000
+        return item.revenue || 0
+      })
+      
+      revenueTrendData.value = {
+        labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        datasets: [{
+          label: 'Revenue (₦)',
+          data: data.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          backgroundColor: 'rgba(147, 51, 234, 0.1)',
+          borderColor: 'rgba(147, 51, 234, 1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        }]
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching monthly revenue:', error)
+    // Handle year validation error
+    if (error.response?.data?.data?.includes('year cannot be later than 2025') || 
+        error.response?.data?.data?.includes('year cannot be greater than 2025')) {
+      // Auto-correct to 2025 and retry
+      selectedYear.value = '2025'
+      toast.warning('Year adjusted to 2025 (maximum supported year)')
+      try {
+        const response = await schoolService.getMonthlyRevenue({ year: '2025' })
+        if (response.data && Array.isArray(response.data)) {
+          const labels = response.data.map((item: any) => {
+            if (typeof item.month === 'string') {
+              return getMonthShortName(item.month)
+            }
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            const monthIndex = parseInt(item.month || '1') - 1
+            return monthNames[monthIndex] || item.month || ''
+          })
+          const data = response.data.map((item: any) => {
+            return item.revenue || 0
+          })
+          
+          revenueTrendData.value = {
+            labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+              label: 'Revenue (₦)',
+              data: data.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              backgroundColor: 'rgba(147, 51, 234, 0.1)',
+              borderColor: 'rgba(147, 51, 234, 1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.4
+            }]
+          }
+        }
+      } catch (retryError) {
+        toast.error('Failed to load revenue data')
+      }
+    } else {
+      toast.error(error.response?.data?.message || 'Failed to load revenue data')
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
 const revenueTrendOptions = ref({
   responsive: true,
   maintainAspectRatio: false,
   scales: {
     y: {
       beginAtZero: true,
-      max: 1000,
       ticks: {
-        stepSize: 200
+        callback: function(value: any) {
+          return '₦' + value.toLocaleString()
+        }
       }
     }
   },
@@ -1037,13 +1153,21 @@ const revenueTrendOptions = ref({
         usePointStyle: true,
         pointStyle: 'rect'
       }
+    },
+    tooltip: {
+      callbacks: {
+        label: function(context: any) {
+          return 'Revenue: ₦' + context.parsed.y.toLocaleString()
+        }
+      }
     }
   }
 })
 
 // Lifecycle
 onMounted(() => {
-  console.log('Revenue Monitoring page mounted')
+  fetchMonthlyRevenue()
+  lastUpdated.value = new Date().toLocaleString()
 })
 
 // Fee Settings data

@@ -4,12 +4,22 @@
     <div class="flex items-center justify-between">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Transaction Monitoring</h1>
-        <p class="text-gray-600 dark:text-gray-400">Track all platform transactions and fees</p>
+        <p class="text-gray-600 dark:text-gray-400">School fee payments only</p>
       </div>
       <div class="flex items-center space-x-4">
         <div class="text-sm text-gray-500">
           Last refreshed: {{ lastUpdated }}
         </div>
+        <button
+          @click="refresh"
+          :disabled="isLoading"
+          class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 flex items-center space-x-2"
+        >
+          <svg class="h-4 w-4" :class="{ 'animate-spin': isLoading }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Refresh</span>
+        </button>
         <button
           @click="exportToCSV"
           class="px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 flex items-center space-x-2"
@@ -26,22 +36,22 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
       <DashboardCard
         title="Total Volume"
-        value="₦1,740,000"
-        subtitle="8 transactions"
+        :value="metrics.totalVolume"
+        :subtitle="`${metrics.count} school fee transactions`"
         icon="money-bag"
         color="purple"
       />
       <DashboardCard
-        title="Platform Revenue"
-        value="₦17,400"
-        subtitle="1.0% transaction fee"
+        title="Success Count"
+        :value="String(metrics.successCount)"
+        subtitle="Completed payments"
         icon="chart-line"
         color="red"
       />
       <DashboardCard
         title="Success Rate"
-        value="75%"
-        subtitle="6 completed"
+        :value="metrics.successRate"
+        :subtitle="`${metrics.successCount} of ${metrics.count} completed`"
         icon="percent"
         color="green"
       />
@@ -52,12 +62,23 @@
       <div class="p-6 border-b border-gray-200 dark:border-gray-700">
         <div>
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Transaction History</h3>
-          <p class="text-sm text-gray-600 dark:text-gray-400">View all financial transactions across the platform</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">School fee payments only</p>
         </div>
       </div>
 
+      <!-- Loading / Error / Empty -->
+      <div v-if="isLoading" class="p-10 text-center">
+        <span class="text-blue-600 dark:text-blue-400 font-semibold">Loading transactions...</span>
+      </div>
+      <div v-else-if="errorMessage" class="p-10 text-center">
+        <p class="text-red-600 dark:text-red-400 mb-2">{{ errorMessage }}</p>
+        <button @click="refresh" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Retry</button>
+      </div>
+      <div v-else-if="transactionsData.length === 0" class="p-10 text-center">
+        <p class="text-gray-600 dark:text-gray-400">No school fee payment transactions found.</p>
+      </div>
       <!-- Vue3 DataTable -->
-      <div class="p-6">
+      <div v-else class="p-6">
         <Vue3Datatable
           :rows="transactionsData"
           :columns="columns"
@@ -75,7 +96,7 @@
             td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white',
           }"
           skin="bh-table-compact"
-          :loading="isLoading"
+          :loading="false"
           @row-clicked="onRowClick"
         >
           <!-- Custom Status Column -->
@@ -116,8 +137,8 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="space-y-4">
               <div>
-                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">School</h4>
-                <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.school }}</p>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Narration</h4>
+                <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.narration || selectedTransaction?.school || '—' }}</p>
               </div>
               <div>
                 <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Amount</h4>
@@ -126,6 +147,11 @@
               <div>
                 <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Transaction Type</h4>
                 <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.type }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Payer</h4>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedTransaction?.userName || '—' }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ selectedTransaction?.userEmail || '—' }}</p>
               </div>
             </div>
             <div class="space-y-4">
@@ -136,12 +162,12 @@
                 </span>
               </div>
               <div>
-                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Platform Fee</h4>
-                <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.platformFee }}</p>
-              </div>
-              <div>
                 <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Payment Method</h4>
                 <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.paymentMethod }}</p>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Currency</h4>
+                <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ selectedTransaction?.currency || 'NGN' }}</p>
               </div>
             </div>
           </div>
@@ -155,12 +181,12 @@
                 <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedTransaction?.date }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Processing Time:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">2.3 seconds</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Payment Reference:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-white break-all">{{ selectedTransaction?.paymentReference || '—' }}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-sm text-gray-600 dark:text-gray-400">Reference Number:</span>
-                <span class="text-sm font-medium text-gray-900 dark:text-white">REF-{{ selectedTransaction?.id }}</span>
+                <span class="text-sm text-gray-600 dark:text-gray-400">Transaction ID:</span>
+                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ selectedTransaction?.id }}</span>
               </div>
             </div>
           </div>
@@ -184,99 +210,40 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Vue3Datatable from '@bhplugin/vue3-datatable';
 import '@bhplugin/vue3-datatable/dist/style.css';
 import DashboardCard from '@/components/DashboardCard.vue';
+import transactionService from '@/services/transactionService';
+
+const SCHOOL_FEE_PAYMENT_TYPE = 'school_fee_payment';
 
 // Reactive data
-const lastUpdated = ref('5/10/2025, 8:20:13 PM');
+const lastUpdated = ref('—');
 const isLoading = ref(false);
+const errorMessage = ref<string | null>(null);
 const itemsPerPage = ref(10);
 
-// Transaction data
-const transactionsData = ref([
-  {
-    id: 'TXN001',
-    school: 'Heritage Grammar School',
-    amount: '₦250,000',
-    platformFee: '₦2,500',
-    type: 'School Fee',
-    paymentMethod: 'Card',
-    date: '5/14/2023',
-    status: 'completed',
-  },
-  {
-    id: 'TXN002',
-    school: 'Greenfield Academy',
-    amount: '₦185,000',
-    platformFee: '₦1,850',
-    type: 'Uniform Fee',
-    paymentMethod: 'Bank Transfer',
-    date: '5/13/2023',
-    status: 'pending',
-  },
-  {
-    id: 'TXN003',
-    school: 'St. Michael\'s College',
-    amount: '₦320,000',
-    platformFee: '₦3,200',
-    type: 'School Fee',
-    paymentMethod: 'Card',
-    date: '5/12/2023',
-    status: 'completed',
-  },
-  {
-    id: 'TXN004',
-    school: 'Westpoint International',
-    amount: '₦275,000',
-    platformFee: '₦2,750',
-    type: 'Boarding Fee',
-    paymentMethod: 'Wallet',
-    date: '5/11/2023',
-    status: 'completed',
-  },
-  {
-    id: 'TXN005',
-    school: 'Horizon Educational Center',
-    amount: '₦150,000',
-    platformFee: '₦1,500',
-    type: 'Exam Fee',
-    paymentMethod: 'Card',
-    date: '5/10/2023',
-    status: 'failed',
-  },
-  {
-    id: 'TXN006',
-    school: 'Royal Academy',
-    amount: '₦420,000',
-    platformFee: '₦4,200',
-    type: 'School Fee',
-    paymentMethod: 'Bank Transfer',
-    date: '5/9/2023',
-    status: 'completed',
-  },
-  {
-    id: 'TXN007',
-    school: 'Elite Preparatory School',
-    amount: '₦195,000',
-    platformFee: '₦1,950',
-    type: 'Uniform Fee',
-    paymentMethod: 'Card',
-    date: '5/8/2023',
-    status: 'pending',
-  },
-  {
-    id: 'TXN008',
-    school: 'Bright Future Academy',
-    amount: '₦310,000',
-    platformFee: '₦3,100',
-    type: 'Boarding Fee',
-    paymentMethod: 'Wallet',
-    date: '5/7/2023',
-    status: 'completed',
-  },
-]);
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', minimumFractionDigits: 0 }).format(value);
+}
+
+/** Raw list from API (only school_fee_payment), mapped to table row shape */
+const transactionsData = ref<Array<{
+  id: string;
+  school: string;
+  amount: string;
+  platformFee: string;
+  type: string;
+  paymentMethod: string;
+  date: string;
+  status: string;
+  narration?: string;
+  paymentReference?: string;
+  userName?: string;
+  userEmail?: string;
+  currency?: string;
+}>>([]);
 
 // Table columns configuration
 const columns = ref([
@@ -349,19 +316,76 @@ const columns = ref([
 const showTransactionModal = ref(false);
 const selectedTransaction = ref<any>(null);
 
+// Metrics from current data
+const metrics = computed(() => {
+  const rows = transactionsData.value;
+  const total = rows.reduce((sum, r) => {
+    const num = parseFloat(String(r.amount).replace(/[^0-9.-]/g, '')) || 0;
+    return sum + num;
+  }, 0);
+  const successCount = rows.filter((r) => /success/i.test(String(r.status))).length;
+  const rate = rows.length ? Math.round((successCount / rows.length) * 100) : 0;
+  return {
+    totalVolume: formatCurrency(total),
+    count: rows.length,
+    successCount,
+    successRate: `${rate}%`,
+  };
+});
+
 // Functions
 const getStatusClass = (status: string) => {
-  switch (status) {
-    case 'completed':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-    case 'pending':
-      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-    case 'failed':
-      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-    default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-  }
+  const s = (status || '').toLowerCase();
+  if (s === 'success' || s === 'successful' || s === 'completed') return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+  if (s === 'pending') return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+  if (s === 'failed' || s === 'failure') return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+  return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
 };
+
+function mapApiTransactionToRow(t: any): typeof transactionsData.value[0] {
+  const user = t.user || {};
+  const userName = [user.first_name, user.lastname].filter(Boolean).join(' ') || '—';
+  return {
+    id: t.id || '—',
+    school: t.narration || t.service_type || 'School fees',
+    amount: formatCurrency(Number(t.amount) || 0),
+    platformFee: '—',
+    type: t.service_type || 'School Fee',
+    paymentMethod: t.payment_method || '—',
+    date: t.created_at ? new Date(t.created_at).toLocaleString() : '—',
+    status: t.status || '—',
+    narration: t.narration,
+    paymentReference: t.paymentReference,
+    userName,
+    userEmail: user.email,
+    currency: t.currency || 'NGN',
+  };
+}
+
+async function fetchTransactions() {
+  isLoading.value = true;
+  errorMessage.value = null;
+  try {
+    const res = await transactionService.getTransactions({ page: 1, limit: 100 });
+    const raw = res.data?.data || res.data || [];
+    if (!Array.isArray(raw)) {
+      transactionsData.value = [];
+      return;
+    }
+    const schoolFeeOnly = raw.filter((t: any) => (t.transaction_type || t.category) === SCHOOL_FEE_PAYMENT_TYPE);
+    transactionsData.value = schoolFeeOnly.map(mapApiTransactionToRow);
+    lastUpdated.value = new Date().toLocaleString();
+  } catch (e: any) {
+    errorMessage.value = e?.message || 'Failed to load transactions';
+    transactionsData.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+function refresh() {
+  fetchTransactions();
+}
 
 const viewTransactionDetails = (transaction: any) => {
   selectedTransaction.value = transaction;
@@ -378,30 +402,29 @@ const onRowClick = (row: any) => {
 };
 
 const exportToCSV = () => {
-  // Get all visible rows (after filtering)
+  const rows = transactionsData.value;
+  if (rows.length === 0) return;
   const csvContent = [
-    // Header
-    ['Transaction ID', 'School', 'Amount', 'Platform Fee', 'Type', 'Payment Method', 'Date', 'Status'].join(','),
-    // Rows
-    ...transactionsData.value.map((row) =>
-      [row.id, row.school, row.amount, row.platformFee, row.type, row.paymentMethod, row.date, row.status].join(',')
+    ['Transaction ID', 'School/Narration', 'Amount', 'Type', 'Payment Method', 'Date', 'Status'].join(','),
+    ...rows.map((row) =>
+      [row.id, `"${(row.school || '').replace(/"/g, '""')}"`, row.amount, row.type, row.paymentMethod, row.date, row.status].join(',')
     ),
   ].join('\n');
 
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', `transactions_${new Date().toISOString().split('T')[0]}.csv`);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `school_fee_transactions_${new Date().toISOString().split('T')[0]}.csv`;
   link.style.visibility = 'hidden';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
-// Lifecycle
 onMounted(() => {
-  console.log('Transaction page mounted');
+  fetchTransactions();
 });
 </script>
 

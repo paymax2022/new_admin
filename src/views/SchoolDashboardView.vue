@@ -31,40 +31,50 @@
       </div>
       <div class="text-sm text-gray-500">
         Last refreshed: {{ lastUpdated }}
+        <button v-if="loading" @click="initializeDashboard" class="ml-2 text-purple-600 hover:text-purple-800">
+          Refresh
+        </button>
       </div>
     </div>
+    
+    <!-- Loading State -->
+    <div v-if="loading" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
+      <p class="text-gray-600 dark:text-gray-400">Loading dashboard data...</p>
+    </div>
+    
+    <template v-else>
 
     <!-- Key Metrics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       <DashboardCard
         title="Total Schools"
-        value="4,521"
-        change="+24%"
-        subtitle="215 active"
+        :value="dashboardMetrics.total_schools.count?.toLocaleString() || '0'"
+        :change="dashboardMetrics.total_schools.month_change_percent || '+0%'"
+        :subtitle="`${dashboardMetrics.total_schools.active || 0} active`"
         icon="school"
         color="blue"
       />
       <DashboardCard
         title="Total Users"
-        value="18,500"
-        change="+16%"
-        subtitle="32 new this week"
+        :value="dashboardMetrics.total_users.count?.toLocaleString() || '0'"
+        :change="dashboardMetrics.total_users.change_percent ? (dashboardMetrics.total_users.change_percent.includes('%') ? dashboardMetrics.total_users.change_percent : `+${dashboardMetrics.total_users.change_percent}%`) : '+0%'"
+        :subtitle="`${dashboardMetrics.total_users.new_this_week || 0} new this week`"
         icon="users"
         color="green"
       />
       <DashboardCard
         title="Transactions"
-        value="15,782"
-        change="+12%"
+        :value="dashboardMetrics.transactions.count?.toLocaleString() || '0'"
+        :change="dashboardMetrics.transactions.change_percent || '+0%'"
         subtitle="Across all schools"
         icon="chart-line"
         color="purple"
       />
       <DashboardCard
         title="Revenue"
-        value="₦12.5M"
-        change="+8%"
-        subtitle="Transaction fees: 1.5%"
+        :value="dashboardMetrics.revenue.amount || '₦0'"
+        :change="dashboardMetrics.revenue.change_percent || '+0%'"
+        :subtitle="`Transaction fees: ${dashboardMetrics.revenue.transaction_fee_rate || '0%'}`"
         icon="money-bag"
         color="yellow"
       />
@@ -141,26 +151,7 @@
     </div>
 
       <!-- Bottom Section -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <!-- Revenue Sources Chart -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Revenue Sources - Breakdown of user activity status</h3>
-          </div>
-        </div>
-        <div class="h-64">
-          <PieChart
-              v-if="revenueSourcesData && revenueSourcesData.datasets"
-              :data="revenueSourcesData"
-            :options="pieChartOptions"
-          />
-          <div v-else class="h-full flex items-center justify-center text-gray-500">
-            Loading chart...
-          </div>
-        </div>
-      </div>
-
+      <div class="grid grid-cols-1 gap-6 mt-6">
         <!-- Support Status Section -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <div class="flex items-center justify-between mb-4">
@@ -436,6 +427,7 @@
         </div>
       </div>
     </div>
+    </template>
   </div>
 
   <!-- School Details Modal -->
@@ -670,13 +662,17 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onErrorCaptured } from 'vue'
+import { useToast } from 'vue-toastification'
 import DashboardCard from '@/components/DashboardCard.vue'
 import BarChart from '@/components/charts/BarChart.vue'
-import PieChart from '@/components/charts/PieChart.vue'
+import schoolService from '@/services/schoolService'
+
+const toast = useToast()
 
 // Error handling
 const hasError = ref(false)
 const errorMessage = ref('')
+const loading = ref(false)
 
 onErrorCaptured((error, instance, info) => {
   console.error('Error captured in SchoolDashboardView:', error, instance, info)
@@ -685,34 +681,40 @@ onErrorCaptured((error, instance, info) => {
   return false // Prevent error from propagating
 })
 
-// ... existing code ...
-
 const retryLoad = () => {
   hasError.value = false
   errorMessage.value = ''
-  // Re-initialize the component by calling the initialization logic directly
   initializeDashboard()
 }
-
-// ... existing code ...
-
-// Lifecycle
-onMounted(() => {
-  // Initialize dashboard data
-  initializeDashboard()
-})
-
-// Add a separate function for initialization
-const initializeDashboard = () => {
-  console.log('Platform Dashboard mounted')
-  // Add any initialization logic here
-}
-
-// ... existing code ...
 
 // Reactive data
-const lastUpdated = ref('5/10/2025, 8:20:13 PM')
+const lastUpdated = ref(new Date().toLocaleString())
 const activeTab = ref('overview')
+
+// Dashboard metrics - matching API response structure
+const dashboardMetrics = ref({
+  revenue: {
+    amount: '₦0',
+    change_percent: '+0%',
+    transaction_fee_rate: '0%'
+  },
+  total_schools: {
+    active: 0,
+    count: 0,
+    month_change_percent: '+0%',
+    new_this_week: 0,
+    week_change_percent: '0'
+  },
+  total_users: {
+    change_percent: '0',
+    count: 0,
+    new_this_week: 0
+  },
+  transactions: {
+    change_percent: '+0%',
+    count: 0
+  }
+})
 
 // School growth chart data - matching the design exactly
 const schoolGrowthData = ref({
@@ -784,80 +786,8 @@ const revenueOptions = ref({
   }
 })
 
-// Revenue sources pie chart data - matching the design exactly
-const revenueSourcesData = ref({
-  labels: ['Transaction Fees', 'Subscriptions', 'Premium features'],
-  datasets: [{
-    data: [70, 20, 10],
-    backgroundColor: [
-      'rgba(147, 51, 234, 0.8)', // Purple
-      'rgba(236, 72, 153, 0.8)', // Pink
-      'rgba(147, 197, 253, 0.8)'  // Light blue
-    ],
-    borderWidth: 2,
-    borderColor: '#fff'
-  }]
-})
-
-const pieChartOptions = ref({
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: 'bottom',
-      labels: {
-        usePointStyle: true,
-        pointStyle: 'rect'
-      }
-    },
-    tooltip: {
-      callbacks: {
-        label: function(context) {
-          return context.label + ': ' + context.parsed + '%'
-        }
-      }
-    }
-  }
-})
-
 // Schools data for the table
-const schoolsData = ref([
-  {
-    id: 1,
-    name: 'Heritage Grammar School',
-    email: 'info@heritagegrammar.edu.ng',
-    registrationDate: '5/14/2023',
-    status: 'active'
-  },
-  {
-    id: 2,
-    name: 'Greenfield Academy',
-    email: 'admin@greenfieldacademy.edu.ng',
-    registrationDate: '5/12/2023',
-    status: 'pending'
-  },
-  {
-    id: 3,
-    name: 'St. Michael\'s College',
-    email: 'contact@stmichaelscollege.edu.ng',
-    registrationDate: '5/10/2023',
-    status: 'active'
-  },
-  {
-    id: 4,
-    name: 'Westpoint International',
-    email: 'info@westpointinternational.edu.ng',
-    registrationDate: '5/8/2023',
-    status: 'active'
-  },
-  {
-    id: 5,
-    name: 'Horizon Educational Center',
-    email: 'admin@horizoneducational.edu.ng',
-    registrationDate: '5/4/2023',
-    status: 'suspended'
-  }
-])
+const schoolsData = ref<any[]>([])
 
 // School details modal state
 const showSchoolModal = ref(false)
@@ -1012,9 +942,201 @@ const transactionsData = ref([
   }
 ])
 
+// Fetch dashboard data
+const fetchDashboardData = async () => {
+  loading.value = true
+  try {
+    const response = await schoolService.getDashboard()
+    if (response.data) {
+      // Map API response to dashboard metrics structure
+      dashboardMetrics.value = {
+        revenue: {
+          amount: response.data.revenue?.amount || '₦0',
+          change_percent: response.data.revenue?.change_percent || '+0%',
+          transaction_fee_rate: response.data.revenue?.transaction_fee_rate || '0%'
+        },
+        total_schools: {
+          active: response.data.total_schools?.active || 0,
+          count: response.data.total_schools?.count || 0,
+          month_change_percent: response.data.total_schools?.month_change_percent || '+0%',
+          new_this_week: response.data.total_schools?.new_this_week || 0,
+          week_change_percent: response.data.total_schools?.week_change_percent || '0'
+        },
+        total_users: {
+          change_percent: response.data.total_users?.change_percent || '0',
+          count: response.data.total_users?.count || 0,
+          new_this_week: response.data.total_users?.new_this_week || 0
+        },
+        transactions: {
+          change_percent: response.data.transactions?.change_percent || '+0%',
+          count: response.data.transactions?.count || 0
+        }
+      }
+      
+    }
+  } catch (error: any) {
+    console.error('Error fetching dashboard data:', error)
+    toast.error(error.response?.data?.message || 'Failed to load dashboard data')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Fetch monthly school count for chart
+const fetchMonthlyCount = async () => {
+  try {
+    // API only supports years up to 2025
+    const currentYear = Math.min(new Date().getFullYear(), 2025).toString()
+    const response = await schoolService.getMonthlyCount({ year: currentYear })
+    if (response.data && Array.isArray(response.data)) {
+      const labels = response.data.map((item: any) => {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        const monthIndex = parseInt(item.month || '1') - 1
+        return monthNames[monthIndex] || item.month || ''
+      })
+      const data = response.data.map((item: any) => item.count || 0)
+      
+      schoolGrowthData.value = {
+        labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Schools',
+          data: data.length > 0 ? data : [600, 200, 400, 700, 450, 450],
+          backgroundColor: 'rgba(147, 51, 234, 0.8)',
+          borderColor: 'rgba(147, 51, 234, 1)',
+          borderWidth: 1
+        }]
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching monthly count:', error)
+    // Handle year validation error gracefully
+    if (error.response?.data?.data?.includes('year cannot be later than 2025') || 
+        error.response?.data?.data?.includes('year cannot be greater than 2025')) {
+      console.warn('Year validation error - using 2025 as fallback')
+      // Retry with 2025
+      try {
+        const response = await schoolService.getMonthlyCount({ year: '2025' })
+        if (response.data && Array.isArray(response.data)) {
+          const labels = response.data.map((item: any) => {
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            const monthIndex = parseInt(item.month || '1') - 1
+            return monthNames[monthIndex] || item.month || ''
+          })
+          const data = response.data.map((item: any) => item.count || 0)
+          
+          schoolGrowthData.value = {
+            labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+              label: 'Schools',
+              data: data.length > 0 ? data : [600, 200, 400, 700, 450, 450],
+              backgroundColor: 'rgba(147, 51, 234, 0.8)',
+              borderColor: 'rgba(147, 51, 234, 1)',
+              borderWidth: 1
+            }]
+          }
+        }
+      } catch (retryError) {
+        console.error('Error fetching monthly count with 2025:', retryError)
+      }
+    }
+  }
+}
+
+// Fetch monthly revenue for chart
+const fetchMonthlyRevenue = async () => {
+  try {
+    // API only supports years up to 2025
+    const currentYear = Math.min(new Date().getFullYear(), 2025).toString()
+    const response = await schoolService.getMonthlyRevenue({ year: currentYear })
+    if (response.data && Array.isArray(response.data)) {
+      const labels = response.data.map((item: any) => {
+        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        const monthIndex = parseInt(item.month || '1') - 1
+        return monthNames[monthIndex] || item.month || ''
+      })
+      const data = response.data.map((item: any) => item.revenue || 0)
+      
+      revenueData.value = {
+        labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Revenue (₦)',
+          data: data.length > 0 ? data : [550, 250, 400, 650, 400, 400],
+          backgroundColor: 'rgba(59, 130, 246, 0.8)',
+          borderColor: 'rgba(59, 130, 246, 1)',
+          borderWidth: 1
+        }]
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching monthly revenue:', error)
+    // Handle year validation error gracefully
+    if (error.response?.data?.data?.includes('year cannot be later than 2025') || 
+        error.response?.data?.data?.includes('year cannot be greater than 2025')) {
+      console.warn('Year validation error - using 2025 as fallback')
+      // Retry with 2025
+      try {
+        const response = await schoolService.getMonthlyRevenue({ year: '2025' })
+        if (response.data && Array.isArray(response.data)) {
+          const labels = response.data.map((item: any) => {
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            const monthIndex = parseInt(item.month || '1') - 1
+            return monthNames[monthIndex] || item.month || ''
+          })
+          const data = response.data.map((item: any) => item.revenue || 0)
+          
+          revenueData.value = {
+            labels: labels.length > 0 ? labels : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+              label: 'Revenue (₦)',
+              data: data.length > 0 ? data : [550, 250, 400, 650, 400, 400],
+              backgroundColor: 'rgba(59, 130, 246, 0.8)',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 1
+            }]
+          }
+        }
+      } catch (retryError) {
+        console.error('Error fetching monthly revenue with 2025:', retryError)
+      }
+    }
+  }
+}
+
+// Fetch schools list
+const fetchSchools = async () => {
+  try {
+    const response = await schoolService.getSchools({ 
+      page: 1, 
+      limit: 10,
+      sort: 'desc'
+    })
+    if (response.data && response.data.data) {
+      schoolsData.value = response.data.data.map((school: any) => ({
+        id: school.id,
+        name: school.name || 'N/A',
+        email: school.email || 'N/A',
+        registrationDate: school.registration_date || school.created_at || 'N/A',
+        status: school.status || 'active'
+      }))
+    }
+  } catch (error: any) {
+    console.error('Error fetching schools:', error)
+  }
+}
+
+// Initialize dashboard
+const initializeDashboard = async () => {
+  await Promise.all([
+    fetchDashboardData(),
+    fetchMonthlyCount(),
+    fetchMonthlyRevenue(),
+    fetchSchools()
+  ])
+  lastUpdated.value = new Date().toLocaleString()
+}
+
 // Lifecycle
 onMounted(() => {
-  // Initialize dashboard data
-  console.log('Platform Dashboard mounted')
+  initializeDashboard()
 })
 </script>

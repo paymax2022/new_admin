@@ -26,12 +26,24 @@
 
           <div class="grid gap-4 sm:grid-cols-2">
             <Detail label="Status">
-              <span
-                class="rounded-full px-3 py-1 text-xs font-semibold"
-                :style="{ backgroundColor: complaint.status.badgeBg, color: complaint.status.badgeColor }"
-              >
-                {{ complaint.status.label }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span
+                  class="rounded-full px-3 py-1 text-xs font-semibold"
+                  :style="{ backgroundColor: complaint.status.badgeBg, color: complaint.status.badgeColor }"
+                >
+                  {{ complaint.status.label }}
+                </span>
+                <select
+                  v-model="selectedStatus"
+                  class="rounded-full border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-xs font-semibold text-[#111827] focus:outline-none focus:ring-2 focus:ring-[#111827]"
+                  @change="emit('update-status', selectedStatus)"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in_review">In Review</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
             </Detail>
             <Detail label="Priority">
               <span
@@ -50,26 +62,35 @@
           </div>
 
           <div>
-            <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Add Resolution</p>
+            <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Resolution / closing notes</p>
             <textarea
+              v-model="resolution"
               rows="4"
               class="mt-2 w-full rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm text-[#111827]"
-              placeholder="Enter resolution notes..."
-              v-model="resolution"
+              placeholder="Enter resolution or closing notes..."
             />
           </div>
 
-          <div class="flex justify-end gap-3">
+          <div class="flex flex-wrap justify-end gap-3">
             <button
               type="button"
-              class="rounded-full border border-[#e2e8f0] px-5 py-2 text-sm font-semibold text-[#111827]"
+              class="rounded-full border border-[#e2e8f0] px-5 py-2 text-sm font-semibold text-[#111827] transition hover:bg-[#f1f5f9]"
               @click="$emit('close')"
             >
-              Reject
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="rounded-full border border-[#e2e8f0] px-5 py-2 text-sm font-semibold text-[#111827] transition hover:bg-[#f1f5f9]"
+              @click="emit('close-complaint', { closing_notes: resolution || 'Closed by admin' })"
+            >
+              Close complaint
             </button>
             <button
               type="button"
               class="rounded-full bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#0f172a]"
+              :disabled="!resolution.trim()"
+              @click="emit('resolve', { admin_response: resolution.trim(), resolution: resolution.trim() })"
             >
               Mark as Resolved
             </button>
@@ -81,12 +102,12 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, defineComponent, defineEmits, h } from 'vue';
+import { ref, defineComponent, h, watch } from 'vue';
 import IconX from '@/components/icon/icon-x.vue';
 
-defineProps<{
+const props = defineProps<{
   complaint: {
-    id: number;
+    id?: string | number;
     title: string;
     reporter: string;
     description: string;
@@ -97,9 +118,28 @@ defineProps<{
   };
 }>();
 
-defineEmits<{ (e: 'close'): void }>();
+const emit = defineEmits<{
+  (e: 'close'): void;
+  (e: 'update-status', status: 'pending' | 'in_review' | 'resolved' | 'closed'): void;
+  (e: 'resolve', payload: { admin_response: string; resolution: string }): void;
+  (e: 'close-complaint', payload: { closing_notes: string }): void;
+}>();
 
 const resolution = ref('');
+const selectedStatus = ref<'pending' | 'in_review' | 'resolved' | 'closed'>('pending');
+
+watch(
+  () => props.complaint?.status?.label,
+  (label) => {
+    const s = (label || '').toLowerCase();
+    if (s === 'pending') selectedStatus.value = 'pending';
+    else if (s === 'in progress' || s === 'in_review') selectedStatus.value = 'in_review';
+    else if (s === 'resolved') selectedStatus.value = 'resolved';
+    else if (s === 'closed') selectedStatus.value = 'closed';
+    else selectedStatus.value = 'pending';
+  },
+  { immediate: true }
+);
 
 const Detail = defineComponent({
   name: 'Detail',

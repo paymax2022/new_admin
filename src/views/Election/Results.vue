@@ -3,21 +3,46 @@
     <!-- Header -->
     <div class="flex flex-col gap-2">
       <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#9ca3af]">Election Results</p>
-      <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 class="text-3xl font-semibold text-[#111827]">Election Results</h1>
           <p class="text-sm text-[#6b7280]">Comprehensive analytics and insights from election data</p>
         </div>
-        <button
-          type="button"
-          class="mt-2 inline-flex items-center gap-2 rounded-full bg-[#111827] px-5 py-2 text-sm font-semibold text-white transition hover:bg-[#1f2937]"
-        >
-          <IconDownload class="h-4 w-4" />
-          Export Report
-        </button>
+        <div class="flex flex-wrap items-center gap-3">
+          <select
+            v-model="selectedElectionId"
+            class="rounded-xl border border-[#e2e8f0] bg-white px-4 py-2.5 text-sm text-[#1f2937] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5] min-w-[220px]"
+            :disabled="loadingElections"
+          >
+            <option value="">Select an election</option>
+            <option
+              v-for="e in elections"
+              :key="e.id"
+              :value="e.id"
+            >
+              {{ e.title || e.name || 'Untitled' }}
+            </option>
+          </select>
+          <button
+            type="button"
+            class="inline-flex items-center gap-2 rounded-full bg-[#111827] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1f2937] disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="!selectedElectionId || loading"
+            @click="exportReport"
+          >
+            <IconDownload class="h-4 w-4" />
+            Export CSV
+          </button>
+        </div>
       </div>
     </div>
 
+    <div v-if="loading && selectedElectionId" class="rounded-3xl bg-white p-8 text-center text-[#64748b] shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
+      Loading results…
+    </div>
+    <div v-else-if="!selectedElectionId" class="rounded-3xl bg-white p-12 text-center text-[#64748b] shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
+      Select an election above to view results.
+    </div>
+    <template v-else>
     <!-- Summary Cards -->
     <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <article
@@ -323,19 +348,23 @@
       </article>
       <div class="grid gap-6 lg:grid-cols-2">
         <article class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
-          <h3 class="text-lg font-semibold text-[#111827] mb-4">Peak Hours Analysis</h3>
+          <h3 class="text-lg font-semibold text-[#111827] mb-4">Peak Hours & Voting Pattern</h3>
           <dl class="space-y-4 text-sm">
             <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
-              <dt class="text-[#6b7280]">Peak Hour</dt>
-              <dd class="font-semibold text-[#111827]">2:00 PM - 3:00 PM</dd>
+              <dt class="text-[#6b7280]">Peak Period</dt>
+              <dd class="font-semibold text-[#111827]">{{ trendsData?.voting_pattern?.peak_period || '—' }}</dd>
             </div>
             <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
-              <dt class="text-[#6b7280]">Highest Turnout</dt>
-              <dd class="font-semibold text-[#111827]">567 votes/hour</dd>
+              <dt class="text-[#6b7280]">Velocity Trend</dt>
+              <dd class="font-semibold text-[#111827]">{{ trendsData?.voting_pattern?.velocity_trend || '—' }}</dd>
+            </div>
+            <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
+              <dt class="text-[#6b7280]">Average Time to Vote</dt>
+              <dd class="font-semibold text-[#111827]">{{ trendsData?.average_time_to_vote || '—' }}</dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-[#6b7280]">Average Rate</dt>
-              <dd class="font-semibold text-[#111827]">342 votes/hour</dd>
+              <dt class="text-[#6b7280]">Early / Mid / Late</dt>
+              <dd class="font-semibold text-[#111827]">{{ votingPatternSummary }}</dd>
             </div>
           </dl>
         </article>
@@ -343,259 +372,328 @@
           <h3 class="text-lg font-semibold text-[#111827] mb-4">Historical Comparison</h3>
           <dl class="space-y-4 text-sm">
             <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
-              <dt class="text-[#6b7280]">vs 2023 Election</dt>
-              <dd class="font-semibold text-[#16a34a]">+15.3%</dd>
+              <dt class="text-[#6b7280]">Current Turnout</dt>
+              <dd class="font-semibold text-[#111827]">{{ comparisonData?.current_turnout ?? '—' }}</dd>
             </div>
             <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
-              <dt class="text-[#6b7280]">vs 2022 Election</dt>
-              <dd class="font-semibold text-[#16a34a]">+8.5%</dd>
+              <dt class="text-[#6b7280]">Previous Turnout</dt>
+              <dd class="font-semibold text-[#111827]">{{ comparisonData?.previous_turnout ?? '—' }}</dd>
+            </div>
+            <div class="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
+              <dt class="text-[#6b7280]">Turnout Change</dt>
+              <dd class="font-semibold" :class="(comparisonData?.turnout_change ?? 0) >= 0 ? 'text-[#16a34a]' : 'text-[#dc2626]'">{{ comparisonData?.turnout_change != null ? (comparisonData.turnout_change >= 0 ? `+${comparisonData.turnout_change}%` : `${comparisonData.turnout_change}%`) : '—' }}</dd>
             </div>
             <div class="flex items-center justify-between">
-              <dt class="text-[#6b7280]">3-year Average</dt>
-              <dd class="font-semibold text-[#111827]">73.2%</dd>
+              <dt class="text-[#6b7280]">Trend</dt>
+              <dd class="font-semibold text-[#111827]">{{ comparisonData?.trend || '—' }}</dd>
             </div>
           </dl>
         </article>
       </div>
     </section>
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconAward from '@/components/icon/icon-award.vue';
 import IconBarChart from '@/components/icon/icon-bar-chart.vue';
 import IconUsersGroup from '@/components/icon/icon-users-group.vue';
 import IconUserCircle from '@/components/icon/icon-user-circle.vue';
 import IconDownload from '@/components/icon/icon-download.vue';
+import electionService from '@/services/electionService';
 
-const summaryCards = [
-  {
-    label: 'Total Elections',
-    value: '12',
-    change: '+2',
-    description: 'Live & historical election events',
-    icon: IconAward,
-    iconBg: '#eff6ff',
-    iconColor: '#2563eb',
-  },
-  {
-    label: 'Total Votes Cast',
-    value: '8,547',
-    change: '+5%',
-    description: 'All verified ballots submitted',
-    icon: IconBarChart,
-    iconBg: '#f0fdf4',
-    iconColor: '#16a34a',
-  },
-  {
-    label: 'Average Turnout',
-    value: '78.5%',
-    change: '+2.3%',
-    description: 'Compared to last election cycle',
-    icon: IconUsersGroup,
-    iconBg: '#fff7ed',
-    iconColor: '#f97316',
-  },
-  {
-    label: 'Active Candidates',
-    value: '45',
-    change: '+9',
-    description: 'Across all live and upcoming races',
-    icon: IconUserCircle,
-    iconBg: '#ecfccb',
-    iconColor: '#65a30d',
-  },
-];
+const toast = useToast();
+const elections = ref<Array<{ id: string; title?: string; name?: string }>>([]);
+const loadingElections = ref(false);
+const selectedElectionId = ref('');
+const loading = ref(false);
+const resultsData = ref<{
+  election_id?: string;
+  election_title?: string;
+  total_eligible_voters?: number;
+  total_votes_cast?: number;
+  turnout_percentage?: number;
+  position_results?: Array<{
+    position_id: string;
+    position_name: string;
+    total_votes: number;
+    candidate_results: Array<{ candidate_id?: string; candidate_name?: string; votes?: number; percentage?: number; rank?: number; status?: string }>;
+    result_status?: string;
+    margin_of_victory?: number;
+    margin_percentage?: number;
+  }>;
+  winners?: Array<unknown>;
+  generated_at?: string;
+} | null>(null);
+const demographicsData = ref<any>(null);
+const trendsData = ref<any>(null);
+const comparisonData = ref<any>(null);
+
+const loadElections = async () => {
+  loadingElections.value = true;
+  try {
+    const response = await electionService.getAllElectionsAdmin({ limit: 100 });
+    const list = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    elections.value = (list || []).map((e: any) => ({ id: e.id || e._id, title: e.title || e.name }));
+    if (elections.value.length && !selectedElectionId.value) {
+      selectedElectionId.value = elections.value[0].id;
+    }
+  } catch (e: any) {
+    toast.error('Failed to load elections');
+    console.error(e);
+  } finally {
+    loadingElections.value = false;
+  }
+};
+
+const loadResults = async () => {
+  if (!selectedElectionId.value) return;
+  loading.value = true;
+  resultsData.value = null;
+  demographicsData.value = null;
+  trendsData.value = null;
+  comparisonData.value = null;
+  try {
+    const [res, demo, trends, comp] = await Promise.allSettled([
+      electionService.getElectionResultsAdmin(selectedElectionId.value),
+      electionService.getDemographicAnalysis(selectedElectionId.value),
+      electionService.getTrendAnalysis(selectedElectionId.value),
+      electionService.getHistoricalComparison(selectedElectionId.value),
+    ]);
+    if (res.status === 'fulfilled' && res.value?.data) resultsData.value = res.value.data;
+    if (demo.status === 'fulfilled' && demo.value?.data) demographicsData.value = demo.value.data;
+    if (trends.status === 'fulfilled' && trends.value?.data) trendsData.value = trends.value.data;
+    if (comp.status === 'fulfilled' && comp.value?.data) comparisonData.value = comp.value.data;
+  } catch (e: any) {
+    toast.error('Failed to load results');
+    console.error(e);
+  } finally {
+    loading.value = false;
+  }
+};
+
+watch(selectedElectionId, (id) => {
+  if (id) loadResults();
+});
+
+onMounted(() => {
+  loadElections();
+});
+
+const summaryCards = computed(() => {
+  const r = resultsData.value;
+  const c = comparisonData.value;
+  const eligible = r?.total_eligible_voters ?? 0;
+  const votes = r?.total_votes_cast ?? 0;
+  const turnout = r?.turnout_percentage ?? 0;
+  const positions = r?.position_results ?? [];
+  const candidateCount = positions.reduce((sum, p) => sum + (p.candidate_results?.length ?? 0), 0);
+  const changeStr = c?.turnout_change != null ? (c.turnout_change >= 0 ? `+${c.turnout_change}%` : `${c.turnout_change}%`) : '—';
+  return [
+    { label: 'Election', value: r?.election_title || '—', change: '', description: 'Selected election', icon: IconAward, iconBg: '#eff6ff', iconColor: '#2563eb' },
+    { label: 'Total Votes Cast', value: votes.toLocaleString(), change: '', description: 'All verified ballots submitted', icon: IconBarChart, iconBg: '#f0fdf4', iconColor: '#16a34a' },
+    { label: 'Turnout', value: `${turnout}%`, change: changeStr, description: 'Compared to previous election', icon: IconUsersGroup, iconBg: '#fff7ed', iconColor: '#f97316' },
+    { label: 'Candidates', value: String(candidateCount), change: '', description: 'Across all positions', icon: IconUserCircle, iconBg: '#ecfccb', iconColor: '#65a30d' },
+  ];
+});
 
 const tabs = ['Overview', 'Candidates', 'Demographics', 'Trends'];
 const activeTab = ref('Overview');
 
-const voteDistribution = [
-  { label: 'Progressive', value: '42.3%', color: '#3b82f6' },
-  { label: 'Unity', value: '20.1%', color: '#f97316' },
-  { label: 'Independent', value: '15.6%', color: '#a855f7' },
-  { label: 'Change', value: '22.0%', color: '#22c55e' },
-];
+const COLORS = ['#3b82f6', '#f97316', '#a855f7', '#22c55e', '#0ea5e9', '#84cc16'];
 
-const turnoutByAge = [
-  { range: '18-24', eligibleCount: 700, votersCount: 620 },
-  { range: '25-34', eligibleCount: 720, votersCount: 580 },
-  { range: '35-44', eligibleCount: 732, votersCount: 675 },
-  { range: '45-54', eligibleCount: 635, votersCount: 480 },
-  { range: '55+', eligibleCount: 592, votersCount: 320 },
-];
+const voteDistribution = computed(() => {
+  const r = resultsData.value;
+  const positions = r?.position_results ?? [];
+  const first = positions[0];
+  const candidates = first?.candidate_results ?? [];
+  const total = first?.total_votes || 1;
+  return candidates.map((c: any, i: number) => ({
+    label: c.candidate_name || c.name || `Candidate ${i + 1}`,
+    value: `${(c.percentage ?? (total ? Math.round(((c.votes ?? 0) / total) * 1000) / 10 : 0))}%`,
+    color: COLORS[i % COLORS.length],
+  }));
+});
 
-const insightCards = [
-  {
-    label: 'Victory Margin',
-    value: '10.2%',
-    delta: '4% vote difference',
-    description: 'Average winning margin for current cycle',
-  },
-  {
-    label: 'Voter Turnout',
-    value: '78.5%',
-    delta: '6,237 of 7,945 eligible voters',
-    description: 'Measured across all open elections',
-  },
-  {
-    label: 'Total Candidates',
-    value: '4',
-    delta: 'Across 3 parties + independents',
-    description: 'Active races reporting real-time data',
-  },
-];
+const turnoutByAge = computed(() => {
+  const demo = demographicsData.value;
+  if (demo?.age_groups && Array.isArray(demo.age_groups)) {
+    return demo.age_groups.map((g: any) => ({
+      range: g.range || g.label || '—',
+      eligibleCount: g.eligible_count ?? g.eligibleCount ?? 0,
+      votersCount: g.voters_count ?? g.votersCount ?? g.votes ?? 0,
+    }));
+  }
+  return [
+    { range: '18-24', eligibleCount: 0, votersCount: 0 },
+    { range: '25-34', eligibleCount: 0, votersCount: 0 },
+    { range: '35-44', eligibleCount: 0, votersCount: 0 },
+    { range: '45-54', eligibleCount: 0, votersCount: 0 },
+    { range: '55+', eligibleCount: 0, votersCount: 0 },
+  ];
+});
+
+const insightCards = computed(() => {
+  const r = resultsData.value;
+  const c = comparisonData.value;
+  const votes = r?.total_votes_cast ?? 0;
+  const eligible = r?.total_eligible_voters ?? 0;
+  const turnout = r?.turnout_percentage ?? 0;
+  const positions = r?.position_results ?? [];
+  const margin = positions[0]?.margin_percentage ?? positions[0]?.margin_of_victory ?? 0;
+  const candidateCount = positions.reduce((s, p) => s + (p.candidate_results?.length ?? 0), 0);
+  return [
+    { label: 'Victory Margin', value: `${margin}%`, delta: 'Leading position', description: 'Margin for first position', },
+    { label: 'Voter Turnout', value: `${turnout}%`, delta: `${votes.toLocaleString()} of ${eligible.toLocaleString()} eligible`, description: 'From election results', },
+    { label: 'Total Candidates', value: String(candidateCount), delta: `Across ${positions.length} position(s)`, description: 'Active in this election', },
+  ];
+});
 
 const conicGradient = computed(() => {
+  const slices = voteDistribution.value;
+  if (!slices.length) return 'conic-gradient(#e2e8f0 0% 100%)';
   let offset = 0;
-  const segments = voteDistribution
+  const segments = slices
     .map((slice) => {
       const start = offset;
-      const value = parseFloat(slice.value);
+      const value = parseFloat(String(slice.value).replace('%', '')) || 0;
       offset += value;
       return `${slice.color} ${start}% ${offset}%`;
     })
     .join(', ');
-
   return `conic-gradient(${segments})`;
 });
 
-const maxEligibleCount = Math.ceil(Math.max(...turnoutByAge.map((group) => group.eligibleCount)) / 50) * 50;
+const maxEligibleCount = computed(() => {
+  const groups = turnoutByAge.value;
+  const max = Math.max(...groups.map((g) => g.eligibleCount), 1);
+  return Math.ceil(max / 50) * 50 || 100;
+});
 const yAxisTicks = computed(() => {
   const divisions = 4;
-  const step = maxEligibleCount / divisions;
-  return Array.from({ length: divisions + 1 }, (_, index) => Math.round(maxEligibleCount - step * index));
+  const step = maxEligibleCount.value / divisions;
+  return Array.from({ length: divisions + 1 }, (_, index) => Math.round(maxEligibleCount.value - step * index));
 });
 
-const candidateResults = [
-  {
-    id: 1,
-    name: 'Sarah Johnson',
-    totalVotes: 2847,
-    percentage: 42.3,
-    badge: 'winner',
-    badgeClass: 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]',
-  },
-  {
-    id: 2,
-    name: 'Mike Chen',
-    totalVotes: 2320,
-    percentage: 34.2,
-    badge: 'runner-up',
-    badgeClass: 'border-[#f97316] bg-[#ffedd5] text-[#f97316]',
-  },
-  {
-    id: 3,
-    name: 'Ava Patel',
-    totalVotes: 1340,
-    percentage: 18.9,
-    badge: 'candidate',
-    badgeClass: 'border-[#94a3b8] bg-[#f1f5f9] text-[#475569]',
-  },
-];
+const candidateResults = computed(() => {
+  const r = resultsData.value;
+  const positions = r?.position_results ?? [];
+  const flat: Array<{ id: string; name: string; totalVotes: number; percentage: number; badge: string; badgeClass: string }> = [];
+  positions.forEach((pos) => {
+    (pos.candidate_results || []).forEach((c: any, idx: number) => {
+      const votes = c.votes ?? 0;
+      const total = pos.total_votes || 1;
+      const pct = pos.total_votes ? Math.round((votes / total) * 1000) / 10 : 0;
+      const rank = c.rank ?? idx + 1;
+      const isWinner = c.status === 'winner' || rank === 1;
+      const isRunnerUp = rank === 2;
+      flat.push({
+        id: c.candidate_id || `${pos.position_id}-${idx}`,
+        name: c.candidate_name || c.name || `Candidate ${idx + 1}`,
+        totalVotes: votes,
+        percentage: c.percentage ?? pct,
+        badge: isWinner ? 'winner' : isRunnerUp ? 'runner-up' : 'candidate',
+        badgeClass: isWinner ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]' : isRunnerUp ? 'border-[#f97316] bg-[#ffedd5] text-[#f97316]' : 'border-[#94a3b8] bg-[#f1f5f9] text-[#475569]',
+      });
+    });
+  });
+  return flat;
+});
 
-const demographicBreakdown = [
-  {
-    id: 1,
-    label: '18-24 years',
-    percentage: 61.7,
-    totalVotes: 1234,
-    details: '1,234 / 2,000 eligible',
-  },
-  {
-    id: 2,
-    label: '25-34 years',
-    percentage: 86.2,
-    totalVotes: 2185,
-    details: '2,185 / 2,600 eligible',
-  },
-  {
-    id: 3,
-    label: '35-44 years',
-    percentage: 85.3,
-    totalVotes: 1879,
-    details: '1,879 / 2,200 eligible',
-  },
-  {
-    id: 4,
-    label: '45-54 years',
-    percentage: 61.7,
-    totalVotes: 1541,
-    details: '1,541 / 2,500 eligible',
-  },
-];
+const demographicBreakdown = computed(() => {
+  const demo = demographicsData.value;
+  if (demo?.breakdown && Array.isArray(demo.breakdown)) {
+    return demo.breakdown.map((b: any, i: number) => ({
+      id: i + 1,
+      label: b.label || b.range || b.name || '—',
+      percentage: b.percentage ?? 0,
+      totalVotes: b.total_votes ?? b.totalVotes ?? 0,
+      details: b.details || `${(b.total_votes ?? 0).toLocaleString()} votes`,
+    }));
+  }
+  return turnoutByAge.value.map((g, i) => ({
+    id: i + 1,
+    label: g.range,
+    percentage: g.eligibleCount ? Math.round((g.votersCount / g.eligibleCount) * 1000) / 10 : 0,
+    totalVotes: g.votersCount,
+    details: `${g.votersCount.toLocaleString()} / ${g.eligibleCount.toLocaleString()} eligible`,
+  }));
+});
 
-const geographicDistribution = [
-  {
-    id: 1,
-    label: 'South Campus',
-    percentage: 61.7,
-    totalVotes: 1847,
-    detail: '1,847 votes',
-  },
-  {
-    id: 2,
-    label: 'West Campus',
-    percentage: 86.2,
-    totalVotes: 2345,
-    detail: '2,345 votes',
-  },
-  {
-    id: 3,
-    label: 'North City',
-    percentage: 85.3,
-    totalVotes: 1879,
-    detail: '1,879 votes',
-  },
-  {
-    id: 4,
-    label: 'Online / Remote',
-    percentage: 61.7,
-    totalVotes: 563,
-    detail: '563 votes',
-  },
-];
+const geographicDistribution = computed(() => {
+  const demo = demographicsData.value;
+  if (demo?.regions && Array.isArray(demo.regions)) {
+    const total = demo.regions.reduce((s: number, r: any) => s + (r.total_votes ?? r.votes ?? 0), 0) || 1;
+    return demo.regions.map((r: any, i: number) => ({
+      id: i + 1,
+      label: r.label || r.name || r.region || '—',
+      percentage: total ? Math.round(((r.total_votes ?? r.votes ?? 0) / total) * 1000) / 10 : 0,
+      totalVotes: r.total_votes ?? r.votes ?? 0,
+      detail: `${(r.total_votes ?? r.votes ?? 0).toLocaleString()} votes`,
+    }));
+  }
+  return [];
+});
 
-const timelineData = [
-  { time: '06:00', value: 120 },
-  { time: '08:00', value: 180 },
-  { time: '10:00', value: 260 },
-  { time: '12:00', value: 340 },
-  { time: '14:00', value: 460 },
-  { time: '16:00', value: 520 },
-  { time: '18:00', value: 640 },
-  { time: '20:00', value: 720 },
-  { time: '22:00', value: 780 },
-];
+const timelineData = computed(() => {
+  const t = trendsData.value;
+  const curve = t?.turnout_curve ?? t?.hourly ?? [];
+  if (Array.isArray(curve) && curve.length > 0) {
+    return curve.map((p: any) => ({
+      time: p.time ?? p.label ?? p.hour ?? '—',
+      value: p.value ?? p.votes ?? p.count ?? 0,
+    }));
+  }
+  return [
+    { time: '06:00', value: 0 },
+    { time: '12:00', value: 0 },
+    { time: '18:00', value: 0 },
+  ];
+});
 
-const maxTimelineValue = Math.max(...timelineData.map((point) => point.value));
-const timelineTicks = [maxTimelineValue, Math.round(maxTimelineValue * 0.75), Math.round(maxTimelineValue * 0.5), Math.round(maxTimelineValue * 0.25), 0];
+const maxTimelineValue = computed(() => {
+  const data = timelineData.value;
+  const m = Math.max(...data.map((p) => p.value), 1);
+  return m;
+});
+const timelineTicks = computed(() => {
+  const max = maxTimelineValue.value;
+  return [max, Math.round(max * 0.75), Math.round(max * 0.5), Math.round(max * 0.25), 0];
+});
 
 const chartWidth = 600;
 const chartHeight = 200;
 
 const buildPoint = (pointIndex: number) => {
-  const spacing = chartWidth / (timelineData.length - 1);
+  const data = timelineData.value;
+  const len = data.length;
+  const spacing = len <= 1 ? chartWidth : chartWidth / (len - 1);
   const x = spacing * pointIndex;
-  const valueRatio = timelineData[pointIndex].value / maxTimelineValue;
+  const val = data[pointIndex]?.value ?? 0;
+  const valueRatio = maxTimelineValue.value ? val / maxTimelineValue.value : 0;
   const y = chartHeight - valueRatio * chartHeight;
   return { x, y };
 };
 
-const timelineLinePoints = computed(() =>
-  timelineData
+const timelineLinePoints = computed(() => {
+  const data = timelineData.value;
+  return data
     .map((_, index) => {
       const { x, y } = buildPoint(index);
       return `${x},${y}`;
     })
-    .join(' ')
-);
+    .join(' ');
+});
 
 const timelineAreaPath = computed(() => {
+  const data = timelineData.value;
+  if (!data.length) return '';
   const firstPoint = buildPoint(0);
-  const lastPoint = buildPoint(timelineData.length - 1);
-  const pathPoints = timelineData
+  const lastPoint = buildPoint(data.length - 1);
+  const pathPoints = data
     .map((_, index) => {
       const { x, y } = buildPoint(index);
       return `${x},${y}`;
@@ -604,16 +702,50 @@ const timelineAreaPath = computed(() => {
   return `M ${firstPoint.x},${chartHeight} L ${pathPoints} L ${lastPoint.x},${chartHeight} Z`;
 });
 
-const highlightPoint = timelineData[4];
+const votingPatternSummary = computed(() => {
+  const vp = trendsData.value?.voting_pattern;
+  if (!vp) return '—';
+  const e = vp.early_voting ?? 0;
+  const m = vp.mid_voting ?? 0;
+  const l = vp.late_voting ?? 0;
+  return `${e}% / ${m}% / ${l}%`;
+});
+
+const highlightPoint = computed(() => {
+  const data = timelineData.value;
+  const i = Math.min(4, data.length - 1);
+  return data[i] ?? { time: '—', value: 0 };
+});
 const highlightPointStyle = computed(() => {
-  const spacing = chartWidth / (timelineData.length - 1);
-  const valueRatio = highlightPoint.value / maxTimelineValue;
-  const x = spacing * timelineData.indexOf(highlightPoint);
+  const data = timelineData.value;
+  const point = highlightPoint.value;
+  const idx = data.indexOf(point);
+  if (idx < 0 || !data.length) return { transform: 'translate(0,0)' };
+  const spacing = data.length <= 1 ? chartWidth : chartWidth / (data.length - 1);
+  const valueRatio = maxTimelineValue.value ? point.value / maxTimelineValue.value : 0;
+  const x = spacing * idx;
   const y = chartHeight - valueRatio * chartHeight;
   return {
     transform: `translate(calc(14px + ${(x / chartWidth) * 100}% - 30px), calc(16px + ${y}px))`,
   };
 });
+
+async function exportReport() {
+  if (!selectedElectionId.value) return;
+  try {
+    const blob = await electionService.exportResults(selectedElectionId.value, 'csv');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `election-results-${selectedElectionId.value}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Export downloaded');
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Export failed');
+    console.error(e);
+  }
+}
 </script>
 
 

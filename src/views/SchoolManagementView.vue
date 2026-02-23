@@ -43,80 +43,164 @@
     </div>
 
     <!-- Schools Directory Section -->
-    <div>
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Schools Directory</h2>
-      <p class="text-gray-600 dark:text-gray-400">Showing {{ filteredSchools.length }} schools</p>
-    </div>
-
-    <!-- Schools Table -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-700">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">School Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Location</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Students</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="school in paginatedSchools" :key="school.id">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10">
-                    <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                      <span class="text-gray-600 text-sm font-medium">{{ school.name.charAt(0) }}</span>
-                    </div>
-                  </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ school.name }}</div>
-                  </div>
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ school.email }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ school.location }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClass(school.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                  {{ school.status }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ school.students.toLocaleString() }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                <button @click="viewSchool(school)" class="text-blue-600 hover:text-blue-900">View Details</button>
-                <button @click="suspendSchool(school)" class="text-orange-600 hover:text-orange-900">Suspend</button>
-                <button @click="deleteSchool(school)" class="text-red-600 hover:text-red-900">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <!-- Pagination -->
-      <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-700 dark:text-gray-300">
-            Showing {{ startIndex + 1 }} to {{ endIndex }} of {{ filteredSchools.length }} entries (filtered from {{ schoolsData.length }} total entries)
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+      <!-- Enhanced Table Header with Summary -->
+      <div class="px-6 py-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Schools Directory
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Showing <span class="font-semibold text-gray-900 dark:text-white">{{ schoolsData.length }}</span>
+              {{ schoolsData.length === 1 ? 'school' : 'schools' }}
+              <span v-if="paginationMeta.totalItems !== schoolsData.length" class="text-gray-500 dark:text-gray-500">
+                (of {{ paginationMeta.totalItems }} total)
+              </span>
+            </p>
           </div>
-          <div class="flex items-center space-x-1">
-            <button @click="goToPage(1)" class="px-3 py-1 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"><<</button>
-            <button @click="goToPage(currentPage - 1)" :disabled="currentPage === 1" class="px-3 py-1 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"><</button>
-            <button 
-              v-for="page in visiblePages" 
-              :key="page"
-              @click="page !== '...' ? goToPage(page as number) : null"
-              :class="page === currentPage ? 'bg-black text-white border-black' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'"
-              class="px-3 py-1 text-sm border rounded-md"
-              :disabled="page === '...'"
-            >
-              {{ page }}
-            </button>
-            <button @click="goToPage(currentPage + 1)" :disabled="currentPage === totalPages" class="px-3 py-1 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">></button>
-            <button @click="goToPage(totalPages)" class="px-3 py-1 text-sm text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50">>></button>
+          <div class="flex items-center gap-4 flex-wrap">
+            <!-- Statistics Cards -->
+            <div class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <div class="text-center">
+                <div class="text-lg font-bold text-green-600 dark:text-green-400">{{ activeSchoolsCount }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Active</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <div class="text-center">
+                <div class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ primarySchoolsCount }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Primary</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <div class="text-center">
+                <div class="text-lg font-bold text-purple-600 dark:text-purple-400">{{ nurserySchoolsCount }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Nursery</div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Vue3 DataTable -->
+      <div class="p-6">
+        <Vue3Datatable
+          :rows="schoolsData"
+          :columns="columns"
+          :totalRows="paginationMeta.totalItems"
+          :sortable="true"
+          :searchable="true"
+          :pageSize="itemsPerPage"
+          :pageSizeOptions="[10, 25, 50, 100]"
+          :classes="{
+            table: 'table-auto w-full',
+            thead: 'bg-gray-50 dark:bg-gray-700',
+            tbody: '',
+            tr: 'border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors',
+            th: 'px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider',
+            td: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white',
+          }"
+          skin="bh-table-compact"
+          :loading="loading"
+          @row-clicked="onRowClick"
+        >
+          <!-- Custom School Name Column -->
+          <template #schoolName="data">
+            <div v-if="data && data.value" class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10">
+                <div class="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center">
+                  <span class="text-gray-600 dark:text-gray-300 text-sm font-medium">{{ (data.value.name || '').charAt(0).toUpperCase() || 'N' }}</span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ data.value.name || 'N/A' }}</div>
+              </div>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Reference Column -->
+          <template #reference="data">
+            <span v-if="data && data.value" class="text-sm font-mono text-gray-700 dark:text-gray-300">
+              {{ data.value.reference || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Type Column -->
+          <template #type="data">
+            <span v-if="data && data.value" :class="getTypeClass(data.value.type)" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full capitalize">
+              {{ data.value.type || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Director Name Column -->
+          <template #directorName="data">
+            <span v-if="data && data.value" class="text-sm text-gray-900 dark:text-white">
+              {{ data.value.directorName || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Director Phone Column -->
+          <template #directorPhone="data">
+            <span v-if="data && data.value" class="text-sm text-gray-700 dark:text-gray-300">
+              {{ data.value.directorPhone || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Status Column -->
+          <template #status="data">
+            <span v-if="data && data.value" :class="getStatusClass(data.value.status || 'active')" class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
+              {{ data.value.status || 'N/A' }}
+            </span>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Created Date Column -->
+          <template #createdAt="data">
+            <div v-if="data && data.value && data.value.createdAt" class="flex flex-col">
+              <span class="text-sm text-gray-900 dark:text-white">
+                {{ formatDate(data.value.createdAt) }}
+              </span>
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                {{ formatTime(data.value.createdAt) }}
+              </span>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+
+          <!-- Custom Actions Column -->
+          <template #actions="data">
+            <div v-if="data && data.value" class="flex items-center space-x-2">
+              <button
+                @click.stop="viewSchool(data.value)"
+                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 font-medium text-sm"
+              >
+                View
+              </button>
+              <button
+                @click.stop="suspendSchool(data.value)"
+                class="text-orange-600 hover:text-orange-900 dark:text-orange-400 dark:hover:text-orange-300 font-medium text-sm"
+              >
+                Suspend
+              </button>
+              <button
+                @click.stop="deleteSchool(data.value)"
+                class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 font-medium text-sm"
+              >
+                Delete
+              </button>
+            </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </Vue3Datatable>
       </div>
     </div>
 
@@ -154,7 +238,7 @@
               </div>
             </div>
             <div class="text-sm text-gray-600">
-              Registered on: 15 Jan 2023
+              Registered on: {{ selectedSchool?.createdAt ? formatDate(selectedSchool.createdAt) : 'N/A' }}
             </div>
           </div>
 
@@ -167,7 +251,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
-              <span class="text-sm text-gray-900">{{ selectedSchool?.location }}</span>
+              <span class="text-sm text-gray-900">{{ selectedSchool?.location || selectedSchool?.address || 'N/A' }}</span>
             </div>
             <div class="flex items-center space-x-3">
               <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -175,7 +259,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <span class="text-sm text-gray-900">{{ selectedSchool?.email }}</span>
+              <span class="text-sm text-gray-900">{{ selectedSchool?.email || selectedSchool?.director?.email || 'N/A' }}</span>
             </div>
             <div class="flex items-center space-x-3">
               <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -183,7 +267,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
               </div>
-              <span class="text-sm text-gray-900">+23480123456</span>
+              <span class="text-sm text-gray-900">{{ selectedSchool?.director?.phone || 'N/A' }}</span>
             </div>
             <div class="flex items-center space-x-3">
               <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -204,10 +288,18 @@
             <div class="flex items-center space-x-3">
               <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
                 <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <span class="text-sm text-gray-900">Students: {{ selectedSchool?.students.toLocaleString() }}</span>
+              <span class="text-sm text-gray-900">Director: {{ selectedSchool?.director?.name || 'N/A' }}</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <span class="text-sm text-gray-900">Reference: {{ selectedSchool?.reference || 'N/A' }}</span>
             </div>
           </div>
 
@@ -264,64 +356,73 @@
             </nav>
           </div>
 
-          <!-- Tab Content -->
+          <!-- Tab Content: Statistics from GET /api/v1/admin/schools/:id/stats -->
           <div v-if="activeTab === 'statistics'" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-if="loadingStats" class="text-center py-8 text-gray-500">Loading statistics…</div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm text-gray-600">Total Fee Volume</p>
-                    <p class="text-2xl font-bold text-gray-900">N24.5M</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(schoolStats?.total_fee_volume ?? 0) }}</p>
                   </div>
-                  <div class="text-green-600">
+                  <div :class="trendClass(schoolStats?.fee_volume_trend)">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
                     </svg>
                   </div>
                 </div>
-                <p class="text-sm text-green-600 mt-2">+12% from last term</p>
+                <p class="text-sm mt-2" :class="changeClass(schoolStats?.fee_volume_change_percentage)">
+                  {{ formatChange(schoolStats?.fee_volume_change_percentage) }} from last period
+                </p>
               </div>
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm text-gray-600">Platform Fees</p>
-                    <p class="text-2xl font-bold text-gray-900">N367,500</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(schoolStats?.platform_fees ?? 0) }}</p>
                   </div>
-                  <div class="text-green-600">
+                  <div :class="trendClass(schoolStats?.platform_fees_trend)">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
                     </svg>
                   </div>
                 </div>
-                <p class="text-sm text-green-600 mt-2">↑1.5% of volume</p>
+                <p class="text-sm mt-2" :class="changeClass(schoolStats?.platform_fees_change_percentage)">
+                  {{ formatChange(schoolStats?.platform_fees_change_percentage) }}
+                </p>
               </div>
               <div class="bg-white border border-gray-200 rounded-lg p-4">
                 <div class="flex items-center justify-between">
                   <div>
                     <p class="text-sm text-gray-600">Payment Success Rate</p>
-                    <p class="text-2xl font-bold text-gray-900">98.2%</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ (schoolStats?.payment_success_rate ?? 0) }}%</p>
                   </div>
-                  <div class="text-green-600">
+                  <div :class="trendClass(schoolStats?.success_rate_trend)">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
                     </svg>
                   </div>
                 </div>
-                <p class="text-sm text-green-600 mt-2">↑+2.15 Improvement</p>
+                <p class="text-sm mt-2" :class="changeClass(schoolStats?.success_rate_change)">
+                  {{ formatChange(schoolStats?.success_rate_change) }} improvement
+                </p>
               </div>
               <div class="bg-white border border-gray-200 rounded-lg p-4">
-    <div class="flex items-center justify-between">
-      <div>
+                <div class="flex items-center justify-between">
+                  <div>
                     <p class="text-sm text-gray-600">Active Parents</p>
-                    <p class="text-2xl font-bold text-gray-900">945</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ (schoolStats?.active_parents ?? 0).toLocaleString() }}</p>
                   </div>
-                  <div class="text-green-600">
+                  <div :class="trendClass(schoolStats?.active_parents_trend)">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
                     </svg>
                   </div>
                 </div>
-                <p class="text-sm text-green-600 mt-2">↑76% adoption rate</p>
+                <p class="text-sm mt-2" :class="changeClass(schoolStats?.active_parents_change_percentage)">
+                  {{ formatChange(schoolStats?.active_parents_change_percentage) }}
+                </p>
               </div>
             </div>
           </div>
@@ -489,6 +590,9 @@
             <button @click="suspendSchool(selectedSchool)" class="flex-1 px-4 py-2 text-red-600 bg-white border border-red-600 rounded-md hover:bg-red-50">
               Suspend School
             </button>
+            <button @click="updateSchool" class="flex-1 px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700">
+              Update School
+            </button>
             <button @click="closeSchoolModal" class="flex-1 px-4 py-2 text-white bg-black rounded-md hover:bg-gray-900">
               Close
             </button>
@@ -527,21 +631,22 @@
             <div>
               <h3 class="font-semibold text-gray-900">{{ schoolToSuspend?.name }}</h3>
               <p class="text-sm text-gray-600">{{ schoolToSuspend?.email }}</p>
-      </div>
-    </div>
+            </div>
+          </div>
     
           <!-- Suspension Reason Input -->
           <div>
             <label for="suspensionReason" class="block text-sm font-medium text-gray-700 mb-2">
-              Suspension Reason
+              Suspension Reason <span class="text-red-500">*</span>
             </label>
-            <input
+            <textarea
               id="suspensionReason"
               v-model="suspensionReason"
-              type="text"
+              rows="3"
               placeholder="Provide a reason for suspension"
               class="block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
-            />
+              required
+            ></textarea>
           </div>
 
           <!-- Action Buttons -->
@@ -549,8 +654,64 @@
             <button @click="closeSuspendModal" class="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
               Cancel
             </button>
-            <button @click="confirmSuspendSchool" class="flex-1 px-4 py-2 text-white bg-orange-600 border border-orange-600 rounded-md hover:bg-orange-700">
+            <button @click="confirmSuspendSchool" :disabled="!suspensionReason.trim()" class="flex-1 px-4 py-2 text-white bg-orange-600 border border-orange-600 rounded-md hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed">
               Suspend School
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete School Confirmation Modal -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+          <div class="flex items-center gap-2">
+            <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z" />
+            </svg>
+            <h2 class="text-xl font-bold text-red-600">Delete School</h2>
+          </div>
+          <button @click="closeDeleteModal" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6 space-y-6">
+          <!-- Warning Message -->
+          <div class="border border-red-400 bg-red-50 text-red-700 rounded px-3 py-2 text-sm">
+            <strong>Warning:</strong> This action cannot be undone. All school data and associated records will be permanently deleted.
+          </div>
+
+          <!-- School Identification -->
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+              <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">{{ schoolToDelete?.name }}</h3>
+              <p class="text-sm text-gray-600">{{ schoolToDelete?.email }}</p>
+              <p class="text-xs text-gray-500 mt-1">Reference: {{ schoolToDelete?.reference }}</p>
+            </div>
+          </div>
+
+          <p class="text-gray-600 text-sm">
+            Are you sure you want to delete <strong>{{ schoolToDelete?.name }}</strong>? This will permanently remove all school data, including students, staff, and transaction records.
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex space-x-3 pt-4">
+            <button @click="closeDeleteModal" class="flex-1 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+              Cancel
+            </button>
+            <button @click="confirmDeleteSchool" class="flex-1 px-4 py-2 text-white bg-red-600 border border-red-600 rounded-md hover:bg-red-700">
+              Delete School
             </button>
           </div>
         </div>
@@ -560,152 +721,321 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useToast } from 'vue-toastification'
+import Vue3Datatable from '@bhplugin/vue3-datatable'
+import '@bhplugin/vue3-datatable/dist/style.css'
+import schoolService from '@/services/schoolService'
+
+const toast = useToast()
 
 // Reactive data
 const searchQuery = ref('')
 const selectedFilter = ref('all')
-const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = ref(10)
+const loading = ref(false)
 
 // Modal state
 const showSchoolModal = ref(false)
 const selectedSchool = ref<any>(null)
 const activeTab = ref('statistics')
+const schoolStats = ref<any>(null)
+const loadingStats = ref(false)
 
 // Suspend modal state
 const showSuspendModal = ref(false)
 const schoolToSuspend = ref<any>(null)
 const suspensionReason = ref('')
 
+// Delete modal state
+const showDeleteModal = ref(false)
+const schoolToDelete = ref<any>(null)
+
 // Schools data
-const schoolsData = ref([
+const schoolsData = ref<any[]>([])
+const paginationMeta = ref({
+  countPerPage: 10,
+  currentPage: 1,
+  totalItems: 0,
+  totalPages: 1
+})
+
+// Computed statistics
+const activeSchoolsCount = computed(() => {
+  return schoolsData.value.filter((school: any) => school.status === 'active').length
+})
+
+const primarySchoolsCount = computed(() => {
+  return schoolsData.value.filter((school: any) => school.type === 'primary').length
+})
+
+const nurserySchoolsCount = computed(() => {
+  return schoolsData.value.filter((school: any) => school.type === 'nursery').length
+})
+
+// Table columns configuration
+const columns = ref([
   {
-    id: 1,
-    name: 'Heritage Grammar School',
-    email: 'admin@heritage.edu',
-    location: '23 Main Road, Lagos',
-    status: 'Active',
-    students: 1250
+    key: 'schoolName',
+    title: 'School Name',
+    field: 'name',
+    sortable: true,
+    filterable: true,
+    visible: true,
   },
   {
-    id: 2,
-    name: 'Greenfield Academy',
-    email: 'info@greenfield.edu',
-    location: '45 Park Avenue, Abuja',
-    status: 'Active',
-    students: 1250
+    key: 'reference',
+    title: 'Reference',
+    field: 'reference',
+    sortable: true,
+    filterable: true,
+    visible: true,
   },
   {
-    id: 3,
-    name: 'St. Michael\'s College',
-    email: 'admin@stmichael.edu',
-    location: '10 Church Street, Port Harcourt',
-    status: 'Active',
-    students: 1250
+    key: 'type',
+    title: 'Type',
+    field: 'type',
+    sortable: true,
+    filterable: true,
+    visible: true,
   },
   {
-    id: 4,
-    name: 'Westpoint International',
-    email: 'contact@westpoint.edu',
-    location: '78 University Road, Kano',
-    status: 'Active',
-    students: 1250
+    key: 'email',
+    title: 'Director Email',
+    field: 'email',
+    sortable: true,
+    filterable: true,
+    visible: true,
   },
   {
-    id: 5,
-    name: 'Horizon Educational Center',
-    email: 'admin@horizon.edu',
-    location: '34 Coastal Road, Calabar',
-    status: 'Active',
-    students: 1250
-  }
+    key: 'directorName',
+    title: 'Director Name',
+    field: 'directorName',
+    sortable: true,
+    filterable: true,
+    visible: true,
+  },
+  {
+    key: 'directorPhone',
+    title: 'Director Phone',
+    field: 'directorPhone',
+    sortable: true,
+    filterable: true,
+    visible: true,
+  },
+  {
+    key: 'location',
+    title: 'Location',
+    field: 'location',
+    sortable: true,
+    filterable: true,
+    visible: true,
+  },
+  {
+    key: 'status',
+    title: 'Status',
+    field: 'status',
+    sortable: true,
+    filterable: true,
+    visible: true,
+  },
+  {
+    key: 'createdAt',
+    title: 'Created Date',
+    field: 'createdAt',
+    sortable: true,
+    filterable: false,
+    visible: true,
+  },
+  {
+    key: 'actions',
+    title: 'Actions',
+    field: 'actions',
+    sortable: false,
+    filterable: false,
+    visible: true,
+  },
 ])
 
-// Computed properties
-const filteredSchools = computed(() => {
-  let filtered = schoolsData.value
-
-  // Apply search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(school => 
-      school.name.toLowerCase().includes(query) || 
-      school.email.toLowerCase().includes(query)
-    )
-  }
-
-  // Apply status filter
-  if (selectedFilter.value !== 'all') {
-    filtered = filtered.filter(school => 
-      school.status.toLowerCase() === selectedFilter.value
-    )
-  }
-
-  return filtered
-})
-
-const totalPages = computed(() => Math.ceil(filteredSchools.value.length / itemsPerPage))
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
-const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, filteredSchools.value.length))
-
-const visiblePages = computed(() => {
-  const pages: (number | string)[] = []
-  const total = totalPages.value
-  
-  if (total <= 7) {
-    for (let i = 1; i <= total; i++) {
-      pages.push(i)
-    }
-  } else {
-    if (currentPage.value <= 4) {
-      for (let i = 1; i <= 5; i++) {
-        pages.push(i)
-      }
-      pages.push('...')
-      pages.push(total)
-    } else if (currentPage.value >= total - 3) {
-      pages.push(1)
-      pages.push('...')
-      for (let i = total - 4; i <= total; i++) {
-        pages.push(i)
-      }
-    } else {
-      pages.push(1)
-      pages.push('...')
-      for (let i = currentPage.value - 1; i <= currentPage.value + 1; i++) {
-        pages.push(i)
-      }
-      pages.push('...')
-      pages.push(total)
-    }
-  }
-  
-  return pages
-})
-
-const paginatedSchools = computed(() => {
-  const start = startIndex.value
-  const end = endIndex.value
-  return filteredSchools.value.slice(start, end)
-})
-
-// Methods
-const goToPage = (page: number) => {
-  if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
+// Format date helper
+const formatDate = (dateString: string) => {
+  if (!dateString) return 'N/A'
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    })
+  } catch {
+    return dateString
   }
 }
 
-const viewSchool = (school: any) => {
-  selectedSchool.value = school
-  showSchoolModal.value = true
+// Format time helper
+const formatTime = (dateString: string) => {
+  if (!dateString) return ''
+  try {
+    const date = new Date(dateString)
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true
+    })
+  } catch {
+    return ''
+  }
+}
+
+// Fetch schools from API
+const fetchSchools = async () => {
+  loading.value = true
+  try {
+    const params: any = {
+      page: 1,
+      limit: 1000, // Fetch all for client-side filtering/sorting
+      sort: 'desc'
+    }
+    
+    if (selectedFilter.value !== 'all') {
+      params.status = selectedFilter.value
+    }
+    
+    const response = await schoolService.getSchools(params)
+    // API: GET /api/v1/admin/schools returns { data: [...], message, ok, page, rows_per_page, total_count }
+    const rawList = Array.isArray(response?.data) ? response.data : (response?.data?.data ?? [])
+    if (rawList.length >= 0) {
+      let mappedSchools = (rawList || []).map((school: any) => ({
+        id: school.id,
+        name: school.name || 'N/A',
+        email: school.director?.email || 'N/A',
+        location: school.address || 'N/A',
+        status: school.status || 'active',
+        students: school.total_students ?? school.students ?? 0,
+        reference: school.reference || 'N/A',
+        type: school.type || 'N/A',
+        directorName: school.director?.name || 'N/A',
+        directorPhone: school.director?.phone || 'N/A',
+        director: school.director,
+        createdAt: school.createdAt,
+        updatedAt: school.updatedAt,
+        logo: school.logo,
+        date_formatted: school.createdAt ? formatDate(school.createdAt) : 'N/A',
+        time_formatted: school.createdAt ? formatTime(school.createdAt) : ''
+      }))
+
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase()
+        mappedSchools = mappedSchools.filter((school: any) =>
+          (school.name && school.name.toLowerCase().includes(query)) ||
+          (school.email && school.email.toLowerCase().includes(query))
+        )
+      }
+
+      schoolsData.value = mappedSchools
+
+      const totalCount = response?.total_count ?? response?.data?.total_count ?? mappedSchools.length
+      const pageNum = response?.page ?? response?.data?.page ?? 1
+      const rowsPerPage = response?.rows_per_page ?? response?.data?.rows_per_page ?? 10
+      paginationMeta.value = {
+        countPerPage: rowsPerPage,
+        currentPage: pageNum,
+        totalItems: totalCount,
+        totalPages: rowsPerPage ? Math.ceil(totalCount / rowsPerPage) || 1 : 1
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching schools:', error)
+    toast.error(error.response?.data?.message || 'Failed to load schools')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Watch for filter changes
+watch([selectedFilter], () => {
+  fetchSchools()
+})
+
+// Watch for search changes (debounced)
+let searchTimeout: any = null
+watch([searchQuery], () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  searchTimeout = setTimeout(() => {
+    fetchSchools()
+  }, 300)
+})
+
+// Row click handler
+const onRowClick = (row: any) => {
+  viewSchool(row)
+}
+
+
+// Methods
+
+const viewSchool = async (school: any) => {
+  try {
+    if (school.id) {
+      const response = await schoolService.getSchoolById(school.id)
+      if (response.data) {
+        selectedSchool.value = {
+          ...school,
+          ...response.data
+        }
+      } else {
+        selectedSchool.value = school
+      }
+    } else {
+      selectedSchool.value = school
+    }
+    showSchoolModal.value = true
+    schoolStats.value = null
+    if (selectedSchool.value?.id) {
+      loadingStats.value = true
+      try {
+        const statsRes = await schoolService.getSchoolStats(selectedSchool.value.id)
+        if (statsRes?.data) schoolStats.value = statsRes.data
+      } catch (e) {
+        console.error('Error fetching school stats:', e)
+      } finally {
+        loadingStats.value = false
+      }
+    }
+  } catch (error: any) {
+    console.error('Error fetching school details:', error)
+    selectedSchool.value = school
+    showSchoolModal.value = true
+  }
 }
 
 const closeSchoolModal = () => {
   showSchoolModal.value = false
   selectedSchool.value = null
+  schoolStats.value = null
   activeTab.value = 'statistics'
+}
+
+// Helpers for stats display
+const formatCurrency = (n: number) => {
+  if (n >= 1e6) return `N${(n / 1e6).toFixed(1)}M`
+  if (n >= 1e3) return `N${(n / 1e3).toFixed(0)}K`
+  return `N${Number(n).toLocaleString()}`
+}
+const formatChange = (v: number | undefined) => {
+  if (v == null) return '—'
+  const s = v >= 0 ? `+${v}%` : `${v}%`
+  return v >= 0 ? `↑${s}` : `↓${s}`
+}
+const trendClass = (trend: string | undefined) => {
+  const t = (trend || '').toLowerCase()
+  if (t === 'up' || t === 'rising') return 'text-green-600'
+  if (t === 'down' || t === 'falling') return 'text-red-600'
+  return 'text-gray-500'
+}
+const changeClass = (v: number | undefined) => {
+  if (v == null) return 'text-gray-500'
+  return v >= 0 ? 'text-green-600' : 'text-red-600'
 }
 
 const suspendSchool = (school: any) => {
@@ -719,22 +1049,108 @@ const closeSuspendModal = () => {
   suspensionReason.value = ''
 }
 
-const confirmSuspendSchool = () => {
-  if (suspensionReason.value) {
-    console.log('Suspending school:', schoolToSuspend.value.name, 'Reason:', suspensionReason.value)
-    // Implement actual suspension logic
+const confirmSuspendSchool = async () => {
+  if (!suspensionReason.value.trim()) {
+    toast.warning('Please provide a suspension reason.')
+    return
+  }
+
+  if (!schoolToSuspend.value?.id) {
+    toast.error('Invalid school data')
+    return
+  }
+
+  try {
+    loading.value = true
+    await schoolService.updateSchool({
+      id: schoolToSuspend.value.id,
+      status: 'suspended'
+    })
+    toast.success('School suspended successfully')
+    await fetchSchools()
     closeSuspendModal()
-  } else {
-    alert('Please provide a suspension reason.')
+  } catch (error: any) {
+    console.error('Error suspending school:', error)
+    toast.error(error.response?.data?.message || 'Failed to suspend school')
+  } finally {
+    loading.value = false
+  }
+}
+
+const updateSchool = async () => {
+  if (!selectedSchool.value?.id) {
+    toast.warning('No school selected')
+    return
+  }
+  
+  try {
+    const updateData: any = {
+      id: selectedSchool.value.id
+    }
+    
+    if (selectedSchool.value.name) updateData.name = selectedSchool.value.name
+    if (selectedSchool.value.email) updateData.email = selectedSchool.value.email
+    if (selectedSchool.value.phone) updateData.phone = selectedSchool.value.phone
+    if (selectedSchool.value.address || selectedSchool.value.location) {
+      updateData.address = selectedSchool.value.address || selectedSchool.value.location
+    }
+    if (selectedSchool.value.type) updateData.type = selectedSchool.value.type
+    if (selectedSchool.value.status) updateData.status = selectedSchool.value.status
+    if (selectedSchool.value.director_name) updateData.director_name = selectedSchool.value.director_name
+    
+    await schoolService.updateSchool(updateData)
+    toast.success('School updated successfully')
+    await fetchSchools()
+    closeSchoolModal()
+  } catch (error: any) {
+    console.error('Error updating school:', error)
+    toast.error(error.response?.data?.message || 'Failed to update school')
   }
 }
 
 const deleteSchool = (school: any) => {
-  console.log('Deleting school:', school.name)
-  // Implement delete functionality
+  if (!school) {
+    toast.error('Invalid school data')
+    return
+  }
+  schoolToDelete.value = school
+  showDeleteModal.value = true
 }
 
-const getStatusClass = (status: string) => {
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  schoolToDelete.value = null
+}
+
+const confirmDeleteSchool = async () => {
+  if (!schoolToDelete.value?.id) {
+    toast.error('Invalid school data')
+    return
+  }
+
+  try {
+    loading.value = true
+    // Use update endpoint to set status to 'deleted' or 'inactive'
+    // If there's a delete endpoint, use that instead
+    await schoolService.updateSchool({
+      id: schoolToDelete.value.id,
+      status: 'deleted'
+    })
+    toast.success('School deleted successfully')
+    await fetchSchools()
+    closeDeleteModal()
+  } catch (error: any) {
+    console.error('Error deleting school:', error)
+    toast.error(error.response?.data?.message || 'Failed to delete school')
+  } finally {
+    loading.value = false
+  }
+}
+
+const getStatusClass = (status: string | undefined) => {
+  if (!status) {
+    return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  }
   switch (status.toLowerCase()) {
     case 'active':
       return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
@@ -747,11 +1163,126 @@ const getStatusClass = (status: string) => {
   }
 }
 
+const getTypeClass = (type: string | undefined) => {
+  if (!type) {
+    return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  }
+  switch (type.toLowerCase()) {
+    case 'primary':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+    case 'nursery':
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+  }
+}
+
 // Lifecycle
 onMounted(() => {
-  console.log('School Management page mounted')
+  fetchSchools()
 })
 </script>
 
+<style scoped>
+/* Custom styles for the datatable */
+:deep(.bh-table-compact) {
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
+:deep(.bh-table-compact thead th) {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f9fafb;
+}
+
+.dark :deep(.bh-table-compact thead th) {
+  background-color: #374151;
+}
+
+:deep(.bh-table-compact tbody tr:hover) {
+  cursor: pointer;
+}
+
+/* Search input styling */
+:deep(.bh-datatable-search) {
+  margin-bottom: 1rem;
+}
+
+:deep(.bh-datatable-search input) {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+:deep(.bh-datatable-search input:focus) {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 2px rgba(147, 51, 234, 0.1);
+}
+
+.dark :deep(.bh-datatable-search input) {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+/* Pagination styling */
+:deep(.bh-datatable-pagination) {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+:deep(.bh-datatable-pagination select) {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+}
+
+.dark :deep(.bh-datatable-pagination select) {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+:deep(.bh-datatable-pagination button) {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+  color: #374151;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+}
+
+:deep(.bh-datatable-pagination button:hover:not(:disabled)) {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+:deep(.bh-datatable-pagination button:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.dark :deep(.bh-datatable-pagination button) {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+.dark :deep(.bh-datatable-pagination button:hover:not(:disabled)) {
+  background-color: #4b5563;
+}
+</style>
 

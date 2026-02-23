@@ -66,7 +66,13 @@
         <p class="text-sm text-[#6b7280]">View and manage your recent elections</p>
       </div>
       <div class="rounded-3xl bg-white shadow-[0_20px_40px_rgba(15,23,42,0.05)] overflow-hidden">
-        <div class="divide-y divide-[#e2e8f0]">
+        <div v-if="loadingElections" class="p-8 text-center">
+          <p class="text-sm text-[#94a3b8]">Loading recent elections...</p>
+        </div>
+        <div v-else-if="recentElections.length === 0" class="p-8 text-center">
+          <p class="text-sm text-[#94a3b8]">No recent elections found</p>
+        </div>
+        <div v-else class="divide-y divide-[#e2e8f0]">
           <div
             v-for="election in recentElections"
             :key="election.id"
@@ -84,7 +90,14 @@
                 <p class="text-sm text-[#6b7280]">{{ election.details }}</p>
               </div>
               <span
-                class="inline-flex items-center rounded-full border border-[#e2e8f0] bg-[#f1f5f9] px-3 py-1 text-xs font-semibold text-[#64748b]"
+                class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold"
+                :class="
+                  election.statusRaw === 'active' || election.statusRaw === 'live'
+                    ? 'border-[#0ea5e9] bg-[#e0f2fe] text-[#0ea5e9]'
+                    : election.statusRaw === 'completed' || election.statusRaw === 'ended'
+                    ? 'border-[#16a34a] bg-[#dcfce7] text-[#16a34a]'
+                    : 'border-[#e2e8f0] bg-[#f1f5f9] text-[#64748b]'
+                "
               >
                 {{ election.status }}
               </span>
@@ -102,9 +115,10 @@
       </div>
     </section>
 
-    <!-- Create Election Modal -->
+    <!-- Create Election Modal (pre-filled when opened via Use Template) -->
     <CreateElectionModal
       v-if="showCreateElectionModal"
+      :initial-template="templateToApply"
       @close="closeCreateElectionModal"
       @next="handleNextStep"
     />
@@ -120,7 +134,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, onMounted, markRaw } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconPlus from '@/components/icon/icon-plus.vue';
 import IconUsersGroup from '@/components/icon/icon-users-group.vue';
 import IconCircleCheck from '@/components/icon/icon-circle-check.vue';
@@ -129,6 +144,15 @@ import IconClock from '@/components/icon/icon-clock.vue';
 import IconEye from '@/components/icon/icon-eye.vue';
 import CreateElectionModal from './components/CreateElectionModal.vue';
 import ElectionDetailsModal from './components/ElectionDetailsModal.vue';
+import electionService from '@/services/electionService';
+
+const toast = useToast();
+
+// Mark icons as raw
+const IconUsersGroupRaw = markRaw(IconUsersGroup);
+const IconCircleCheckRaw = markRaw(IconCircleCheck);
+const IconPlayCircleRaw = markRaw(IconPlayCircle);
+const IconClockRaw = markRaw(IconClock);
 
 const showCreateElectionModal = ref(false);
 const electionDetailsModal = ref<{
@@ -184,113 +208,147 @@ const templates = [
   },
 ];
 
-const recentElections = [
-  {
-    id: 1,
-    title: 'Student Union President 2024',
-    details: '2847 eligible voters • 53% turnout',
-    status: 'ongoing',
-    icon: IconPlayCircle,
-    iconBg: '#e0f2fe',
-    iconColor: '#0ea5e9',
-  },
-  {
-    id: 2,
-    title: 'Class Representative Elections',
-    details: '1523 eligible voters • 32% turnout',
-    status: 'ongoing',
-    icon: IconPlayCircle,
-    iconBg: '#e0f2fe',
-    iconColor: '#0ea5e9',
-  },
-  {
-    id: 3,
-    title: 'Graduate Council',
-    details: '892 eligible voters • 0% turnout',
-    status: 'upcoming',
-    icon: IconClock,
-    iconBg: '#f1f5f9',
-    iconColor: '#64748b',
-  },
-  {
-    id: 4,
-    title: 'Sports Committee',
-    details: '456 eligible voters • 78% turnout',
-    status: 'completed',
-    icon: IconCircleCheck,
-    iconBg: '#dcfce7',
-    iconColor: '#16a34a',
-  },
-];
+// Recent elections from GET /api/v1/election/admin/elections?page=1&limit=10
+const loadingElections = ref(false);
+const recentElections = ref<Array<{
+  id: string;
+  title: string;
+  details: string;
+  status: string;
+  statusRaw: string;
+  icon: any;
+  iconBg: string;
+  iconColor: string;
+  originalData?: any;
+}>>([]);
+
+const getStatusIcon = (status: string) => {
+  const s = (status || '').toLowerCase();
+  if (s === 'active' || s === 'ongoing' || s === 'live') return { icon: IconPlayCircleRaw, iconBg: '#e0f2fe', iconColor: '#0ea5e9' };
+  if (s === 'completed' || s === 'ended') return { icon: IconCircleCheckRaw, iconBg: '#dcfce7', iconColor: '#16a34a' };
+  if (s === 'upcoming' || s === 'pending') return { icon: IconClockRaw, iconBg: '#f1f5f9', iconColor: '#64748b' };
+  return { icon: IconClockRaw, iconBg: '#fef3c7', iconColor: '#f59e0b' }; // draft
+};
+
+const loadRecentElections = async () => {
+  loadingElections.value = true;
+  try {
+    const response = await electionService.getAllElectionsAdmin({ page: 1, limit: 10 });
+    const rawList = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    const stats = (e: any) => e?.stats || {};
+    recentElections.value = (rawList || []).map((e: any) => {
+      const st = stats(e);
+      const participants = st.total_participants ?? e.eligible_voters ?? e.total_voters ?? 0;
+      const turnout = st.voter_turnout_percent ?? 0;
+      const statusRaw = e.status || 'draft';
+      const statusDisplay = statusRaw === 'active' ? 'ongoing' : statusRaw === 'pending' ? 'upcoming' : statusRaw;
+      const { icon, iconBg, iconColor } = getStatusIcon(statusRaw);
+      return {
+        id: e.id || e._id,
+        title: e.title || e.name || 'Untitled Election',
+        details: `${Number(participants).toLocaleString()} eligible voters • ${turnout}% turnout`,
+        status: statusDisplay,
+        statusRaw,
+        icon,
+        iconBg,
+        iconColor,
+        originalData: e,
+      };
+    });
+  } catch (error: any) {
+    console.error('Error loading recent elections:', error);
+    toast.error('Failed to load recent elections');
+    recentElections.value = [];
+  } finally {
+    loadingElections.value = false;
+  }
+};
+
+const templateToApply = ref<typeof templates[0] | null>(null);
 
 const openCreateElectionModal = () => {
+  templateToApply.value = null;
   showCreateElectionModal.value = true;
 };
 
 const closeCreateElectionModal = () => {
   showCreateElectionModal.value = false;
+  templateToApply.value = null;
 };
 
-const handleNextStep = (formData: unknown) => {
-  console.log('Form data:', formData);
-  // Handle form submission here when all steps are completed
-  closeCreateElectionModal();
+const handleNextStep = async (formData: unknown) => {
+  try {
+    const data = formData as any;
+    if (data) {
+      await electionService.createElection(data);
+      toast.success('Election created successfully');
+      await loadRecentElections(); // Reload recent elections
+      closeCreateElectionModal();
+    }
+  } catch (error: any) {
+    console.error('Error creating election:', error);
+    toast.error(error?.response?.data?.message || 'Failed to create election');
+  }
 };
 
 const useTemplate = (template: typeof templates[0]) => {
-  console.log('Use template:', template);
-  // Handle template usage - could open the create election modal with pre-filled data
-  openCreateElectionModal();
+  templateToApply.value = template;
+  showCreateElectionModal.value = true;
 };
 
-const viewElectionDetails = (election: typeof recentElections[0]) => {
-  // Parse the details string to extract eligible voters and turnout
-  const detailsMatch = election.details.match(/(\d+)\s+eligible voters.*?(\d+)%/);
-  const eligibleVoters = detailsMatch ? detailsMatch[1] : '0';
-  const turnoutPercent = detailsMatch ? detailsMatch[2] : '0';
-  
-  // Calculate current votes based on turnout percentage
-  const totalVoters = parseInt(eligibleVoters);
-  const currentVotes = Math.round((totalVoters * parseInt(turnoutPercent)) / 100);
+const viewElectionDetails = async (election: any) => {
+  try {
+    // Fetch full election details if we have the ID
+    let electionData = election.originalData || election;
+    
+    if (election.id) {
+      try {
+        const response = await electionService.getElectionDetailsAdmin(election.id);
+        // API returns { data: { id, title, ... }, success: true }
+        if (response?.data) {
+          electionData = response.data;
+        }
+      } catch (error) {
+        console.error('Error fetching election details:', error);
+        // Use existing data if fetch fails
+      }
+    }
+    
+    const stats = electionData?.stats || {};
+    const eligibleVoters = stats.total_participants ?? election.eligibleVoters ?? electionData?.eligible_voters ?? electionData?.total_voters ?? 0;
+    const votes = stats.total_votes ?? election.votes ?? electionData?.total_votes ?? electionData?.votes ?? 0;
+    const positions = election.positions ?? electionData?.positions?.length ?? electionData?.positions_count ?? 0;
+    
+    // Map status to proper format
+    let status = election.status || electionData.status || 'Draft';
+    if (status === 'active' || status === 'live') {
+      status = 'Live';
+    } else if (status === 'completed' || status === 'ended') {
+      status = 'Completed';
+    } else if (status === 'pending' || status === 'upcoming') {
+      status = 'Upcoming';
+    } else if (status === 'draft') {
+      status = 'Draft';
+    }
 
-  // Set default dates based on status - using December 2024 to match the design
-  let startDate = '';
-  let endDate = '';
-  
-  if (election.status === 'ongoing') {
-    startDate = new Date('2024-12-01').toISOString(); // Dec 1, 2024
-    endDate = new Date('2024-12-03').toISOString(); // Dec 3, 2024
-  } else if (election.status === 'upcoming') {
-    startDate = new Date('2024-12-15').toISOString();
-    endDate = new Date('2024-12-18').toISOString();
-  } else {
-    startDate = new Date('2024-11-01').toISOString();
-    endDate = new Date('2024-11-03').toISOString();
+    electionDetailsModal.value = {
+      open: true,
+      data: {
+        title: election.title || electionData.title || 'Untitled Election',
+        description: election.description || electionData.description || '',
+        startDate: election.startDate || electionData.start_date || electionData.startDate || '',
+        endDate: election.endDate || electionData.end_date || electionData.endDate || '',
+        status,
+        positions: positions.toString(),
+        eligibleVoters: `${eligibleVoters.toLocaleString()} eligible voters`,
+        votes: `${votes.toLocaleString()} votes`,
+        originalData: electionData,
+      },
+    };
+  } catch (error: any) {
+    console.error('Error viewing election details:', error);
+    toast.error('Failed to load election details');
   }
-
-  // Map status to proper format
-  let status = election.status;
-  if (status === 'ongoing') {
-    status = 'Live';
-  } else if (status === 'completed') {
-    status = 'Completed';
-  } else if (status === 'upcoming') {
-    status = 'Upcoming';
-  }
-
-  electionDetailsModal.value = {
-    open: true,
-    data: {
-      title: election.title,
-      description: 'Annual election for Student Union leadership positions',
-      startDate,
-      endDate,
-      status,
-      positions: '3',
-      eligibleVoters: `${eligibleVoters} eligible voters`,
-      votes: `${currentVotes} votes`,
-    },
-  };
 };
 
 const closeElectionDetailsModal = () => {
@@ -308,5 +366,10 @@ const handleEditElection = () => {
   // TODO: Open edit election modal with the election data
   console.log('Edit election:', electionData);
 };
+
+// Load recent elections on mount
+onMounted(() => {
+  loadRecentElections();
+});
 </script>
 

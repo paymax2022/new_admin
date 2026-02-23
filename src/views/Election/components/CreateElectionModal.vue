@@ -444,13 +444,27 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import { useToast } from 'vue-toastification';
 import IconX from '@/components/icon/icon-x.vue';
 import IconCalendar from '@/components/icon/icon-calendar.vue';
 import IconPlus from '@/components/icon/icon-plus.vue';
 import IconUserCircle from '@/components/icon/icon-user-circle.vue';
 import electionService from '@/services/electionService';
+
+const props = withDefaults(
+  defineProps<{
+    initialTemplate?: {
+      id: number;
+      title: string;
+      description: string;
+      positions: string[];
+      duration: string;
+      type: string;
+    } | null;
+  }>(),
+  { initialTemplate: null }
+);
 
 const toast = useToast();
 const emit = defineEmits(['close', 'next']);
@@ -492,6 +506,45 @@ const eligibilityRules = ref({
   adminRequiresApproval: true,
   candidateRequiresApproval: true,
 });
+
+// Pre-fill form from Quick Start Template (e.g. "3 days" → start/end dates)
+function getDefaultDatesFromDuration(durationStr: string): { startDate: string; endDate: string } {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const start = new Date();
+  start.setHours(8, 0, 0, 0);
+  const days = parseInt(String(durationStr).replace(/\D/g, '') || '3', 10) || 3;
+  const end = new Date(start);
+  end.setDate(end.getDate() + days);
+  end.setHours(17, 0, 0, 0);
+  return {
+    startDate: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(start.getDate())}T${pad(start.getHours())}:${pad(start.getMinutes())}`,
+    endDate: `${end.getFullYear()}-${pad(end.getMonth() + 1)}-${pad(end.getDate())}T${pad(end.getHours())}:${pad(end.getMinutes())}`,
+  };
+}
+
+function applyTemplate(template: NonNullable<typeof props.initialTemplate>) {
+  formData.value.title = template.title || formData.value.title;
+  formData.value.description = template.description || formData.value.description;
+  const { startDate, endDate } = getDefaultDatesFromDuration(template.duration || '3 days');
+  formData.value.startDate = startDate;
+  formData.value.endDate = endDate;
+  positions.value = (template.positions && template.positions.length > 0)
+    ? template.positions.map((name) => ({
+        title: name,
+        description: '',
+        maxCandidates: name.toLowerCase().includes('representative') ? '1' : '5',
+      }))
+    : [{ title: '', description: '', maxCandidates: '' }];
+  currentStep.value = 1;
+}
+
+watch(
+  () => props.initialTemplate,
+  (template) => {
+    if (template) applyTemplate(template);
+  },
+  { immediate: true }
+);
 
 // Load institutions based on type
 const onInstitutionTypeChange = async () => {

@@ -1,10 +1,22 @@
 <template>
   <div class="min-h-screen bg-[#f8fafc] p-6 space-y-6">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-4">
       <div>
         <p class="text-sm font-semibold uppercase tracking-[0.2em] text-[#9ca3af]">Manual Registration</p>
         <h1 class="text-3xl font-semibold text-[#111827]">Manual Registration</h1>
         <p class="text-sm text-[#6b7280]">Manually register voters and candidates in the system</p>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-[#94a3b8] mb-2">Election</label>
+        <select
+          v-model="selectedElectionId"
+          class="w-full max-w-md rounded-full border border-[#e2e8f0] bg-white px-4 py-2.5 text-sm text-[#111827] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
+          :disabled="loadingElections"
+        >
+          <option value="">Select election</option>
+          <option v-for="e in elections" :key="e.id" :value="e.id">{{ e.title }}</option>
+        </select>
+        <p v-if="!selectedElectionId && (activeTab === 'voter' || activeTab === 'candidate')" class="mt-1 text-xs text-[#94a3b8]">Select an election to register voters or candidates.</p>
       </div>
     </div>
 
@@ -36,6 +48,26 @@
         </div>
         <form class="space-y-6" @submit.prevent="handleRegister">
           <div class="grid gap-5 md:grid-cols-2">
+            <FieldBlock label="Full Name">
+              <input
+                v-model="voterForm.fullName"
+                type="text"
+                placeholder="Enter full name"
+                class="field-input"
+                required
+              />
+            </FieldBlock>
+
+            <FieldBlock label="Email">
+              <input
+                v-model="voterForm.email"
+                type="email"
+                placeholder="Enter email"
+                class="field-input"
+                required
+              />
+            </FieldBlock>
+
             <FieldBlock label="School Category">
               <select v-model="voterForm.category" class="field-select" required>
                 <option value="" disabled>Select</option>
@@ -89,15 +121,34 @@
                 <option v-for="program in programs" :key="program">{{ program }}</option>
               </select>
             </FieldBlock>
+
+            <FieldBlock label="Phone">
+              <input
+                v-model="voterForm.phone"
+                type="tel"
+                placeholder="Enter phone (optional)"
+                class="field-input"
+              />
+            </FieldBlock>
+
+            <FieldBlock label="Reason / Notes">
+              <input
+                v-model="voterForm.reason"
+                type="text"
+                placeholder="Optional notes"
+                class="field-input"
+              />
+            </FieldBlock>
           </div>
 
           <div class="flex justify-end">
             <button
               type="submit"
-              class="inline-flex items-center gap-2 rounded-full bg-[#111827] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f172a]"
+              class="inline-flex items-center gap-2 rounded-full bg-[#111827] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f172a] disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="submittingVoter || !selectedElectionId"
             >
               <IconPlus class="h-4 w-4" />
-              Register Voter
+              {{ submittingVoter ? 'Registering…' : 'Register Voter' }}
             </button>
           </div>
         </form>
@@ -115,7 +166,7 @@
         </div>
         <form class="space-y-6" @submit.prevent="handleCandidateRegister">
           <div class="grid gap-5 md:grid-cols-2">
-            <FieldBlock label="Name">
+            <FieldBlock label="Full Name">
               <input v-model="candidateForm.name" type="text" placeholder="Enter full name" class="field-input" required />
             </FieldBlock>
             <FieldBlock label="Registration/Matriculation Number">
@@ -126,6 +177,12 @@
                 class="field-input"
                 required
               />
+            </FieldBlock>
+            <FieldBlock label="Email">
+              <input v-model="candidateForm.email" type="email" placeholder="Enter email" class="field-input" required />
+            </FieldBlock>
+            <FieldBlock label="Phone">
+              <input v-model="candidateForm.phone" type="tel" placeholder="Enter phone (optional)" class="field-input" />
             </FieldBlock>
             <FieldBlock label="Department">
               <select v-model="candidateForm.department" class="field-select" required>
@@ -226,10 +283,11 @@
           <div class="flex justify-end">
             <button
               type="submit"
-              class="inline-flex items-center gap-2 rounded-full bg-[#111827] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f172a]"
+              class="inline-flex items-center gap-2 rounded-full bg-[#111827] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0f172a] disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="submittingCandidate || !selectedElectionId"
             >
               <IconPlus class="h-4 w-4" />
-              Register Candidate
+              {{ submittingCandidate ? 'Registering…' : 'Register Candidate' }}
             </button>
           </div>
         </form>
@@ -239,16 +297,52 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, ref, defineComponent, h } from 'vue';
+import { reactive, ref, defineComponent, h, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import IconUserPlus from '@/components/icon/icon-user-plus.vue';
 import IconUsers from '@/components/icon/icon-users.vue';
 import IconPlus from '@/components/icon/icon-plus.vue';
+import electionService from '@/services/electionService';
 
 defineOptions({ name: 'ManualRegistration' });
+const toast = useToast();
 
 const activeTab = ref<'voter' | 'candidate'>('voter');
+const elections = ref<Array<{ id: string; title: string }>>([]);
+const loadingElections = ref(false);
+const selectedElectionId = ref('');
+const submittingVoter = ref(false);
+const submittingCandidate = ref(false);
+
+const isValidObjectId = (id: unknown): id is string => {
+  if (typeof id !== 'string' || !id) return false;
+  return /^[a-fA-F0-9]{24}$/.test(id.trim());
+};
+
+const loadElections = async () => {
+  loadingElections.value = true;
+  try {
+    const response = await electionService.getAllElectionsAdmin({ limit: 50 });
+    const list = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    const mapped = (list || []).map((e: any) => ({
+      id: String(e.id ?? e._id ?? '').trim(),
+      title: e.title || e.name || 'Untitled Election',
+    }));
+    elections.value = mapped.filter((e) => isValidObjectId(e.id));
+    if (elections.value.length > 0 && !selectedElectionId.value) selectedElectionId.value = elections.value[0].id;
+  } catch (e: any) {
+    toast.error('Failed to load elections');
+    console.error(e);
+  } finally {
+    loadingElections.value = false;
+  }
+};
+
+onMounted(() => loadElections());
 
 const voterForm = reactive({
+  fullName: '',
+  email: '',
   category: '',
   schoolName: '',
   matricNumber: '',
@@ -256,6 +350,8 @@ const voterForm = reactive({
   department: '',
   faculty: '',
   program: '',
+  phone: '',
+  reason: '',
 });
 
 const schoolCategories = ['Undergraduate', 'Postgraduate', 'Professional'];
@@ -267,6 +363,8 @@ const positions = ['President', 'Vice President', 'Secretary', 'Treasurer'];
 
 const candidateForm = reactive({
   name: '',
+  email: '',
+  phone: '',
   registrationNumber: '',
   department: '',
   faculty: '',
@@ -277,12 +375,78 @@ const candidateForm = reactive({
   leadershipExperiences: [''],
 });
 
-const handleRegister = () => {
-  console.table(voterForm);
+const handleRegister = async () => {
+  const electionId = selectedElectionId.value;
+  if (!isValidObjectId(electionId)) {
+    toast.error('Please select an election');
+    return;
+  }
+  submittingVoter.value = true;
+  try {
+    await electionService.manualVoterRegistration(electionId, {
+      identifier: voterForm.matricNumber,
+      email: voterForm.email,
+      full_name: voterForm.fullName,
+      phone: voterForm.phone || '',
+      reason: voterForm.reason || '',
+    });
+    toast.success('Voter registered successfully');
+    Object.assign(voterForm, {
+      fullName: '',
+      email: '',
+      category: '',
+      schoolName: '',
+      matricNumber: '',
+      gender: '',
+      department: '',
+      faculty: '',
+      program: '',
+      phone: '',
+      reason: '',
+    });
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Failed to register voter');
+    console.error(e);
+  } finally {
+    submittingVoter.value = false;
+  }
 };
 
-const handleCandidateRegister = () => {
-  console.table(candidateForm);
+const handleCandidateRegister = async () => {
+  const electionId = selectedElectionId.value;
+  if (!isValidObjectId(electionId)) {
+    toast.error('Please select an election');
+    return;
+  }
+  submittingCandidate.value = true;
+  try {
+    await electionService.manualCandidateRegistration(electionId, {
+      identifier: candidateForm.registrationNumber,
+      email: candidateForm.email,
+      full_name: candidateForm.name,
+      phone: candidateForm.phone || '',
+      reason: candidateForm.bio || '',
+    });
+    toast.success('Candidate registered successfully');
+    Object.assign(candidateForm, {
+      name: '',
+      email: '',
+      phone: '',
+      registrationNumber: '',
+      department: '',
+      faculty: '',
+      position: '',
+      gpa: '',
+      bio: '',
+      manifestoPoints: [''],
+      leadershipExperiences: [''],
+    });
+  } catch (e: any) {
+    toast.error(e?.response?.data?.message || 'Failed to register candidate');
+    console.error(e);
+  } finally {
+    submittingCandidate.value = false;
+  }
 };
 
 const addManifestoPoint = () => {

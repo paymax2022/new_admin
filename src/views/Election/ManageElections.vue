@@ -61,8 +61,18 @@
 
     <!-- Elections List -->
     <section class="space-y-4">
+      <div v-if="loading" class="rounded-3xl bg-white p-12 shadow-[0_20px_40px_rgba(15,23,42,0.05)] text-center text-[#64748b]">
+        Loading elections…
+      </div>
+      <div
+        v-else-if="!filteredElections.length"
+        class="rounded-3xl bg-white p-12 shadow-[0_20px_40px_rgba(15,23,42,0.05)] text-center text-[#64748b]"
+      >
+        No elections found. Create one to get started.
+      </div>
       <div
         v-for="election in filteredElections"
+        v-else
         :key="election.id"
         class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)]"
       >
@@ -346,19 +356,23 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' });
 };
 
-// Load elections from API
+// Load elections from API (GET /api/v1/election/admin/elections?limit=100)
 const loadElections = async () => {
   loading.value = true;
   try {
     const response = await electionService.getAllElectionsAdmin({ limit: 100 });
-    if (response?.data && Array.isArray(response.data)) {
-      elections.value = response.data.map((election: any) => {
+    // API returns { data: { elections: [...], pagination: {...} } }
+    const rawList = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    if (rawList.length >= 0) {
+      elections.value = rawList.map((election: any) => {
         const startDate = formatDate(election.start_date || election.startDate || '');
         const endDate = formatDate(election.end_date || election.endDate || '');
-        const votes = election.total_votes || election.votes || 0;
-        const eligibleVoters = election.eligible_voters || election.total_voters || 0;
-        const turnout = eligibleVoters > 0 ? Math.round((votes / eligibleVoters) * 100) : 0;
-        
+        const stats = election.stats || {};
+        const votes = stats.total_votes ?? election.total_votes ?? election.votes ?? 0;
+        const eligibleVoters = stats.total_participants ?? election.eligible_voters ?? election.total_voters ?? 0;
+        const turnoutPercent = stats.voter_turnout_percent ?? (eligibleVoters > 0 ? Math.round((votes / eligibleVoters) * 100) : 0);
+        const candidatesCount = stats.total_candidates ?? election.candidates?.length ?? election.candidates_count ?? 0;
+
         return {
           id: election.id || election._id,
           title: election.title || election.name || 'Untitled Election',
@@ -368,16 +382,16 @@ const loadElections = async () => {
                   election.status === 'completed' ? 'completed' : 
                   election.status === 'draft' ? 'draft' : election.status || 'draft',
           dateRange: startDate && endDate ? `${startDate} - ${endDate}` : 'N/A',
-          voters: `${eligibleVoters.toLocaleString()} voters`,
+          voters: `${Number(eligibleVoters).toLocaleString()} voters`,
           positions: `${election.positions?.length || election.positions_count || 0} positions`,
-          votesCast: votes.toLocaleString(),
-          turnout: `${turnout}%`,
-          candidates: (election.candidates?.length || election.candidates_count || 0).toString(),
+          votesCast: Number(votes).toLocaleString(),
+          turnout: `${turnoutPercent}%`,
+          candidates: String(candidatesCount),
           originalData: election, // Keep original for API calls
         };
       });
 
-      // Update statistics
+      // Update statistics from loaded list
       statistics.value[0].value = elections.value.filter(e => e.status === 'ongoing').length.toString();
       statistics.value[1].value = elections.value.filter(e => e.status === 'upcoming').length.toString();
       statistics.value[2].value = elections.value.filter(e => e.status === 'completed').length.toString();

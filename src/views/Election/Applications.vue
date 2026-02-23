@@ -118,6 +118,7 @@
       v-if="reviewModal.open && reviewModal.application"
       :application="reviewModal.application"
       @close="closeReviewModal"
+      @review="handleReview"
     />
   </div>
 </template>
@@ -196,6 +197,12 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
+/** MongoDB ObjectID is 24 hex characters. Backend rejects invalid IDs. */
+const isValidObjectId = (id: unknown): id is string => {
+  if (typeof id !== 'string' || !id) return false;
+  return /^[a-fA-F0-9]{24}$/.test(id.trim());
+};
+
 const filteredApplications = computed(() => {
   let filtered = applications.value;
   
@@ -214,17 +221,20 @@ const filteredApplications = computed(() => {
 const loadElections = async () => {
   try {
     const response = await electionService.getAllElectionsAdmin({ limit: 50 });
-    if (response?.data && Array.isArray(response.data)) {
-      elections.value = response.data.map((e: any) => ({
-        id: e.id || e._id,
-        title: e.title || e.name || 'Untitled Election',
-      }));
-      
-      // Auto-select first election if available
-      if (elections.value.length > 0 && !selectedElectionId.value) {
-        selectedElectionId.value = elections.value[0].id;
-        await loadApplications();
-      }
+    const list = response?.data?.elections ?? (Array.isArray(response?.data) ? response.data : []);
+    const mapped = (list || []).map((e: any) => {
+      const rawId = e.id ?? e._id;
+      const id = rawId != null ? String(rawId).trim() : '';
+      return { id, title: e.title || e.name || 'Untitled Election' };
+    });
+    elections.value = mapped.filter((e) => isValidObjectId(e.id));
+    if (elections.value.length > 0 && !selectedElectionId.value) {
+      selectedElectionId.value = elections.value[0].id;
+      await loadApplications();
+    } else if (!isValidObjectId(selectedElectionId.value)) {
+      selectedElectionId.value = '';
+      applications.value = [];
+      updateStats();
     }
   } catch (error: any) {
     console.error('Error loading elections:', error);
@@ -233,22 +243,22 @@ const loadElections = async () => {
 };
 
 const loadApplications = async () => {
-  if (!selectedElectionId.value) {
+  const electionId = selectedElectionId.value;
+  if (!electionId || !isValidObjectId(electionId)) {
     applications.value = [];
     updateStats();
+    if (electionId && !isValidObjectId(electionId)) {
+      toast.error('Invalid election ID. Please select an election from the list.');
+    }
     return;
   }
-  
   loading.value = true;
   try {
-    const params: any = { limit: 100 };
-    if (statusFilter.value) {
-      params.status = statusFilter.value;
-    }
-    
-    const response = await electionService.getApplicationsByElection(selectedElectionId.value, params);
-    const apps = Array.isArray(response?.data) ? response.data : [];
-    
+    const params: any = { page: 1, limit: 10 };
+    if (statusFilter.value) params.status = statusFilter.value;
+    const response = await electionService.getApplicationsByElection(electionId, params);
+    const raw = response?.data;
+    const apps = Array.isArray(raw) ? raw : (raw?.applications ?? []);
     applications.value = apps.map((app: any) => ({
       id: app.id || app._id || app.application_id,
       candidateId: app.candidate_id || app.participant_id || app.identifier || 'N/A',
@@ -301,13 +311,61 @@ const reviewModal = ref<{ open: boolean; application: any | null }>({
   application: null,
 });
 
-const openReviewModal = (application: any) => {
+const openReviewModal = async (application: any) => {
   reviewModal.value = { open: true, application };
+  const electionId = selectedElectionId.value;
+  const appId = application.id ?? application._id;
+  if (isValidObjectId(electionId) && isValidObjectId(appId)) {
+    try {
+      const res = await electionService.getApplicationDetails(electionId, appId);
+      if (res?.data) {
+        const d = res.data;
+        reviewModal.value = {
+          open: true,
+          application: {
+            ...reviewModal.value.application,
+            candidateId: d.candidate_id ?? d.candidateId ?? application.candidateId,
+            name: d.candidate_name ?? d.full_name ?? d.name ?? application.name,
+            email: d.email ?? d.candidate_email ?? application.email,
+            phone: d.phone ?? d.phone_number ?? application.phone,
+            district: d.district ?? d.constituency ?? application.district,
+            education: d.education ?? d.qualifications ?? application.education,
+            experience: d.experience ?? d.work_experience ?? application.experience,
+            statement: d.manifesto ?? d.statement ?? d.bio ?? application.statement,
+            documents: d.documents ?? d.attachments ?? application.documents ?? [],
+          },
+        };
+      }
+    } catch (e) {
+      console.error('Failed to load application details:', e);
+    }
+  }
 };
 
 const closeReviewModal = () => {
   reviewModal.value = { open: false, application: null };
-  loadApplications(); // Refresh after review
+  loadApplications();
+};
+
+const handleReview = async (payload: { status: 'approved' | 'rejected' | 'in_review'; admin_notes?: string }) => {
+  const app = reviewModal.value.application;
+  const electionId = selectedElectionId.value;
+  const appId = app?.id ?? app?._id;
+  if (!isValidObjectId(electionId) || !isValidObjectId(appId)) {
+    toast.error('Invalid election or application ID');
+    return;
+  }
+  try {
+    await electionService.reviewApplication(electionId, appId, {
+      status: payload.status,
+      admin_notes: payload.admin_notes,
+    });
+    toast.success(payload.status === 'approved' ? 'Application approved' : payload.status === 'rejected' ? 'Application rejected' : 'Marked under review');
+    closeReviewModal();
+  } catch (error: any) {
+    toast.error(error?.response?.data?.message || 'Review failed');
+    console.error(error);
+  }
 };
 
 onMounted(() => {

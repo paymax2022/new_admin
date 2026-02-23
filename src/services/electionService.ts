@@ -231,6 +231,7 @@ class ElectionService {
   }
 
   // ========== ADMIN - ELECTION MANAGEMENT ==========
+  /** POST /api/v1/election/admin/elections - Create election with full payload */
   async createElection(data: {
     title: string;
     description: string;
@@ -242,6 +243,9 @@ class ElectionService {
     settings?: {
       is_public?: boolean;
       allow_vote_changes?: boolean;
+      require_identification?: boolean;
+      enable_complaints?: boolean;
+      show_results?: boolean;
     };
     positions: Array<{
       name: string;
@@ -249,7 +253,15 @@ class ElectionService {
       max_candidates?: number;
       order: number;
     }>;
-    eligibility_rules?: any;
+    eligibility_rules?: {
+      min_gpa?: number;
+      require_fees_clearance?: boolean;
+      require_active_status?: boolean;
+      max_admins?: number;
+      admin_requires_approval?: boolean;
+      candidate_requires_approval?: boolean;
+      min_gpa_for_candidate?: number;
+    };
   }): Promise<ApiResponse<any>> {
     const response = await api.post(`${BASE_PATH}/admin/elections/`, data);
     return response.data;
@@ -438,7 +450,7 @@ class ElectionService {
   }
 
   async getComplaintDetailsAdmin(complaintId: string): Promise<ApiResponse<any>> {
-    const response = await api.get(`${BASE_PATH}/election/elections/complaints/${complaintId}`);
+    const response = await api.get(`${BASE_PATH}/elections/complaints/${complaintId}`);
     return response.data;
   }
 
@@ -670,6 +682,17 @@ class ElectionService {
 
   async getRecentActivities(): Promise<ApiResponse<any[]>> {
     const response = await api.get(`${BASE_PATH}/admin/dashboard/activities/recent`);
+    return response.data;
+  }
+
+  async getElectionsActivities(params?: {
+    limit?: number;
+  }): Promise<ApiResponse<any>> {
+    const queryParams = new URLSearchParams();
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    
+    const query = queryParams.toString();
+    const response = await api.get(`${BASE_PATH}/admin/elections${query ? `?${query}` : ''}`);
     return response.data;
   }
 

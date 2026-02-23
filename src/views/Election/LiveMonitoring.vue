@@ -133,10 +133,14 @@
             :key="activity.id"
             class="flex items-start gap-3"
           >
-            <div class="mt-1 h-2 w-2 rounded-full bg-[#16a34a] shrink-0" />
+            <div class="mt-1 h-2 w-2 rounded-full bg-[#16a34a] shrink-0 animate-pulse" />
             <div class="flex-1">
-              <p class="text-sm font-semibold text-[#111827]">{{ activity.time }} {{ activity.action }}</p>
-              <p class="text-xs text-[#94a3b8]">{{ activity.description }}</p>
+              <p class="text-sm font-semibold text-[#111827]">
+                <span class="text-[#94a3b8]">{{ activity.time }}</span>
+                <span class="ml-2">{{ activity.action }}</span>
+                <span v-if="activity.user" class="ml-2 text-[#2563eb]">by {{ activity.user }}</span>
+              </p>
+              <p class="text-xs text-[#6b7280] mt-1">{{ activity.description }}</p>
             </div>
           </div>
         </div>
@@ -173,26 +177,77 @@
               <p class="text-sm font-semibold text-[#111827]">{{ analytics.avgVotesPerMinute }} votes</p>
             </div>
           </div>
+          <div v-if="analytics.growthRate > 0" class="flex items-center gap-3">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#dcfce7] text-[#16a34a]">
+              <IconTrendingUp class="h-5 w-5" />
+            </div>
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Turnout growth (24h)</p>
+              <p class="text-sm font-semibold text-[#16a34a]">+{{ analytics.growthRate.toFixed(1) }}%</p>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Voting Trends -->
       <div class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
         <h2 class="text-lg font-semibold text-[#111827] mb-4">Voting Trends</h2>
-        <div v-if="votingTrends.length > 0" class="space-y-3">
-          <div
-            v-for="trend in votingTrends.slice(0, 5)"
-            :key="trend.timestamp"
-            class="flex items-center justify-between"
-          >
+        <div v-if="velocityData" class="space-y-4">
+          <!-- Total Votes -->
+          <div class="flex items-center justify-between">
             <div>
-              <p class="text-xs font-semibold text-[#111827]">{{ formatTrendTime(trend.timestamp) }}</p>
-              <p class="text-xs text-[#94a3b8]">Cumulative votes: {{ trend.cumulative_votes || trend.total_votes || 0 }}</p>
+              <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Total Votes</p>
+              <p class="text-sm font-semibold text-[#111827]">{{ (velocityData.total_votes_so_far || 0).toLocaleString() }}</p>
             </div>
             <div class="text-right">
-              <p class="text-xs font-semibold text-[#16a34a]" v-if="trend.votes_in_period > 0">
-                +{{ trend.votes_in_period }}
+              <p class="text-xs font-semibold uppercase tracking-wide text-[#94a3b8]">Velocity Trend</p>
+              <p class="text-sm font-semibold" :class="getVelocityTrendClass(velocityData.velocity_trend)">
+                {{ formatVelocityTrend(velocityData.velocity_trend) }}
               </p>
+            </div>
+          </div>
+          
+          <!-- Voting Rates -->
+          <div class="space-y-3 pt-2 border-t border-[#e2e8f0]">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold text-[#111827]">Votes per Hour</p>
+                <p class="text-xs text-[#94a3b8]">Current rate</p>
+              </div>
+              <p class="text-sm font-semibold text-[#2563eb]">{{ (velocityData.votes_per_hour || 0).toLocaleString() }}/hr</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold text-[#111827]">Votes per Minute</p>
+                <p class="text-xs text-[#94a3b8]">Current rate</p>
+              </div>
+              <p class="text-sm font-semibold text-[#2563eb]">{{ (velocityData.votes_per_minute || 0).toFixed(1) }}/min</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold text-[#111827]">Last Hour</p>
+                <p class="text-xs text-[#94a3b8]">Votes in past hour</p>
+              </div>
+              <p class="text-sm font-semibold text-[#16a34a]">{{ (velocityData.votes_last_hour || 0).toLocaleString() }}</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-xs font-semibold text-[#111827]">Last 5 Minutes</p>
+                <p class="text-xs text-[#94a3b8]">Recent activity</p>
+              </div>
+              <p class="text-sm font-semibold text-[#16a34a]">{{ (velocityData.votes_last_5_min || 0).toLocaleString() }}</p>
+            </div>
+          </div>
+          
+          <!-- Velocity Stats -->
+          <div v-if="velocityData.peak_velocity || velocityData.average_velocity" class="space-y-2 pt-2 border-t border-[#e2e8f0]">
+            <div v-if="velocityData.peak_velocity" class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-[#111827]">Peak Velocity</p>
+              <p class="text-xs font-semibold text-[#f59e0b]">{{ velocityData.peak_velocity.toLocaleString() }}/hr</p>
+            </div>
+            <div v-if="velocityData.average_velocity" class="flex items-center justify-between">
+              <p class="text-xs font-semibold text-[#111827]">Average Velocity</p>
+              <p class="text-xs font-semibold text-[#6b7280]">{{ velocityData.average_velocity.toFixed(1) }}/hr</p>
             </div>
           </div>
         </div>
@@ -204,27 +259,75 @@
       <!-- Election Insights -->
       <div class="rounded-3xl bg-white p-6 shadow-[0_20px_40px_rgba(15,23,42,0.05)]">
         <h2 class="text-lg font-semibold text-[#111827] mb-4">Election Insights</h2>
-        <div v-if="insights.suspicious_activities?.length > 0 || insights.patterns?.length > 0" class="space-y-3">
+        <div v-if="hasInsights" class="space-y-3">
+          <!-- Suspicious Activity -->
           <div
-            v-for="(activity, index) in (insights.suspicious_activities || []).slice(0, 3)"
-            :key="index"
+            v-if="insights.suspicious_activities && insights.suspicious_activities.length > 0"
+            v-for="(activity, index) in insights.suspicious_activities.slice(0, 1)"
+            :key="`activity-${index}`"
             class="flex items-start gap-3 p-3 rounded-xl bg-[#fef3c7] border border-[#fbbf24]"
           >
             <IconInfoTriangle class="h-5 w-5 text-[#f59e0b] shrink-0 mt-0.5" />
             <div class="flex-1">
-              <p class="text-xs font-semibold text-[#111827]">{{ activity.type || 'Suspicious Activity' }}</p>
-              <p class="text-xs text-[#6b7280]">{{ activity.description || activity.message || 'Activity detected' }}</p>
+              <p class="text-xs font-semibold text-[#111827]">
+                {{ activity.type || activity.category || activity.title || 'Suspicious Activity' }}
+              </p>
+              <p class="text-xs text-[#6b7280]">
+                {{ activity.description || activity.message || activity.details || activity.reason || 'Activity detected' }}
+              </p>
+              <p v-if="activity.severity" class="text-[10px] text-[#f59e0b] mt-1 uppercase font-semibold">
+                {{ activity.severity }}
+              </p>
             </div>
           </div>
+          
+          <!-- Voting Patterns -->
           <div
-            v-for="(pattern, index) in (insights.patterns || []).slice(0, 2)"
+            v-for="(pattern, index) in (insights.patterns || []).slice(0, 5)"
             :key="`pattern-${index}`"
             class="flex items-start gap-3 p-3 rounded-xl bg-[#e0f2fe] border border-[#0ea5e9]"
           >
             <IconBarChart class="h-5 w-5 text-[#0ea5e9] shrink-0 mt-0.5" />
             <div class="flex-1">
-              <p class="text-xs font-semibold text-[#111827]">{{ pattern.name || 'Pattern Detected' }}</p>
-              <p class="text-xs text-[#6b7280]">{{ pattern.description || 'Voting pattern identified' }}</p>
+              <p class="text-xs font-semibold text-[#111827]">
+                {{ pattern.name || 'Pattern Detected' }}
+              </p>
+              <p class="text-xs text-[#6b7280]">
+                {{ pattern.description || 'Voting pattern identified' }}
+              </p>
+            </div>
+          </div>
+          
+          <!-- Projected Turnout -->
+          <div
+            v-if="insights.projected_turnout !== null && insights.projected_turnout !== undefined"
+            class="flex items-start gap-3 p-3 rounded-xl bg-[#dcfce7] border border-[#16a34a]"
+          >
+            <IconCircleCheck class="h-5 w-5 text-[#16a34a] shrink-0 mt-0.5" />
+            <div class="flex-1">
+              <p class="text-xs font-semibold text-[#111827]">Projected Turnout</p>
+              <p class="text-xs text-[#6b7280]">
+                {{ insights.projected_turnout.toLocaleString() }} voters expected
+              </p>
+            </div>
+          </div>
+          
+          <!-- Comparison Data -->
+          <div
+            v-if="insights.comparison_data"
+            class="flex items-start gap-3 p-3 rounded-xl bg-[#f3f4f6] border border-[#9ca3af]"
+          >
+            <IconTrendingUp class="h-5 w-5 text-[#6b7280] shrink-0 mt-0.5" />
+            <div class="flex-1">
+              <p class="text-xs font-semibold text-[#111827]">Turnout Comparison</p>
+              <p class="text-xs text-[#6b7280]">
+                <span v-if="insights.comparison_data.current_vs_average && insights.comparison_data.current_vs_average !== 'N/A'">
+                  {{ insights.comparison_data.current_vs_average }} vs average
+                </span>
+                <span v-else>
+                  Average turnout rate: {{ (insights.comparison_data.average_turnout_rate || 0).toFixed(1) }}%
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -316,15 +419,38 @@ const realTimeActivities = ref<any[]>([]);
 const activityOffset = ref(0);
 const loadingActivities = ref(false);
 const votingTrends = ref<any[]>([]);
+const velocityData = ref<any>(null);
 const insights = ref<any>({
   suspicious_activities: [],
   patterns: [],
+  projected_turnout: null,
+  comparison_data: null,
+  active_voters: 0,
+  inactive_voters: 0,
+  dropoff_rate: 0,
+  voting_patterns: null,
+  // Legacy fields
   projections: null,
+  recommendations: [],
+  anomalies: [],
+  alerts: [],
+});
+
+// Computed property to check if there are any insights
+const hasInsights = computed(() => {
+  return (
+    (insights.value.suspicious_activities?.length || 0) > 0 ||
+    (insights.value.patterns?.length || 0) > 0 ||
+    insights.value.projected_turnout !== null ||
+    insights.value.comparison_data !== null
+  );
 });
 const analytics = ref({
   peakHour: 'N/A',
   votesThisHour: 0,
   avgVotesPerMinute: 0,
+  growthRate: 0,
+  currentTurnout: 0,
 });
 
 // Calculate time remaining
@@ -442,130 +568,495 @@ const loadActiveElections = async () => {
   }
 };
 
+// Get election ID from recent activities
+const getElectionIdFromActivities = async (): Promise<string | null> => {
+  try {
+    // First try to get from active elections
+    if (activeElections.value.length > 0 && activeElections.value[0].id) {
+      const electionId = activeElections.value[0].id;
+      // Check if it's a valid ID (not the placeholder)
+      if (electionId && electionId !== '000000000000000000000000') {
+        return electionId;
+      }
+    }
+    
+    // Fallback: Get election ID from recent activities endpoint
+    const recentResponse = await electionService.getRecentActivities();
+    if (recentResponse && 'ok' in recentResponse && recentResponse.ok && 'data' in recentResponse) {
+      const responseData = recentResponse.data as any;
+      const activities = responseData?.activities || responseData?.data?.activities || [];
+      
+      // Find the first valid election ID (not the placeholder)
+      for (const activity of activities) {
+        const electionId = activity.election_id;
+        if (electionId && electionId !== '000000000000000000000000') {
+          return electionId;
+        }
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error getting election ID from activities:', error);
+    return null;
+  }
+};
+
 // Load real-time activities
 const loadRealTimeActivities = async (reset = false) => {
-  if (activeElections.value.length === 0) return;
-  
   loadingActivities.value = true;
   try {
-    const firstElectionId = activeElections.value[0].id;
+    // Get election ID from recent activities or active elections
+    const electionId = await getElectionIdFromActivities();
     
-    // Use getLiveActivities for initial load
+    if (!electionId) {
+      console.warn('No valid election ID found for loading live activities');
+      realTimeActivities.value = [];
+      return;
+    }
+    
+    // Use getLiveActivities endpoint: /election/admin/elections/:id/feed/live?limit=20&include_names=true
+    const response = await electionService.getLiveActivities(electionId, { 
+      limit: 20, 
+      include_names: true 
+    });
+    
+    // Handle different response structures
+    let activities: any[] = [];
+    
+    if (response && 'ok' in response && response.ok && 'data' in response) {
+      const responseData = response.data as any;
+      
+      // Check if data is directly an array
+      if (Array.isArray(responseData)) {
+        activities = responseData;
+      } 
+      // Check if data has an activities property
+      else if (responseData?.activities && Array.isArray(responseData.activities)) {
+        activities = responseData.activities;
+      }
+      // Check if data has an events property
+      else if (responseData?.events && Array.isArray(responseData.events)) {
+        activities = responseData.events;
+      }
+      // Check if data has a data property with activities
+      else if (responseData?.data?.activities && Array.isArray(responseData.data.activities)) {
+        activities = responseData.data.activities;
+      }
+    } else if (Array.isArray(response)) {
+      // Response might be directly an array
+      activities = response;
+    }
+    
+    // Map activities to display format
+    const mappedActivities = activities.map((activity: any, index: number) => ({
+      id: activity.id || activity._id || `activity-${reset ? index : activityOffset.value + index}`,
+      action: activity.action || activity.type || activity.event_type || 'Activity',
+      description: activity.description || activity.message || activity.details || activity.summary || '',
+      time: formatTime(activity.timestamp || activity.created_at || activity.createdAt || activity.time || new Date().toISOString()),
+      user: activity.user_name || activity.user || activity.participant_name || null,
+    }));
+    
     if (reset || activityOffset.value === 0) {
-      const response = await electionService.getLiveActivities(firstElectionId, { limit: 20, include_names: true });
-      const activities = Array.isArray(response?.data) ? response.data : Array.isArray(response?.data?.activities) ? response.data.activities : [];
-      
-      realTimeActivities.value = activities.map((activity: any, index: number) => ({
-        id: activity.id || activity._id || `activity-${index}`,
-        action: activity.action || activity.type || 'Activity',
-        description: activity.description || activity.message || activity.details || '',
-        time: formatTime(activity.timestamp || activity.created_at || activity.createdAt || new Date().toISOString()),
-      }));
-      activityOffset.value = 20;
+      realTimeActivities.value = mappedActivities;
+      activityOffset.value = mappedActivities.length;
     } else {
-      // Use getActivityStream for pagination
-      const response = await electionService.getActivityStream(firstElectionId, {
-        limit: 20,
-        offset: activityOffset.value,
-        include_names: true,
-        anonymize: false,
-      });
-      
-      const activities = Array.isArray(response?.data) ? response.data : Array.isArray(response?.data?.events) ? response.data.events : [];
-      const newActivities = activities.map((activity: any, index: number) => ({
-        id: activity.id || activity._id || `activity-${activityOffset.value + index}`,
-        action: activity.action || activity.type || 'Activity',
-        description: activity.description || activity.message || activity.details || '',
-        time: formatTime(activity.timestamp || activity.created_at || activity.createdAt || new Date().toISOString()),
-      }));
-      
+      // Append new activities, avoiding duplicates
+      const existingIds = new Set(realTimeActivities.value.map(a => a.id));
+      const newActivities = mappedActivities.filter(a => !existingIds.has(a.id));
       realTimeActivities.value = [...realTimeActivities.value, ...newActivities];
       activityOffset.value += newActivities.length;
     }
   } catch (error: any) {
     console.error('Error loading real-time activities:', error);
+    toast.error(error?.response?.data?.message || 'Failed to load real-time activities');
+    realTimeActivities.value = [];
   } finally {
     loadingActivities.value = false;
   }
 };
 
 // Load more activities
-const loadMoreActivities = () => {
-  loadRealTimeActivities(false);
+const loadMoreActivities = async () => {
+  // For live feed, we'll fetch again with a higher limit or use activity stream for pagination
+  loadingActivities.value = true;
+  try {
+    // Get election ID from recent activities or active elections
+    const electionId = await getElectionIdFromActivities();
+    
+    if (!electionId) {
+      console.warn('No valid election ID found for loading more activities');
+      return;
+    }
+    
+    // Use activity stream for pagination when loading more
+    const response = await electionService.getActivityStream(electionId, {
+      limit: 20,
+      offset: activityOffset.value,
+      include_names: true,
+      anonymize: false,
+    });
+    
+    let activities: any[] = [];
+    if (response && 'ok' in response && response.ok && 'data' in response) {
+      const responseData = response.data as any;
+      if (Array.isArray(responseData)) {
+        activities = responseData;
+      } else if (responseData?.events && Array.isArray(responseData.events)) {
+        activities = responseData.events;
+      } else if (responseData?.data?.events && Array.isArray(responseData.data.events)) {
+        activities = responseData.data.events;
+      }
+    }
+    
+    const newActivities = activities.map((activity: any, index: number) => ({
+      id: activity.id || activity._id || `activity-${activityOffset.value + index}`,
+      action: activity.action || activity.type || activity.event_type || 'Activity',
+      description: activity.description || activity.message || activity.details || activity.summary || '',
+      time: formatTime(activity.timestamp || activity.created_at || activity.createdAt || activity.time || new Date().toISOString()),
+      user: activity.user_name || activity.user || activity.participant_name || null,
+    }));
+    
+    // Append new activities, avoiding duplicates
+    const existingIds = new Set(realTimeActivities.value.map(a => a.id));
+    const uniqueNewActivities = newActivities.filter(a => !existingIds.has(a.id));
+    
+    if (uniqueNewActivities.length > 0) {
+      realTimeActivities.value = [...realTimeActivities.value, ...uniqueNewActivities];
+      activityOffset.value += uniqueNewActivities.length;
+    }
+  } catch (error: any) {
+    console.error('Error loading more activities:', error);
+    toast.error('Failed to load more activities');
+  } finally {
+    loadingActivities.value = false;
+  }
 };
 
-// Load voting trends
+// Format velocity trend label
+const formatVelocityTrend = (trend: string) => {
+  if (!trend) return 'N/A';
+  const trendMap: Record<string, string> = {
+    'steady': 'Steady',
+    'increasing': 'Increasing',
+    'decreasing': 'Decreasing',
+    'slow': 'Slow',
+    'fast': 'Fast',
+    'moderate': 'Moderate',
+  };
+  return trendMap[trend.toLowerCase()] || trend.charAt(0).toUpperCase() + trend.slice(1);
+};
+
+// Get velocity trend color class
+const getVelocityTrendClass = (trend: string) => {
+  if (!trend) return 'text-[#94a3b8]';
+  const trendLower = trend.toLowerCase();
+  if (trendLower === 'increasing' || trendLower === 'fast') {
+    return 'text-[#16a34a]';
+  } else if (trendLower === 'decreasing' || trendLower === 'slow') {
+    return 'text-[#dc2626]';
+  } else if (trendLower === 'steady' || trendLower === 'moderate') {
+    return 'text-[#2563eb]';
+  }
+  return 'text-[#6b7280]';
+};
+
+// Load voting trends from velocity endpoint
 const loadVotingTrends = async () => {
   try {
-    if (activeElections.value.length > 0) {
-      const firstElectionId = activeElections.value[0].id;
-      const response = await electionService.getVotingTrends(firstElectionId);
-      
-      const trends = response?.data?.trends || 
-                     response?.data?.data?.trends || 
-                     Array.isArray(response?.data) ? response.data : [];
-      
-      votingTrends.value = trends.slice(0, 10); // Show last 10 trends
+    // Get election ID from recent activities or active elections
+    const electionId = await getElectionIdFromActivities();
+    
+    if (!electionId) {
+      console.warn('No valid election ID found for loading voting trends');
+      velocityData.value = null;
+      return;
+    }
+    
+    // Use velocity endpoint: /election/admin/elections/:id/feed/velocity
+    const response = await electionService.getVotingVelocity(electionId);
+    
+    // Handle response structure based on actual API response
+    if (response && 'ok' in response && response.ok && 'data' in response) {
+      // Store the velocity data directly
+      velocityData.value = response.data;
+    } else if (response && typeof response === 'object' && 'data' in response) {
+      velocityData.value = response.data;
+    } else {
+      velocityData.value = null;
     }
   } catch (error: any) {
     console.error('Error loading voting trends:', error);
+    toast.error(error?.response?.data?.message || 'Failed to load voting trends');
+    velocityData.value = null;
   }
 };
 
 // Load election insights
 const loadElectionInsights = async () => {
   try {
-    if (activeElections.value.length > 0) {
-      const firstElectionId = activeElections.value[0].id;
-      const response = await electionService.getElectionInsights(firstElectionId);
-      
-      const data = response?.data || {};
+    // Get election ID from recent activities or active elections
+    const electionId = await getElectionIdFromActivities();
+    
+    if (!electionId) {
+      console.warn('No valid election ID found for loading election insights');
       insights.value = {
-        suspicious_activities: Array.isArray(data.suspicious_activities) ? data.suspicious_activities : [],
-        patterns: Array.isArray(data.patterns) ? data.patterns : [],
-        projections: data.projections || data.projection || null,
+        suspicious_activities: [],
+        patterns: [],
+        projected_turnout: null,
+        comparison_data: null,
+        active_voters: 0,
+        inactive_voters: 0,
+        dropoff_rate: 0,
+        voting_patterns: null,
+        projections: null,
+        recommendations: [],
+        anomalies: [],
+        alerts: [],
       };
+      return;
     }
+    
+    // Use insights endpoint: /election/admin/elections/:id/monitoring/insights
+    const response = await electionService.getElectionInsights(electionId);
+    
+    // Handle response structure
+    let insightsData: any = {};
+    
+    if (response && 'ok' in response && response.ok && 'data' in response) {
+      insightsData = response.data;
+    } else if (response && typeof response === 'object' && 'data' in response) {
+      insightsData = response.data;
+    } else if (response && typeof response === 'object') {
+      insightsData = response;
+    }
+    
+    // Map insights data to our structure based on actual API response
+    // API returns: suspicious_activity (singular, can be null), voting_patterns (object), projected_turnout, etc.
+    
+    // Handle suspicious_activity (singular, can be null)
+    const suspiciousActivity = insightsData.suspicious_activity;
+    const suspiciousActivitiesList = suspiciousActivity 
+      ? [suspiciousActivity] 
+      : [];
+    
+    // Transform voting_patterns object into array format for display
+    const patternsList: any[] = [];
+    if (insightsData.voting_patterns && typeof insightsData.voting_patterns === 'object') {
+      const patterns = insightsData.voting_patterns;
+      
+      // Add most active hour pattern
+      if (patterns.most_active_hour) {
+        patternsList.push({
+          name: 'Most Active Hour',
+          description: `Peak voting time: ${patterns.most_active_hour}`,
+          type: 'activity_time',
+        });
+      }
+      
+      // Add least active hour pattern
+      if (patterns.least_active_hour) {
+        patternsList.push({
+          name: 'Least Active Hour',
+          description: `Lowest voting time: ${patterns.least_active_hour}`,
+          type: 'activity_time',
+        });
+      }
+      
+      // Add average vote time pattern
+      if (patterns.average_vote_time) {
+        patternsList.push({
+          name: 'Average Vote Time',
+          description: `Users take ${patterns.average_vote_time} on average to vote`,
+          type: 'vote_time',
+        });
+      }
+      
+      // Add mobile vs desktop pattern
+      if (patterns.mobile_vs_desktop) {
+        const mobile = patterns.mobile_vs_desktop.mobile || 0;
+        const desktop = patterns.mobile_vs_desktop.desktop || 0;
+        const total = mobile + desktop;
+        if (total > 0) {
+          const mobilePercent = ((mobile / total) * 100).toFixed(1);
+          const desktopPercent = ((desktop / total) * 100).toFixed(1);
+          patternsList.push({
+            name: 'Device Usage',
+            description: `Mobile: ${mobilePercent}% | Desktop: ${desktopPercent}%`,
+            type: 'device',
+          });
+        }
+      }
+      
+      // Add consistent voting pattern
+      if (patterns.consistent_voting !== undefined) {
+        patternsList.push({
+          name: 'Voting Consistency',
+          description: patterns.consistent_voting 
+            ? 'Voters show consistent voting patterns' 
+            : 'Voting patterns vary significantly',
+          type: 'consistency',
+        });
+      }
+    }
+    
+    insights.value = {
+      suspicious_activities: suspiciousActivitiesList,
+      patterns: patternsList,
+      projected_turnout: insightsData.projected_turnout || null,
+      comparison_data: insightsData.comparison_data || null,
+      active_voters: insightsData.active_voters || 0,
+      inactive_voters: insightsData.inactive_voters || 0,
+      dropoff_rate: insightsData.dropoff_rate || 0,
+      voting_patterns: insightsData.voting_patterns || null,
+      // Keep legacy fields for backward compatibility
+      projections: insightsData.projected_turnout || null,
+      recommendations: [],
+      anomalies: [],
+      alerts: [],
+    };
   } catch (error: any) {
     console.error('Error loading election insights:', error);
+    toast.error(error?.response?.data?.message || 'Failed to load election insights');
+    insights.value = {
+      suspicious_activities: [],
+      patterns: [],
+      projections: null,
+      recommendations: [],
+      anomalies: [],
+      alerts: [],
+    };
   }
 };
 
 // Load analytics
 const loadAnalytics = async () => {
   try {
-    if (activeElections.value.length > 0) {
-      const firstElectionId = activeElections.value[0].id;
-      
-      const [analysisRes, velocityRes] = await Promise.allSettled([
-        electionService.getVotingTimeAnalysis(firstElectionId),
-        electionService.getVotingVelocity(firstElectionId),
-      ]);
-      
-      const analysis = analysisRes.status === 'fulfilled' ? analysisRes.value?.data : {};
-      const velocity = velocityRes.status === 'fulfilled' ? velocityRes.value?.data : {};
-      
-      // Get peak hours
-      const peakHours = analysis.peak_hours || analysis.peakHours || [];
-      const peakHour = peakHours.length > 0 
-        ? `${peakHours[0].hour || 'N/A'}:00 - ${(peakHours[0].hour || 0) + 1}:00`
-        : 'N/A';
-      
-      // Get votes this hour
-      const votesThisHour = analysis.votes_this_hour || analysis.current_hour_votes || velocity.votes_per_hour || 0;
-      
-      // Get average votes per minute
-      const avgVotesPerMinute = velocity.votes_per_minute || 
-                               (velocity.votes_per_hour ? (velocity.votes_per_hour / 60).toFixed(1) : 0);
-      
+    // Get election ID from recent activities or active elections
+    const electionId = await getElectionIdFromActivities();
+    
+    if (!electionId) {
+      console.warn('No valid election ID found for loading analytics');
       analytics.value = {
-        peakHour,
-        votesThisHour: typeof votesThisHour === 'number' ? votesThisHour : parseInt(votesThisHour) || 0,
-        avgVotesPerMinute: typeof avgVotesPerMinute === 'number' ? avgVotesPerMinute : parseFloat(avgVotesPerMinute) || 0,
+        peakHour: 'N/A',
+        votesThisHour: 0,
+        avgVotesPerMinute: 0,
       };
+      return;
     }
+    
+    // Use turnout-growth endpoint: /election/admin/elections/:id/feed/turnout-growth?hours=24
+    // Also get voting analysis for peak hours and average voting rate
+    const [turnoutGrowthRes, analysisRes] = await Promise.allSettled([
+      electionService.getTurnoutGrowth(electionId, 24),
+      electionService.getVotingTimeAnalysis(electionId),
+    ]);
+    
+    const turnoutGrowth = turnoutGrowthRes.status === 'fulfilled' && turnoutGrowthRes.value?.ok 
+      ? turnoutGrowthRes.value.data 
+      : {};
+    const analysis = analysisRes.status === 'fulfilled' && analysisRes.value?.ok
+      ? analysisRes.value.data 
+      : {};
+    
+    // Extract data from turnout growth response
+    // The response might have: growth_rate, current_turnout, previous_turnout, hourly_data, etc.
+    const growthRate = turnoutGrowth.growth_rate || turnoutGrowth.turnout_growth_rate || 0;
+    const currentTurnout = turnoutGrowth.current_turnout || turnoutGrowth.turnout || 0;
+    const hourlyData = turnoutGrowth.hourly_data || turnoutGrowth.data || [];
+    
+    // Find peak hour from analysis data (peak_hours field)
+    let peakHour = 'N/A';
+    if (analysis.peak_hours && Array.isArray(analysis.peak_hours) && analysis.peak_hours.length > 0) {
+      // peak_hours is an array, get the first one
+      const peakHourValue = analysis.peak_hours[0];
+      if (typeof peakHourValue === 'number') {
+        peakHour = `${peakHourValue}:00 - ${peakHourValue + 1}:00`;
+      } else if (peakHourValue && typeof peakHourValue === 'object') {
+        const hour = peakHourValue.hour || peakHourValue.hour_number || 0;
+        peakHour = `${hour}:00 - ${hour + 1}:00`;
+      }
+    } else if (hourlyData.length > 0) {
+      // Fallback: Find the hour with maximum votes/turnout from hourly data
+      const peakHourData = hourlyData.reduce((max: any, hour: any) => {
+        const hourVotes = hour.votes || hour.turnout || 0;
+        const maxVotes = max.votes || max.turnout || 0;
+        return hourVotes > maxVotes ? hour : max;
+      }, hourlyData[0]);
+      
+      if (peakHourData.hour !== undefined) {
+        const hour = peakHourData.hour;
+        peakHour = `${hour}:00 - ${hour + 1}:00`;
+      } else if (peakHourData.timestamp) {
+        const date = new Date(peakHourData.timestamp);
+        const hour = date.getHours();
+        peakHour = `${hour}:00 - ${hour + 1}:00`;
+      }
+    }
+    
+    // Get votes this hour - fetch velocity data if not already loaded, otherwise use existing
+    let votesThisHour = 0;
+    let currentVelocityData = velocityData.value;
+    
+    // If velocity data not loaded yet, fetch it
+    if (!currentVelocityData) {
+      try {
+        const velocityResponse = await electionService.getVotingVelocity(electionId);
+        if (velocityResponse && 'ok' in velocityResponse && velocityResponse.ok && 'data' in velocityResponse) {
+          currentVelocityData = velocityResponse.data;
+        }
+      } catch (error) {
+        // Ignore error, will use fallback
+      }
+    }
+    
+    if (currentVelocityData && currentVelocityData.votes_last_hour !== undefined) {
+      votesThisHour = currentVelocityData.votes_last_hour;
+    } else if (hourlyData.length > 0) {
+      // Get the most recent hour's data
+      const currentHour = new Date().getHours();
+      const currentHourData = hourlyData.find((h: any) => {
+        if (h.hour !== undefined) return h.hour === currentHour;
+        if (h.timestamp) {
+          const hour = new Date(h.timestamp).getHours();
+          return hour === currentHour;
+        }
+        return false;
+      });
+      votesThisHour = currentHourData?.votes || currentHourData?.turnout || 0;
+    } else {
+      // Fallback to analysis data
+      votesThisHour = analysis.votes_this_hour || analysis.current_hour_votes || 0;
+    }
+    
+    // Get average votes per minute from velocity data or calculate from average voting rate
+    let avgVotesPerMinute = 0;
+    if (currentVelocityData && currentVelocityData.votes_per_minute !== undefined) {
+      avgVotesPerMinute = currentVelocityData.votes_per_minute;
+    } else if (analysis.average_voting_rate !== undefined) {
+      // Convert average voting rate (per hour) to per minute
+      avgVotesPerMinute = parseFloat((analysis.average_voting_rate / 60).toFixed(1));
+    } else if (votesThisHour > 0) {
+      // Calculate from current hour votes
+      avgVotesPerMinute = parseFloat((votesThisHour / 60).toFixed(1));
+    }
+    
+    analytics.value = {
+      peakHour,
+      votesThisHour: typeof votesThisHour === 'number' ? votesThisHour : parseInt(String(votesThisHour)) || 0,
+      avgVotesPerMinute: typeof avgVotesPerMinute === 'number' ? avgVotesPerMinute : parseFloat(String(avgVotesPerMinute)) || 0,
+      growthRate: typeof growthRate === 'number' ? growthRate : parseFloat(String(growthRate)) || 0,
+      currentTurnout: typeof currentTurnout === 'number' ? currentTurnout : parseInt(String(currentTurnout)) || 0,
+    };
   } catch (error: any) {
     console.error('Error loading analytics:', error);
+    analytics.value = {
+      peakHour: 'N/A',
+      votesThisHour: 0,
+      avgVotesPerMinute: 0,
+      growthRate: 0,
+      currentTurnout: 0,
+    };
   }
 };
 
