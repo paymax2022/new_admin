@@ -51,7 +51,7 @@
           </div>
         </section>
 
-        <section class="space-y-4 px-8 pb-8">
+        <section v-if="user.balances && user.balances.length > 0" class="space-y-4 px-8 pb-8">
           <h3 class="text-sm font-semibold text-[#111827]">Accounts & Balances</h3>
           <div class="space-y-3">
             <div
@@ -77,8 +77,13 @@ import IconX from '@/components/icon/icon-x.vue';
 
 const statusClasses: Record<string, string> = {
   Active: 'bg-[#ecfdf5] text-[#16a34a]',
+  ACTIVE: 'bg-[#ecfdf5] text-[#16a34a]',
+  active: 'bg-[#ecfdf5] text-[#16a34a]',
   Suspended: 'bg-[#fef2f2] text-[#ef4444]',
+  SUSPENDED: 'bg-[#fef2f2] text-[#ef4444]',
   Inactive: 'bg-[#f8fafc] text-[#64748b]',
+  INACTIVE: 'bg-[#f8fafc] text-[#64748b]',
+  inactive: 'bg-[#f8fafc] text-[#64748b]',
 };
 
 defineProps<{
@@ -87,9 +92,9 @@ defineProps<{
     email: string;
     joined: string;
     userId: string;
-    status: 'Active' | 'Suspended' | 'Inactive';
-    kyc: 'verified' | 'pending';
-    balances: { currency: string; amount: string; flag: string }[];
+    status: string;
+    kyc?: 'verified' | 'pending';
+    balances?: { currency: string; amount: string; flag: string }[];
   };
 }>();
 

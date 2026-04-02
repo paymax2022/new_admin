@@ -39,14 +39,18 @@
           <div class="relative flex items-center">
             <IconSearch class="absolute left-4 h-4 w-4 text-[#94a3b8]" />
             <input
+              v-model="searchQuery"
               type="text"
               placeholder="Search admin users..."
               class="w-full rounded-full border border-[#e2e8f0] bg-[#f8fafc] py-2 pl-11 pr-4 text-sm text-[#1f2937] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
+              @input="handleSearch"
             />
           </div>
           <div class="flex gap-3">
             <select
+              v-model="roleFilter"
               class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm text-[#475569] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
+              @change="handleFilterChange"
             >
               <option>All Roles</option>
               <option>Super Admin</option>
@@ -54,7 +58,9 @@
               <option>Compliance</option>
             </select>
             <select
+              v-model="statusFilter"
               class="rounded-full border border-[#e2e8f0] bg-white px-4 py-2 text-sm text-[#475569] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#cbd5f5]"
+              @change="handleFilterChange"
             >
               <option>All Status</option>
               <option>Active</option>
@@ -87,7 +93,16 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-[#e2e8f0] bg-white">
-              <tr v-for="(admin, index) in admins" :key="admin.email" class="relative hover:bg-[#f8fafc] transition">
+              <tr v-if="loading">
+                <td colspan="6" class="px-5 py-8 text-center text-sm text-[#6b7280]">Loading admin users...</td>
+              </tr>
+              <tr v-else-if="error">
+                <td colspan="6" class="px-5 py-8 text-center text-sm text-red-500">{{ error }}</td>
+              </tr>
+              <tr v-else-if="filteredAdmins.length === 0">
+                <td colspan="6" class="px-5 py-8 text-center text-sm text-[#6b7280]">No admin users found</td>
+              </tr>
+              <tr v-else v-for="(admin, index) in paginatedAdmins" :key="admin.id || admin.email" class="relative hover:bg-[#f8fafc] transition">
                 <td class="px-5 py-5">
                   <div class="space-y-1">
                     <p class="font-semibold text-[#111827]">{{ admin.name }}</p>
@@ -99,7 +114,7 @@
                     class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize"
                     :class="roleClasses[admin.role]"
                   >
-                    {{ admin.role }}
+                    {{ roleLabelMap[admin.role] || admin.role }}
                   </span>
                 </td>
                 <td class="px-5 py-5">
@@ -111,10 +126,10 @@
                   </span>
                 </td>
                 <td class="px-5 py-5 text-[#475569]">
-                  {{ admin.assignedDate }}
+                  {{ formatDate(admin.assignedDate) }}
                 </td>
                 <td class="px-5 py-5 text-[#475569]">
-                  {{ admin.assignedBy }}
+                  {{ admin.assignedBy || 'N/A' }}
                 </td>
                 <td class="px-5 py-5 text-right">
                   <div class="relative inline-flex">
@@ -128,7 +143,7 @@
                     <transition name="fade">
                       <div
                         v-if="openMenuIndex === index"
-                        class="absolute right-0 top-12 z-20 w-40 rounded-2xl border border-[#e2e8f0] bg-white py-2 text-left shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
+                        class="absolute right-0 top-12 z-[9999] w-40 rounded-2xl border border-[#e2e8f0] bg-white py-2 text-left shadow-[0_20px_40px_rgba(15,23,42,0.12)]"
                       >
                         <button
                           type="button"
@@ -146,16 +161,46 @@
             </tbody>
           </table>
         </div>
+        
+        <!-- Pagination -->
+        <div v-if="!loading && filteredAdmins.length > 0" class="flex items-center justify-between border-t border-[#e2e8f0] px-5 py-4">
+          <div class="text-sm text-[#6b7280]">
+            Showing <span class="font-medium text-[#111827]">{{ pagination.startIndex + 1 }}</span> to 
+            <span class="font-medium text-[#111827]">{{ pagination.endIndex }}</span> of 
+            <span class="font-medium text-[#111827]">{{ totalCount }}</span> entries
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              @click="prevPage"
+              :disabled="currentPage === 1"
+              class="rounded-full border border-[#e2e8f0] px-4 py-2 text-sm text-[#475569] transition hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <span class="text-sm text-[#475569]">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+            <button
+              @click="nextPage"
+              :disabled="currentPage === totalPages"
+              class="rounded-full border border-[#e2e8f0] px-4 py-2 text-sm text-[#475569] transition hover:bg-[#f8fafc] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
     <EditRoleModal v-if="editModal.open && editModal.admin" :admin="editModal.admin" @close="closeEditModal" />
-    <AssignAdminModal v-if="assignModal" @close="closeAssignModal" />
+    <AssignAdminModal v-if="assignModal" @close="closeAssignModal" @assigned="handleRoleAssigned" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { useToast } from 'vue-toastification';
+import userService from '@/services/userService';
 
 import IconBellBing from '@/components/icon/icon-bell-bing.vue';
 import IconEdit from '@/components/icon/icon-edit.vue';
@@ -171,10 +216,20 @@ import IconWallet from '@/components/icon/icon-wallet.vue';
 import EditRoleModal from './components/EditRoleModal.vue';
 import AssignAdminModal from './components/AssignAdminModal.vue';
 
-const statCards = [
+const toast = useToast();
+const loading = ref(false);
+const error = ref('');
+const searchQuery = ref('');
+const roleFilter = ref('All Roles');
+const statusFilter = ref('All Status');
+const currentPage = ref(1);
+const limit = ref(10);
+const totalCount = ref(0);
+
+const statCards = computed(() => [
   {
     label: 'Total Admin Users',
-    value: '24',
+    value: totalCount.value.toString(),
     delta: '+5% from last month',
     deltaColor: 'text-[#22c55e]',
     icon: IconUsersGroup,
@@ -183,7 +238,7 @@ const statCards = [
   },
   {
     label: 'Active Sessions',
-    value: '18',
+    value: admins.value.filter(a => a.status === 'active').length.toString(),
     delta: '-12% from last month',
     deltaColor: 'text-[#ef4444]',
     icon: IconTrendingUp,
@@ -192,7 +247,7 @@ const statCards = [
   },
   {
     label: 'Super Admins',
-    value: '3',
+    value: admins.value.filter(a => a.role === 'super-admin').length.toString(),
     delta: 'unchanged',
     deltaColor: 'text-[#94a3b8]',
     icon: IconWallet,
@@ -201,14 +256,14 @@ const statCards = [
   },
   {
     label: 'Pending Invites',
-    value: '5',
+    value: admins.value.filter(a => a.status === 'pending').length.toString(),
     delta: '+3 pending invites',
     deltaColor: 'text-[#f97316]',
     icon: IconMessageDots,
     iconBg: '#fff7ed',
     iconColor: '#f97316',
   },
-];
+]);
 
 const roleClasses: Record<'super-admin' | 'admin' | 'compliance', string> = {
   'super-admin': 'bg-[#fef3f2] text-[#f97316]',
@@ -223,6 +278,7 @@ const statusClasses: Record<'active' | 'inactive' | 'pending', string> = {
 };
 
 type AdminRecord = {
+  id: string;
   name: string;
   email: string;
   role: 'super-admin' | 'admin' | 'compliance';
@@ -231,40 +287,161 @@ type AdminRecord = {
   assignedBy: string;
 };
 
-const admins: AdminRecord[] = [
-  {
-    name: 'Sarah Johnson',
-    email: 'sarah.johnson@example.com',
-    role: 'super-admin',
-    status: 'active',
-    assignedDate: '2024-01-15',
-    assignedBy: 'John Admin',
-  },
-  {
-    name: 'John Carter',
-    email: 'john.carter@example.com',
-    role: 'admin',
-    status: 'active',
-    assignedDate: '2024-01-15',
-    assignedBy: 'John Admin',
-  },
-  {
-    name: 'Mike Lawson',
-    email: 'mike.lawson@example.com',
-    role: 'admin',
-    status: 'inactive',
-    assignedDate: '2024-01-15',
-    assignedBy: 'Sarah Johnson',
-  },
-  {
-    name: 'Emily Rogers',
-    email: 'emily.rogers@example.com',
-    role: 'compliance',
-    status: 'pending',
-    assignedDate: '2024-01-15',
-    assignedBy: 'Sarah Johnson',
-  },
-];
+const admins = ref<AdminRecord[]>([]);
+
+// Fetch admin users from API
+const fetchAdminUsers = async () => {
+  loading.value = true;
+  error.value = '';
+  
+  try {
+    const params: any = {
+      page: currentPage.value,
+      limit: limit.value,
+      role: 'ADMIN',
+    };
+    
+    if (searchQuery.value) {
+      params.search = searchQuery.value;
+    }
+    
+    if (statusFilter.value !== 'All Status') {
+      const statusMap: Record<string, string> = {
+        'Active': 'ACTIVE',
+        'Pending': 'PENDING',
+        'Suspended': 'DEACTIVATED',
+      };
+      params.status = statusMap[statusFilter.value] || statusFilter.value.toUpperCase();
+    }
+    
+    const response = await userService.getUsers(params);
+    
+    // Handle response structure - API returns { data: [...], total_count, page, rows_per_page }
+    let usersData: any[] = [];
+    if (response?.data?.data && Array.isArray(response.data.data)) {
+      usersData = response.data.data;
+      totalCount.value = response.data.total_count || response.data.totalCount || response.data.data.length;
+    } else if (Array.isArray(response?.data)) {
+      usersData = response.data;
+      totalCount.value = response.total_count || response.totalCount || usersData.length;
+    } else if (response?.data && Array.isArray(response.data)) {
+      usersData = response.data;
+      totalCount.value = usersData.length;
+    }
+    
+    // Map API response to component structure
+    admins.value = usersData.map((user: any) => {
+      // Map role from API to component role
+      let role: 'super-admin' | 'admin' | 'compliance' = 'admin';
+      if (user.role === 'SYSTEM_ADMIN' || user.userType === 'SYS_ADMIN') {
+        role = 'super-admin';
+      } else if (user.role === 'ADMIN') {
+        role = 'admin';
+      } else {
+        role = 'compliance';
+      }
+      
+      // Map status from API to component status
+      let status: 'active' | 'inactive' | 'pending' = 'active';
+      if (user.status === 'ACTIVE') {
+        status = 'active';
+      } else if (user.status === 'PENDING' || user.status === 'UNVERIFIED') {
+        status = 'pending';
+      } else {
+        status = 'inactive';
+      }
+      
+      return {
+        id: user.id || user._id || '',
+        name: `${user.first_name || ''} ${user.lastname || ''}`.trim() || user.email?.split('@')[0] || 'Unknown',
+        email: user.email || '',
+        role,
+        status,
+        assignedDate: user.createdAt || user.created_at || 'N/A',
+        assignedBy: 'System',
+      };
+    });
+  } catch (err: any) {
+    console.error('Error fetching admin users:', err);
+    error.value = err?.response?.data?.message || 'Failed to load admin users';
+    toast.error('Failed to load admin users');
+    admins.value = [];
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Filtered admins based on role filter (client-side, since API already filters by ADMIN role)
+const filteredAdmins = computed(() => {
+  let filtered = admins.value;
+  
+  if (roleFilter.value && roleFilter.value !== 'All Roles') {
+    const roleMap: Record<string, 'super-admin' | 'admin' | 'compliance'> = {
+      'Super Admin': 'super-admin',
+      'Admin': 'admin',
+      'Compliance': 'compliance',
+    };
+    const targetRole = roleMap[roleFilter.value];
+    if (targetRole) {
+      filtered = filtered.filter((admin) => admin.role === targetRole);
+    }
+  }
+  
+  return filtered;
+});
+
+// Pagination - API handles pagination, so we just use the current page data
+const totalPages = computed(() => Math.ceil(totalCount.value / limit.value));
+
+const pagination = computed(() => {
+  const startIndex = (currentPage.value - 1) * limit.value;
+  const endIndex = Math.min(startIndex + filteredAdmins.value.length, totalCount.value);
+  return { startIndex, endIndex };
+});
+
+const paginatedAdmins = computed(() => {
+  return filteredAdmins.value;
+});
+
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    fetchAdminUsers();
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    fetchAdminUsers();
+  }
+};
+
+const handleSearch = () => {
+  currentPage.value = 1;
+  fetchAdminUsers();
+};
+
+const handleFilterChange = () => {
+  currentPage.value = 1;
+  fetchAdminUsers();
+};
+
+const formatDate = (dateString: string) => {
+  if (!dateString || dateString === 'N/A' || dateString === '0001-01-01T00:00:00Z') {
+    return 'N/A';
+  }
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } catch {
+    return dateString;
+  }
+};
 
 const openMenuIndex = ref<number | null>(null);
 const editModal = ref<{ open: boolean; admin: { name: string; email: string; roleLabel: string } | null }>({
@@ -311,7 +488,20 @@ const closeAssignModal = () => {
   assignModal.value = false;
 };
 
-onMounted(() => window.addEventListener('click', handleClickOutside));
+const handleRoleAssigned = () => {
+  // Refresh admin users list after role assignment
+  fetchAdminUsers();
+};
+
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside);
+  fetchAdminUsers();
+});
+
 onBeforeUnmount(() => window.removeEventListener('click', handleClickOutside));
+
+watch([currentPage], () => {
+  fetchAdminUsers();
+});
 </script>
 

@@ -56,7 +56,8 @@ export function transformUserData(userData: any): any {
     'kyc_verified',
     'two_factor_enabled',
     'pin_set',
-    'biometric_enabled'
+    'biometric_enabled',
+    'deleted'
   ];
   
   // Transform boolean fields silently
@@ -65,6 +66,32 @@ export function transformUserData(userData: any): any {
       transformed[field] = safeBoolean(transformed[field]);
     }
   });
+  
+  // Handle paymentMethod - convert object to string if needed
+  if ('paymentMethod' in transformed && transformed.paymentMethod !== null && transformed.paymentMethod !== undefined) {
+    if (typeof transformed.paymentMethod === 'object') {
+      // If it's an object, try to extract a meaningful string value
+      // Common patterns: { type: 'card' }, { method: 'wallet' }, etc.
+      transformed.paymentMethod = transformed.paymentMethod.type || 
+                                   transformed.paymentMethod.method || 
+                                   transformed.paymentMethod.name ||
+                                   JSON.stringify(transformed.paymentMethod);
+    } else if (typeof transformed.paymentMethod !== 'string') {
+      // Convert to string if it's not already
+      transformed.paymentMethod = String(transformed.paymentMethod);
+    }
+  }
+  
+  // Handle defaultCurrency - ensure it's a string
+  if ('defaultCurrency' in transformed && transformed.defaultCurrency !== null && transformed.defaultCurrency !== undefined) {
+    if (typeof transformed.defaultCurrency === 'object') {
+      transformed.defaultCurrency = transformed.defaultCurrency.code || 
+                                     transformed.defaultCurrency.symbol ||
+                                     JSON.stringify(transformed.defaultCurrency);
+    } else if (typeof transformed.defaultCurrency !== 'string') {
+      transformed.defaultCurrency = String(transformed.defaultCurrency);
+    }
+  }
   
   return transformed;
 }
